@@ -1,4 +1,4 @@
-﻿import { NicheProfile } from '@/types/niche';
+import { NicheProfile } from '@/types/niche';
 
 export function getNicheLabel(niche: NicheProfile | null | undefined): string {
   const labels: Record<NicheProfile, string> = {
@@ -32,26 +32,27 @@ export type NavItem = {
 
 export function getNicheNavItems(niche: NicheProfile | null | undefined): NavItem[] {
   const base: NavItem[] = [
-    { href: '/dashboard', label: 'Дашборд', icon: '📊' },
-    { href: '/dashboard/inbox', label: 'Диалоги', icon: '💬' },
-    { href: '/dashboard/leads', label: 'Лиды (CRM)', icon: '👥' },
+    { href: '/', label: 'Дашборд', icon: '📊' },
+    { href: '/inbox', label: 'Диалоги', icon: '💬' },
+    { href: '/leads', label: 'Лиды (CRM)', icon: '👥' },
   ];
 
   const nicheSpecific: Partial<Record<NicheProfile, NavItem[]>> = {
-    REALTY: [{ href: '/dashboard/objects', label: 'Объекты Krisha', icon: '🏠' }],
-    AUTO_SALES: [{ href: '/dashboard/catalog', label: 'Авто Kolesa', icon: '🚗' }],
-    AUTO_SERVICE: [{ href: '/dashboard/schedule', label: 'Расписание', icon: '🔧' }],
-    BEAUTY: [{ href: '/dashboard/schedule', label: 'Запись', icon: '💅' }],
-    CLINIC: [{ href: '/dashboard/schedule', label: 'Расписание', icon: '🏥' }],
-    OTHER_CALENDAR: [{ href: '/dashboard/schedule', label: 'Расписание', icon: '📅' }],
+    REALTY: [{ href: '/objects', label: 'Объекты Krisha', icon: '🏠' }],
+    AUTO_SALES: [{ href: '/catalog', label: 'Авто Kolesa', icon: '🚗' }],
+    AUTO_SERVICE: [{ href: '/schedule', label: 'Расписание', icon: '🔧' }],
+    BEAUTY: [{ href: '/schedule', label: 'Запись', icon: '💅' }],
+    CLINIC: [{ href: '/schedule', label: 'Расписание', icon: '🏥' }],
+    OTHER_CALENDAR: [{ href: '/schedule', label: 'Расписание', icon: '📅' }],
   };
 
   const tail: NavItem[] = [
-    { href: '/dashboard/analytics', label: 'Аналитика', icon: '📈' },
-    { href: '/dashboard/settings', label: 'Настройки', icon: '⚙️' },
-    { href: '/dashboard/billing', label: 'Тариф и оплата', icon: '💳' },
+    { href: '/analytics', label: 'Аналитика', icon: '📈' },
+    { href: '/settings', label: 'Настройки', icon: '⚙️' },
+    { href: '/billing', label: 'Тариф и оплата', icon: '💳' },
   ];
 
   const specific = niche ? nicheSpecific[niche] ?? [] : [];
   return [...base, ...specific, ...tail];
 }
+

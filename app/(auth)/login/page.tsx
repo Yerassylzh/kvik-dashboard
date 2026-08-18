@@ -29,12 +29,12 @@ function LoginForm() {
       try {
         const stateRes = await getOnboardingState();
         if (stateRes.step === 'DONE') {
-          router.push(from || '/dashboard');
+          router.push(from || '/');
         } else {
           router.push('/onboarding');
         }
       } catch {
-        router.push(from || '/dashboard');
+        router.push(from || '/');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка входа. Проверьте почту и пароль.');

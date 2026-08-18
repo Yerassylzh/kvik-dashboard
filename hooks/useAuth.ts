@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect } from 'react';
 import { useAuthStore } from '@/store/auth.store';
@@ -77,6 +77,13 @@ export function useAuth() {
       setUser(userData);
     } catch {
       clearAuth();
+      if (typeof window !== 'undefined') {
+        const pathname = window.location.pathname;
+        if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
+          const from = encodeURIComponent(pathname + window.location.search);
+          window.location.href = `/login?from=${from}`;
+        }
+      }
     } finally {
       setLoading(false);
     }

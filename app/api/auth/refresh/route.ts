@@ -20,14 +20,18 @@ export async function POST(request: NextRequest) {
     const setCookie = backendRes.headers.get('set-cookie');
     if (setCookie) {
       response.headers.set('set-cookie', setCookie);
+    } else if (!backendRes.ok) {
+      response.cookies.delete('refresh_token');
     }
 
     return response;
   } catch (error) {
     console.error('Refresh proxy error:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: 'Session refresh failed' },
       { status: 401 }
     );
+    response.cookies.delete('refresh_token');
+    return response;
   }
 }

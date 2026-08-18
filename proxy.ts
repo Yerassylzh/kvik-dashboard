@@ -1,13 +1,11 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const PUBLIC_PATHS = ['/login', '/register'];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hostname = request.headers.get('host') || '';
-  const isApp = hostname.startsWith('app.');
 
-  // Ignore Next.js internal files, static assets, and API routes
+  // 1. Pass through Next.js internals, API routes, and static assets
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -16,33 +14,41 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Rewrite app.domain.com/ to app.domain.com/dashboard
-  if (isApp && pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // 2. Canonical redirect: /dashboard -> / (or /dashboard/* -> /*)
+  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
+    const newPath = pathname.replace(/^\/dashboard/, '') || '/';
+    return NextResponse.redirect(new URL(newPath, request.url));
   }
 
-  // Allow public auth pages
-  if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
-    // If user already has refresh cookie and hits /login or /register, let app handle it or proceed
+  // 3. Public Auth Pages: /login and /register (always allow access, never loop)
+  const isPublicAuthPage = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  if (isPublicAuthPage) {
     return NextResponse.next();
   }
 
-  // Protected app routes
-  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/onboarding');
-
-  if (isProtected) {
-    const hasRefreshCookie = request.cookies.has('refresh_token');
-
-    if (!hasRefreshCookie) {
-      const loginUrl = new URL('/login', request.url);
+  // 4. ALL OTHER PAGES ARE PROTECTED
+  // Unauthorized users trying to access "/", "/onboarding", or any other route get redirected to /login
+  const hasRefreshCookie = request.cookies.has('refresh_token');
+  if (!hasRefreshCookie) {
+    const loginUrl = new URL('/login', request.url);
+    if (pathname !== '/') {
       loginUrl.searchParams.set('from', pathname);
-      return NextResponse.redirect(loginUrl);
     }
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - static public files with extensions
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

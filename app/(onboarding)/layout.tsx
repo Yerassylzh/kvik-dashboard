@@ -1,6 +1,14 @@
-﻿import React from 'react';
+import React from 'react';
+import { redirect } from 'next/navigation';
+import { getServerUser } from '@/lib/auth/server';
 
-export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
+export default async function OnboardingLayout({ children }: { children: React.ReactNode }) {
+  const user = await getServerUser();
+
+  if (!user) {
+    redirect('/login?from=/onboarding');
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative overflow-hidden">
       {/* Dynamic Background Glows */}

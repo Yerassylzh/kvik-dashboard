@@ -100,6 +100,15 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         useAuthStore.getState().clearAuth();
+
+        if (typeof window !== 'undefined') {
+          const pathname = window.location.pathname;
+          if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
+            const from = encodeURIComponent(pathname + window.location.search);
+            window.location.href = `/login?from=${from}`;
+          }
+        }
+
         return Promise.reject(
           new ApiError(401, 'Session expired. Please log in again.')
         );
@@ -114,7 +123,17 @@ apiClient.interceptors.response.use(
       'An unexpected error occurred';
     const status = error.response?.status || 500;
 
+    if (status === 401 && typeof window !== 'undefined') {
+      const pathname = window.location.pathname;
+      if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
+        useAuthStore.getState().clearAuth();
+        const from = encodeURIComponent(pathname + window.location.search);
+        window.location.href = `/login?from=${from}`;
+      }
+    }
+
     return Promise.reject(new ApiError(status, message, error.response?.data));
   }
 );
+
 

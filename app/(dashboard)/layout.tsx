@@ -1,69 +1,32 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-
-async function getServerUser() {
-  const cookieStore = await cookies();
-  const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
-
-  // We need an access_token to call /auth/me
-  // Since we only have refresh_token on the server side, try /auth/refresh first
-  const refreshCookie = cookieStore.get('refresh_token');
-  if (!refreshCookie) return null;
-
-  try {
-    // Attempt token refresh from server side
-    const refreshRes = await fetch(`${BACKEND_URL}/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: `refresh_token=${refreshCookie.value}`,
-      },
-      cache: 'no-store',
-    });
-    if (!refreshRes.ok) return null;
-
-    const { access_token } = await refreshRes.json();
-
-    const meRes = await fetch(`${BACKEND_URL}/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-      cache: 'no-store',
-    });
-    if (!meRes.ok) return null;
-
-    return await meRes.json();
-  } catch {
-    return null;
-  }
-}
+import { getServerUser } from '@/lib/auth/server';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getServerUser();
 
   if (!user) {
-    redirect('/login?from=/dashboard');
+    redirect('/login');
   }
 
   const niche = user?.workspace?.nicheProfile;
 
   const navItems = [
-    { href: '/dashboard', label: 'Дашборд', icon: '📊', always: true },
-    { href: '/dashboard/inbox', label: 'Диалоги', icon: '💬', always: true },
-    { href: '/dashboard/leads', label: 'Лиды (CRM)', icon: '👥', always: true },
+    { href: '/', label: 'Дашборд', icon: '📊', always: true },
+    { href: '/inbox', label: 'Диалоги', icon: '💬', always: true },
+    { href: '/leads', label: 'Лиды (CRM)', icon: '👥', always: true },
     ...(niche === 'REALTY' ? [
-      { href: '/dashboard/objects', label: 'Объекты Krisha', icon: '🏠', always: false },
+      { href: '/objects', label: 'Объекты Krisha', icon: '🏠', always: false },
     ] : []),
     ...(niche === 'AUTO_SALES' || niche === 'AUTO_SERVICE' ? [
-      { href: '/dashboard/catalog', label: 'Авто Kolesa', icon: '🚗', always: false },
+      { href: '/catalog', label: 'Авто Kolesa', icon: '🚗', always: false },
     ] : []),
     ...(niche === 'OTHER_CALENDAR' || niche === 'BEAUTY' || niche === 'CLINIC' ? [
-      { href: '/dashboard/schedule', label: 'Расписание', icon: '📅', always: false },
+      { href: '/schedule', label: 'Расписание', icon: '📅', always: false },
     ] : []),
-    { href: '/dashboard/analytics', label: 'Аналитика', icon: '📈', always: true },
-    { href: '/dashboard/settings', label: 'Настройки', icon: '⚙️', always: true },
-    { href: '/dashboard/billing', label: 'Тариф и оплата', icon: '💳', always: true },
+    { href: '/analytics', label: 'Аналитика', icon: '📈', always: true },
+    { href: '/settings', label: 'Настройки', icon: '⚙️', always: true },
+    { href: '/billing', label: 'Тариф и оплата', icon: '💳', always: true },
   ];
 
   return (
