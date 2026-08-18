@@ -1,308 +1,233 @@
-# Продуктовая и системная архитектура AI SaaS-платформы
+# Product and System Architecture of the AI SaaS Platform
 
-**Специализация:** Агентства недвижимости, автобизнес и сервисы с онлайн-записью  
-**Рынок:** Казахстан и СНГ  
-**Тип документа:** Внутренний документ (анализ рынка, конкурентов и спецификация продукта: *лендинг → онбординг → дашборд → техническая архитектура*)
-
----
-
-## 1. Резюме и стратегическая рамка
-
-Мы строим **вертикализированного AI-агента по продажам для мессенджеров** (WhatsApp, Instagram, Telegram) с двумя основными нишами:
-1. **Агентства недвижимости**
-2. **Автобизнес** (автосалоны + автосервисы)
-
-*Второстепенное направление:* бизнесы с записью по расписанию (клиники, барбершопы, бьюти-салоны и похожие сервисы).
-
-### Ключевая ставка продукта
-Там, где горизонтальные SaaS-конкуренты (*Pleep, Suvvy, Soldee, ai-managers.ru*) дают клиенту «пустой конструктор» и заставляют самостоятельно строить логику под свою нишу, мы даём **готовую нишевую логику «из коробки»** — с интеграцией по смыслу под **Krisha.kz** и **Kolesa.kz** — при сохранении лёгкого 5-минутного онбординга, свойственного массовым продуктам.
-
-### Структура документа
-1. Синтез анализа ниш и конкурентов
-2. Архитектура лендинга
-3. Сценарии онбординга по типам бизнеса
-4. Структура дашборда с кастомизацией под нишу
-5. Продуктовые фичи AI-движка
-6. Техническая системная архитектура
+**Specialization:** Real Estate Agencies, Automotive Business, and Appointment-based Services  
+**Target Market:** Kazakhstan and CIS  
+**Document Type:** Internal Document (Market Analysis, Competitor Breakdown, Product Spec: _Landing → Onboarding → Dashboard → Technical Architecture_)
 
 ---
 
-## 2. Синтез анализа ниш в Казахстане
+## 1. Executive Summary and Strategic Framework
 
-На основе разбора операционных процессов в недвижимости, автобизнесе, юруслугах и ремонте — ключевые параметры четырёх ниш:
+We are building a **verticalized AI Sales Agent for messaging channels** (WhatsApp, Instagram, Telegram) with two primary niches:
 
-| Ниша | Канал трафика | Основная боль | Чек / комиссия | Наш приоритет |
-| :--- | :--- | :--- | :--- | :--- |
-| **Недвижимость** | Krisha.kz, WhatsApp, Instagram | Скорость первого ответа, хаос из 10–15 параллельных диалогов | 200 000–350 000+ ₸ за сделку | **Primary** |
-| **Авто (салоны + СТО)** | Kolesa.kz, Instagram, WhatsApp | FAQ-рутина, накладки расписания мастеров, гонка за скорость | От мелкого чека СТО до крупной продажи авто | **Primary** |
-| **Юристы / консалтинг** | Сайт, WhatsApp, 2GIS | Дорогое время senior-специалиста на нецелевые лиды | $50–$5 000+ | *Вне фокуса* |
-| **Ремонт / стройка** | Instagram (портфолио), WhatsApp | Долгий цикл (недели), лиды остывают без follow-up | $5 000–$50 000+ | *Вне фокуса* (переиспользуем follow-up) |
+1. **Real Estate Agencies**
+2. **Automotive Business** (dealerships + service centers / workshops)
 
-> **Примечание:** Юруслуги и ремонт исключены из фокуса на старте — не совпадают с профилем *«много однотипных обращений через мессенджер + доска объявлений/календарь»*, на котором строится наше УТП. Логику автоматического «догрева» из ниши ремонта переносим как фичу **Follow-up** для всех трёх наших вертикалей.
+_Secondary vertical:_ Appointment-driven service businesses (clinics, barbershops, beauty salons, and similar appointment-based providers).
 
-### 2.1 Почему именно недвижимость и авто — как primary
-* **Доминирующие доски объявлений:** В обеих нишах есть мощные локальные площадки (**Krisha.kz** — 500 000+ активных объявлений; **Kolesa.kz** — 6.5 млн объявлений, 250 млн сообщений/год), то есть предсказуемый, концентрированный источник входящего трафика для глубокой интеграции.
-* **Критичность скорости ответа:** В обеих нишах побеждает скорость ответа — это количественно измеримая метрика ценности AI-агента (*speed-to-lead*), что упрощает продажу продукта и делает ROI наглядным.
-* **Переиспользование логики:** Агент физически не справляется с 10–15 параллельными диалогами (недвижимость) или потоком FAQ + расписанием подъёмников (авто) — паттерн боли похож, что позволяет переиспользовать **70–80% логики движка** между нишами.
+### Core Value Proposition
 
-### 2.2 Почему calendar-бизнесы — secondary
-Клиники, барбершопы, бьюти — большой горизонтальный сегмент со зрелой инфраструктурой (YCLIENTS, Altegio), что даёт быстрый охват через готовые интеграции, но ниже потолок чека и более острая конкуренция с горизонтальными игроками (Pleep, Soldee уже там).
+Where horizontal SaaS competitors (_Pleep, Suvvy, Soldee, ai-managers.ru_) offer an empty canvas forcing customers to construct custom logic from scratch, we provide **out-of-the-box vertical workflows** — with deep data connectors for **Krisha.kz** and **Kolesa.kz** — while maintaining a frictionless 5-minute onboarding experience.
 
-*Стратегия:* Используем этот сегмент как канал быстрого набора платящих клиентов и подтверждения unit-экономики, пока углубляем нишевые фичи для недвижимости и авто.
+### Document Structure
 
----
-
-## 3. Конкурентный анализ
-
-### 3.1 Игроки СНГ / Казахстан
-
-| Продукт | Позиционирование | Цена | Сильная сторона | Слабость |
-| :--- | :--- | :--- | :--- | :--- |
-| **Pleep** | Горизонтальный, B2C-услуги/e-com | 42 380–130 780 ₸/мес + % от сделок | Kaspi Pay в диалоге, голос+чат в одном контексте, своя CRM | Шаблонность для сложных ниш (недвижимость/авто); клиент сам настраивает базу знаний |
-| **Suvvy AI** | Горизонтальный B2B, Enterprise+SMB | Pay-as-you-go, 35–150 ₸/ответ | Мультимодельность, расчёты по Excel-прайсам, глубокая работа с CRM-воронкой | Сложный онбординг (вебхуки, токены), нет локализации под KZ (Kaspi, Krisha, Kolesa) |
-| **Soldee.kz** | Горизонтальный, локальный (Алматы) | MRR-оценка $1.5–4k, ранняя стадия | Имитация «живого» набора текста, Live-Overflow идея, free-триал без карты | Нет глубоких интеграций (Krisha/Kolesa API, DMS), нет защиты от галлюцинаций в календаре |
-| **ai-managers.ru** | Горизонтальный, РФ-рынок | Внедрение «за 1 день» | Широкий охват каналов (включая Авито, ВК) | Универсальный промпт → абстрактные ответы, нет отраслевых БД |
-
-### 3.2 Западные нишевые игроки (референс для продукта)
-
-| Продукт | Ниша | Сильная сторона | Слабость / неприменимо к СНГ |
-| :--- | :--- | :--- | :--- |
-| **Uptail.ai** | Недвижимость, WhatsApp | Подбор объектов, отправка фото/планировок, бронь показа прямо в диалоге | Только недвижимость; интеграции под западные CRM |
-| **Gubagoo** | Автодилеры (Enterprise) | Глубокая интеграция с DMS, знает комплектации/Trade-in, live-оператор | Тяжёлый и дорогой Enterprise-продукт, не для малого/среднего бизнеса |
-| **Roof AI** | Недвижимость, сайты брокеров | MLS-интеграция, авто-прогрев с персональными подборками, роутинг на агента | Заточен под веб-виджет сайта, а не под мессенджеры (в СНГ хаб — мессенджеры/доски) |
-| **Chatbase** | Универсальный no-code бот | Сборка бота за пару минут из PDF/сайта | Знает только загруженное; нет готовой транзакционной логики (запись, доски объявлений) |
-
-### 3.3 Карта позиционирования и наш white space
-
-По двум осям — **«глубина нишевой логики»** и **«простота онбординга»** — рынок делится на четыре квадранта:
-
-1. **Горизонтальные + простой онбординг:** *Pleep, Soldee, ai-managers.ru, Chatbase* — быстрый старт, но бот «не понимает» специфику недвижимости/авто и требует ручной донастройки.
-2. **Горизонтальные + сложный онбординг:** *Suvvy AI* — мощная логика, но порог входа рассчитан на интеграторов, а не на владельца СТО или агентства.
-3. **Нишевые + сложный/тяжёлый онбординг:** *Gubagoo, Roof AI* — глубокая логика под нишу, но Enterprise-стоимость и внедрение, недоступные малому и среднему бизнесу СНГ.
-4. **Нишевые + простой онбординг (свободная зона):** Здесь никто из разобранных игроков системно не работает на рынке КЗ/СНГ — это и есть наш **white space**.
-
-> **Вывод:** Продукт должен сочетать глубину Suvvy/Gubagoo (готовая логика под Krisha.kz/Kolesa.kz/YCLIENTS) с простотой Pleep/Soldee (онбординг за 5 минут, авто-парсинг вместо ручной настройки).
+1. Niche Synthesis and Market Analysis
+2. Landing Page Architecture
+3. Vertical Onboarding Flows
+4. Niche-Tailored Dashboard Structure
+5. Core AI Engine Capabilities
+6. Technical System Architecture
 
 ---
 
-## 4. Архитектура продукта
+## 2. Niche Synthesis in Kazakhstan
 
-Продукт состоит из четырёх зон: **Лендинг → Онбординг → Дашборд → AI-движок (core engine)**, которые работают на трёх нишевых профилях: *Недвижимость, Авто, Calendar-бизнесы*.
+Based on operational workflow audits across real estate, automotive, legal, and renovation services:
+
+| Niche                            | Traffic Channels                | Primary Pain Point                                                    | Average Ticket / Commission                    | Priority                                  |
+| :------------------------------- | :------------------------------ | :-------------------------------------------------------------------- | :--------------------------------------------- | :---------------------------------------- |
+| **Real Estate**                  | Krisha.kz, WhatsApp, Instagram  | Speed-to-lead, managing 10–15 concurrent chat threads                 | 200,000–350,000+ KZT per closed deal           | **Primary**                               |
+| **Automotive (Sales + Service)** | Kolesa.kz, Instagram, WhatsApp  | Repetitive FAQ inquiries, schedule conflicts, race for fast responses | From minor repair bill to high-ticket car sale | **Primary**                               |
+| **Legal / Consulting**           | Website, WhatsApp, 2GIS         | Senior specialist time wasted on unqualified leads                    | $50–$5,000+                                    | _Out of focus_                            |
+| **Home Renovation**              | Instagram (portfolio), WhatsApp | Long sales cycle (weeks), leads go cold without follow-up             | $5,000–$50,000+                                | _Out of focus_ (reusing follow-up engine) |
+
+> **Note:** Legal services and renovation are excluded from initial vertical focus — they do not match the profile of _high-volume repetitive messenger inquiries + classified board/calendar integration_. However, automated nurturing logic is adopted as a universal **Follow-up Engine** across our primary verticals.
+
+### 2.1 Why Real Estate and Automotive are Primary
+
+- **Dominant Classified Marketplaces:** Both verticals possess powerful localized platforms (**Krisha.kz** — 500,000+ active listings; **Kolesa.kz** — 6.5M listings, 250M messages/year), providing concentrated incoming traffic ripe for deep integration.
+- **Criticality of Response Speed:** Speed-to-lead directly dictates deal conversion, delivering an easily measurable ROI metric for sales conversations.
+- **High Logic Reusability:** Overloaded agents handling 10-15 parallel chats or service desks routing repair requests share similar structural bottlenecks, allowing **70–80% engine reusability** across verticals.
+
+### 2.2 Why Calendar Businesses are Secondary
+
+Clinics and beauty salons represent a large horizontal market with established scheduling infrastructure (YCLIENTS, Altegio), offering quick distribution but lower pricing power and intense competition from horizontal platforms.
+
+---
+
+## 3. Competitive Landscape
+
+### 3.1 CIS and Kazakhstan Competitors
+
+| Product            | Positioning                    | Pricing                                 | Key Strength                                                                        | Weakness                                                                             |
+| :----------------- | :----------------------------- | :-------------------------------------- | :---------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| **Pleep**          | Horizontal, B2C services/e-com | 42,380–130,780 KZT/mo + transaction fee | In-chat Kaspi Pay, voice+chat context, built-in CRM                                 | Generic templates for complex verticals; requires manual knowledge base construction |
+| **Suvvy AI**       | Horizontal B2B, Enterprise+SMB | Pay-as-you-go, 35–150 KZT/response      | Multi-model architecture, calculations via Excel sheets, CRM funnel management      | High onboarding barrier (webhooks, tokens), lacks localized KZ connectors            |
+| **Soldee.kz**      | Horizontal, local (Almaty)     | Estimated MRR $1.5k–$4k, early stage    | Human-like typing cadence simulation, Live-Overflow concept, credit-card-free trial | Lacks deep classified integrations, prone to scheduling hallucinations               |
+| **ai-managers.ru** | Horizontal, Russian market     | "1-day rollout"                         | Broad channel coverage (including Avito, VK)                                        | Generic prompts yield generic answers, no industry-specific databases                |
+
+### 3.2 Western Reference Players
+
+| Product       | Vertical                            | Key Strength                                                        | Limitation / CIS Incompatibility                                           |
+| :------------ | :---------------------------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------- |
+| **Uptail.ai** | Real Estate, WhatsApp               | Property matching, sending floor plans, scheduling showings in-chat | Real-estate only; integrated solely with Western CRMs                      |
+| **Gubagoo**   | Automotive Dealerships (Enterprise) | Deep DMS integration, trim/trade-in aware, live agent handoff       | Heavy and expensive Enterprise pricing, inaccessible for local SMBs        |
+| **Roof AI**   | Real Estate, Brokerage Websites     | MLS integration, automated personalized matching, routing to agents | Built for website widgets rather than mobile messengers                    |
+| **Chatbase**  | Generic no-code chatbot             | Fast bot creation from PDF/site crawls                              | Knowledge retrieval only; lacks transactional logic (scheduling, listings) |
+
+### 3.3 Positioning Matrix & Our White Space
+
+Analyzing along two axes — **Vertical Logic Depth** and **Onboarding Simplicity**:
+
+1. **Horizontal + Simple Onboarding:** _Pleep, Soldee, Chatbase_ — rapid setup, but lacks domain understanding for real estate/auto.
+2. **Horizontal + Complex Onboarding:** _Suvvy AI_ — powerful, but demands technical integrators.
+3. **Vertical + Heavy/Enterprise:** _Gubagoo, Roof AI_ — deep logic, but inaccessible price point and implementation timeline for CIS SMBs.
+4. **Vertical + Simple Onboarding (The White Space):** Our target territory — combining the domain depth of Suvvy/Gubagoo with 5-minute automated onboarding.
+
+---
+
+## 4. Product Architecture
+
+The platform spans four integrated layers: **Landing Page → Onboarding → Dashboard → Core AI Engine**, configurable across vertical profiles (_Real Estate, Automotive, Calendar-based_).
 
 ```
 +-----------------------------------------------------------------------+
-|                           ЛЕНДИНГ (Niche-switcher)                     |
+|                       LANDING (Niche Switcher)                        |
 +-----------------------------------------------------------------------+
                                    |
                                    v
 +-----------------------------------------------------------------------+
-|                          ОНБОРДИНГ (5 минут)                          |
-|    [Ветка A: Недвижимость]   [Ветка Б: Авто]   [Ветка В: Calendar]    |
+|                          ONBOARDING (5 minutes)                       |
+|      [Branch A: Realty]      [Branch B: Auto]     [Branch C: Calendar]|
 +-----------------------------------------------------------------------+
                                    |
                                    v
 +-----------------------------------------------------------------------+
-|                          ДАШБОРД (Niche Profile)                      |
-|       Общий каркас + Виджеты под Недвижимость / Авто / Сервисы        |
+|                          DASHBOARD (Niche Profile)                    |
+|          Shared Framework + Niche-Specific Configured Widgets         |
 +-----------------------------------------------------------------------+
                                    |
                                    v
 +-----------------------------------------------------------------------+
 |                          CORE AI ENGINE                               |
-|        Orchestrator | Slot-Validation | Live Overflow | Follow-up     |
+|       Orchestrator | Slot-Validation | Live Overflow | Follow-up      |
 +-----------------------------------------------------------------------+
 ```
 
-### 4.1 Лендинг
+### 4.1 Landing Page Architecture
 
-**Задача лендинга:** не «объяснить продукт», а как можно быстрее провести три сегмента посетителей (риелтор, автобизнес, бьюти/клиника) к узнаванию *«это сделано специально под меня»*, используя терминологию их ниши.
+**Core Goal:** Rapidly guide visitors (realtors, auto businesses, clinic owners) to immediate recognition of _“this was built specifically for my business”_ using industry-native vocabulary.
 
-#### Структура страницы (блоки сверху вниз)
-1. **Niche-switcher в шапке:** переключатель «Недвижимость / Авто / Запись и услуги» — меняет заголовки, скриншоты и кейсы ниже по странице без перезагрузки (via query-параметр или state), чтобы один лендинг обслуживал все сегменты без размытия месседжа.
-2. **Hero-блок:** pain-first заголовок под выбранную нишу + подзаголовок с конкретной цифрой + CTA «Подключить бесплатно» и вторичный CTA «Смотреть демо-диалог».
-3. **Live-demo виджет:** встроенный чат-виджет, имитирующий реальный диалог с клиентом (пример: покупатель квартиры пишет *«актуальна ли цена?»* → бот квалифицирует бюджет/ипотеку → предлагает время показа) — интерактивный, посетитель может написать своё сообщение и получить ответ демо-бота.
-4. **Блок боли (Problem):** 3 карточки с болью на языке ниши — *«Пока вы отвечаете, клиент уже пишет конкуренту»*, *«Расписание мастеров ломается от одной накладки»*, *«Клиент, спросивший про объект вчера, забыт сегодня»*.
-5. **Блок решения (How it works):** 3 шага — *Подключи мессенджер → ИИ квалифицирует и ведёт диалог → Сделка/запись падает в твою воронку*. Сопровождается GIF/скринкастом реального интерфейса, а не абстрактной иллюстрацией.
-6. **Нишевые кейсы / социальное доказательство:** переключаемые по нише мини-кейсы с цифрой (*«снизили время первого ответа с 40 минут до 15 секунд»*, *«вернули в диалог 12% остывших лидов»*).
-7. **ROI-калькулятор (виджет):** пользователь вводит количество лидов в месяц и текущее время ответа → калькулятор показывает оценку потерянных сделок и экономию от подключения бота.
-8. **Блок «Почему не универсальный бот»:** прямое сравнение 3 строк — «Универсальный конструктор» vs «Наш нишевый пресет» по параметрам (время настройки, знание Krisha.kz/Kolesa.kz, защита от накладок в календаре).
-9. **Тарифы:** 2–3 карточки (Self-Serve / VIP-Внедрение / Enterprise).
-10. **FAQ с отработкой возражений:** *«Не спалится ли клиент, что общается с ботом?»*, *«Что если бот ошибётся с ценой/слотом?»*, *«Можно ли передать диалог живому менеджеру?»*.
-11. **Финальный CTA-блок** с ограничителем срочности (например, счётчик мест в пилотной группе с ручным онбордингом) и повторной кнопкой запуска.
+#### Page Structure
 
-#### Примеры заголовков по нише (копирайт-техники)
-* **Недвижимость:** *«Пока вы открываете чат, клиент уже пишет другому агенту. ИИ отвечает за 15 секунд — 24/7»* — pain + конкретная цифра + снятие тревоги про время.
-* **Авто:** *«Администратор не может отвечать 300 раз в день на один и тот же вопрос. ИИ может»* — pain, знакомый именно этой аудитории (усталость от рутины), без общих слов.
-* **Calendar-бизнесы:** *«Каждый no-show — это потерянный слот и потерянные деньги. Снижаем no-show на 40% автонапоминаниями»* — сразу цифра, знакомая нише.
-
-#### Общие приёмы
-* Использование терминов, которые «подтверждают своего» (*комиссия, показ, ипотека* / *VIN, trade-in, подъёмник* / *no-show, слот*) — так лендинг фильтрует нецелевой трафик и повышает доверие целевого.
-* **Anti-Pleep/Soldee месседж** без прямого называния конкурентов: *«Не общий конструктор — готовый пресет под вашу нишу с первого дня»*.
+1. **Niche-Switcher in Header:** Seamlessly updates headlines, mockups, and case studies across the page without full page reload.
+2. **Hero Block:** Pain-first vertical headline + quantified value metric + primary CTA "Start Free Trial" and secondary CTA "View Interactive Demo".
+3. **Interactive Demo Chat:** Embedded widget simulating real client dialogs (e.g., qualifying budget and scheduling a property showing).
+4. **Pain Points (Problem):** 3 vertical-specific friction points.
+5. **Solution (How It Works):** 3 clear steps with real interface screen captures.
+6. **Social Proof & Metrics:** Vertical case studies with concrete numbers (_"Cut response time from 40m to 15s"_).
+7. **Interactive ROI Calculator:** Computes lost revenue based on current response latency.
+8. **Comparison Matrix:** "Generic Bot Builder" vs. "Pre-configured Vertical Engine".
+9. **Transparent Pricing:** Tiered cards (Starter / Pro / VIP).
+10. **FAQ & Objection Handling:** Explaining bot humanization, hallucination guards, and live takeover.
+11. **Final CTA:** Urgency trigger and registration button.
 
 ---
 
-### 4.2 Онбординг
+### 4.2 Onboarding Flow
 
-**Принцип:** один общий первый шаг (выбор ниши) → далее у каждой ниши свой короткий путь, построенный вокруг главного источника лидов этой ниши (Krisha.kz, Kolesa.kz или календарная система). Цель — **рабочий бот за 5 минут без чтения документации**.
+**Guiding Principle:** Step 0 selects business type → subsequent steps execute automated data extraction from the primary lead channel (Krisha.kz, Kolesa.kz, or scheduling engine). Goal: **A fully operational assistant in 5 minutes without reading docs**.
 
-#### Шаг 0 — Выбор типа бизнеса
-Три крупные кликабельные карточки, без формы регистрации на этом шаге (снижение барьера входа):
-* 🏠 **Агентство недвижимости**
-* 🚗 **Автобизнес** (автосалон или автосервис/СТО)
-* 📅 **Бизнес с записью** (клиника, барбершоп, бьюти, другое)
+#### Step 0 — Business Type Selection
 
----
-
-#### Ветка А — Недвижимость
-1. **Шаг 1:** Вставить ссылку на профиль/объявления на Krisha.kz → система автоматически парсит активные объекты (адрес, цена, фото, параметры) вместо ручного ввода базы знаний.
-2. **Шаг 2:** Подтвердить/скорректировать распарсенные объекты (чек-лист с превью карточек).
-3. **Шаг 3:** Подключить канал приёма сообщений — WhatsApp Business API и/или Instagram Direct (OAuth-подключение в 2 клика).
-4. **Шаг 4:** Настроить логику квалификации — бюджет, ипотека (да/нет), район, срочность — предзаполненные поля можно оставить как есть или отредактировать.
-5. **Шаг 5:** Подключить календарь показов (Google Calendar) и правило Live Overflow — *«если менеджер не ответил за N секунд, бот берёт диалог на себя»*.
-6. **Шаг 6:** Тест-диалог с ботом от имени «покупателя» → подтверждение запуска.
+- 🏠 **Real Estate Agency / Realtor**
+- 🚗 **Automotive Business** (Dealership or Auto Service Center)
+- 📅 **Appointment-based Business** (Clinic, Barbershop, Beauty Salon, Services)
 
 ---
 
-#### Ветка Б — Автобизнес
-1. **Шаг 1:** Выбор подсегмента — *Продажа авто* (дилер/частный продавец на Kolesa.kz) или *Сервис/СТО*.
-   * **Шаг 1а (продажа):** Ссылка на профиль/объявления на Kolesa.kz → авто-парсинг марок, комплектаций, цен, фото.
-   * **Шаг 1б (сервис):** Загрузка прайс-листа услуг (файл или ручной ввод) + расписание мастеров/подъёмников (интеграция или ручные слоты, ограничение по числу машин в день).
-2. **Шаг 2:** Подключение WhatsApp/Instagram, аналогично ветке недвижимости.
-3. **Шаг 3:** Настройка правил записи — защита от накладок (валидация занятости слота в реальном времени, а не «на глаз», как у горизонтальных решений).
-4. **Шаг 4:** Тест-диалог и запуск.
+#### Branch A — Real Estate
+
+1. **Step 1:** Paste Krisha.kz profile URL → system automatically parses all active listings (pricing, photos, specifications, descriptions).
+2. **Step 2:** Review and confirm parsed listings (interactive preview cards).
+3. **Step 3:** Connect messaging channel (WhatsApp Business API / Instagram Direct / Telegram).
+4. **Step 4:** Configure lead qualification criteria (budget, mortgage pre-approval, target district, urgency).
+5. **Step 5:** Connect showings calendar (Google Calendar) and define Live Overflow threshold (_"Take over chat if manager does not respond within N seconds"_).
+6. **Step 6:** Execute test dialogue as a prospective buyer → activate assistant.
 
 ---
 
-#### Ветка В — Calendar-бизнесы
-1. **Шаг 1:** Выбор под-вертикали (*клиника / барбершоп / бьюти-салон / другое*) — определяет набор пресетных вопросов и формулировок.
-2. **Шаг 2:** Подключение календарной системы — Altegio, YCLIENTS или Google Calendar (список специалистов, услуги, длительность, цены).
-3. **Шаг 3:** Подключение мессенджеров (WhatsApp/Instagram/Telegram) и включение авто-напоминаний (снижение no-show).
-4. **Шаг 4:** Тест-диалог и запуск.
+#### Branch B — Automotive
+
+1. **Step 1:** Select sub-segment: _Auto Sales_ (Kolesa.kz URL) or _Auto Service_ (upload service price list + bay capacity).
+2. **Step 2:** Connect WhatsApp / Instagram.
+3. **Step 3:** Configure real-time scheduling rules and collision prevention.
+4. **Step 4:** Test dialogue and launch.
 
 ---
 
-#### Сквозные принципы онбординга
-* **Регистрация (email/телефон)** запрашивается после того, как пользователь увидел работающего бота на своих данных — не раньше, чтобы не терять посетителя на пустой форме.
-* **Авто-парсинг:** Везде, где возможно, — парсинг существующих данных (Krisha.kz, Kolesa.kz, сайт, Instagram) вместо ручного заполнения базы знаний, это прямая отстройка от Pleep/Suvvy.
-* **VIP-upsell:** В конце любой ветки — предложение VIP-онбординга «за руку» (звонок 15 минут) как upsell для нетехнологичных владельцев бизнеса, которые обычно бросают самостоятельную настройку.
+#### Branch C — Calendar Businesses
+
+1. **Step 1:** Select sub-vertical (clinic, barbershop, salon, consulting).
+2. **Step 2:** Connect calendar platform (Altegio, YCLIENTS, Google Calendar).
+3. **Step 3:** Connect messaging channels and enable automated appointment reminders (reducing no-shows).
+4. **Step 4:** Test dialogue and launch.
 
 ---
 
-### 4.3 Дашборд
+### 4.3 Dashboard Framework
 
-Дашборд состоит из **общего каркаса** (единого для всех ниш) и **нишевого модуля**, который подставляется в зависимости от выбора на онбординге. Это не три разных продукта, а один каркас с конфигурируемыми виджетами.
+The dashboard consists of a **Shared Core Framework** populated with dynamic **Niche Modules** dictated by `niche_profile`.
 
-#### Общие модули (для всех ниш)
-* **Inbox:** Единый чат-инбокс по всем каналам (WhatsApp/Instagram/Telegram) с индикатором *«отвечает бот / перехвачен менеджером»*, историей и возможностью вмешаться вручную в любой момент.
-* **Лиды / CRM-таблица:** Список обращений со статусами воронки, фильтрами по каналу, дате, статусу; экспорт и синхронизация с amoCRM/Bitrix24 при наличии.
-* **Аналитика:** Время первого ответа, доля диалогов, закрытых ботом без менеджера, конверсия по этапам воронки, отчёт по Follow-up (сколько «остывших» лидов вернулось в диалог).
-* **Настройки бота:** Редактор базы знаний (правки через «дизлайк + комментарий», без кода), тон общения, правила эскалации на менеджера, языки (рус/каз/eng).
-* **Биллинг:** Текущий тариф, история платежей, подключение Kaspi Pay для приёма оплаты в диалоге (актуально прежде всего для e-commerce/услуг внутри calendar-сегмента).
-* **Команда:** Доступы менеджеров, распределение диалогов между сотрудниками.
+#### Universal Modules (All Niches)
 
----
-
-#### Нишевый модуль — Недвижимость
-* **Объекты:** Карточки объектов, синхронизированные с Krisha.kz (цена, статус «активно/снято с продажи», авто-обновление при изменении объявления).
-* **Календарь показов:** Слоты показов по объектам и агентам, с блокировкой двойного бронирования.
-* **Воронка сделки:** Этапы: *Обращение → Квалификация → Показ назначен → Показ проведён → Задаток → Сделка закрыта*, с суммой ожидаемой комиссии на каждом этапе.
-* **Тёплые лиды без показа:** Отдельный список для ручного/автоматического повторного касания (карточки объектов, которыми интересовались, но не дошли до показа).
+- **Unified Inbox:** Consolidated omnichannel chat interface with active takeover toggles (_Bot Active / Manager Takeover_).
+- **Leads / CRM Table:** Pipeline stages, channel filters, export, and CRM sync (amoCRM, Bitrix24).
+- **Analytics:** Speed-to-lead, automated resolution rate, funnel conversions, and Follow-up re-engagement performance.
+- **Assistant Configuration:** Knowledge base editor ("dislike + feedback" continuous learning), tone of voice, escalation triggers, multilingual settings (Russian, Kazakh, English).
+- **Billing & Payments:** Plan management, usage metrics, Kaspi Pay in-chat checkout.
+- **Team Management:** Role-based access and chat distribution.
 
 ---
 
-#### Нишевый модуль — Авто
-* **Каталог/склад:** Для продаж: список авто с VIN, комплектацией, ценой, статусом (*в наличии/продан/резерв*); для СТО: прайс-лист услуг.
-* **Расписание мастеров/подъёмников:** Визуальный график загрузки по дням, с ограничением по мощности (например, 8–10 машин в день), блокировка накладок.
-* **Trade-in / доп. интерес:** Фиксация, если клиент упомянул трейд-ин или доп. услугу, для передачи менеджеру.
-* **Воронка:** *Обращение → Квалификация (бюджет/поломка) → Тест-драйв/запись → Сделка/сервис завершён*.
+## 5. Core AI Engine Capabilities
+
+| Feature                         | Description                                                                               | Strategic Benefit                                                  |
+| :------------------------------ | :---------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
+| **Omnichannel Unified Context** | WhatsApp Business API, Instagram Direct, Telegram in one shared inbox                     | Table-stakes communication hygiene                                 |
+| **Live Overflow**               | Assistant takes over conversation if human manager does not reply within N seconds        | Eliminates fear of bot misbehavior while guaranteeing response SLA |
+| **Automated Data Connectors**   | Direct ingestion of listings and services from Krisha.kz, Kolesa.kz, or website links     | Eliminates manual knowledge base setup                             |
+| **Real-time Slot Validation**   | Validates calendar availability against live schedule before confirming appointment       | Prevents LLM booking hallucinations and double bookings            |
+| **Automated Follow-up Engine**  | Scheduled nurturing touches at 24/72 hours for silent leads                               | Reactivates cold inquiries across all verticals                    |
+| **In-Chat Kaspi Pay**           | Generates and verifies native payment links directly inside conversations                 | Powerful conversion driver for the Kazakhstan market               |
+| **Multilingual Support**        | Automatic language detection and switching across Russian, Kazakh, and English            | Critical local requirement                                         |
+| **No-Code Dislike Feedback**    | Refine bot behavior by flagging responses with a comment, avoiding raw prompt engineering | Reduces churn among non-technical business owners                  |
+| **Conversational Humanization** | Realistic typing delays and natural cadence                                               | Increases engagement and trust                                     |
 
 ---
 
-#### Нишевый модуль — Calendar-бизнесы
-* **Календарь записей:** По специалистам/кабинетам, синхронизация с Altegio/YCLIENTS/Google Calendar.
-* **No-show аналитика:** Процент неявок, эффект автонапоминаний до/после подключения бота.
-* **Услуги и прайс:** Редактируемый список услуг с длительностью и ценой, используется ботом для расчёта и записи.
-* **Up-sell/Cross-sell отчёт:** Какие доп. услуги предложил бот и какая конверсия в согласие.
+## 6. Technical System Architecture
 
-> **Техническая реализация:** Кастомизация реализуется не как три разных фронтенда, а как единый дашборд с конфигом ниши (`niche_profile`), который определяет набор виджетов, терминологию интерфейса и поля CRM-карточки лида.
+Designed as a **Modular Monolith** with clean domain separation, allowing straightforward extraction into microservices as volume scales.
 
----
+### 6.1 Architectural Layers
 
-## 5. Продуктовые фичи AI-движка (сквозные для всех ниш)
-
-| Фича | Описание | Зачем нужна / у кого подсмотрено |
-| :--- | :--- | :--- |
-| **Мультиканальность** | WhatsApp Business API, Instagram Direct, Telegram в едином инбоксе | Базовый гигиенический минимум (*Pleep, Suvvy, Soldee, ai-managers.ru*) |
-| **Live Overflow** | Перехват диалога ботом, если менеджер не ответил за N секунд (настраивается) | Снимает страх владельца «бот испортит общение»; идея усилена по мотивам *Soldee* |
-| **Авто-парсинг источника** | Импорт объектов/авто/услуг с Krisha.kz, Kolesa.kz или сайта вместо ручного ввода | Прямая отстройка от «пустого конструктора» *Pleep/Suvvy/ai-managers.ru* |
-| **Защита от накладок в календаре** | Валидация занятости слота в реальном времени перед подтверждением записи | Явный недостаток *Soldee* и горизонтальных решений — LLM «галлюцинирует» время |
-| **Follow-up / автодогрев** | Автоматические повторные касания через 24/72 часа для молчащих лидов | Перенесено из ниши «ремонт» (анализ ниш) как сквозная фича для остывших лидов |
-| **Приём оплаты в диалоге** | Интеграция с Kaspi Pay — ссылка на оплату прямо в чат | Сильный локальный триггер рынка КЗ (по опыту *Pleep*) |
-| **Мультиязычность** | Автоматическое переключение рус/каз/eng по языку клиента | Требование локального рынка КЗ |
-| **Обучение без кода** | Правки логики через кнопку «некорректно» + комментарий, без промпт-инжиниринга | Снижает отток нетехнологичных владельцев бизнеса (слабость *Pleep* на стандартном тарифе) |
-| **Гуманизация диалога** | Имитация задержки набора текста, естественный тон | Подсмотрено у *Soldee* — снижает ощущение общения с ботом |
+| Layer                 | Components                                                                                    | Responsibility                                                                       |
+| :-------------------- | :-------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| **Presentation**      | Landing (Next.js/SSR), Onboarding Wizard, Dashboard (SPA)                                     | Public and authenticated UIs; adapts views according to `niche_profile`              |
+| **Channel Adapters**  | WhatsApp Business API, Instagram Graph API, Telegram Bot API                                  | Normalizes incoming/outgoing payloads into standard internal message schema          |
+| **Core AI Engine**    | Orchestrator, Niche Prompt Policy, Slot-Validation Engine, Follow-up Scheduler, Live Overflow | Lead qualification, dialogue generation, scheduling verification, escalation routing |
+| **Integration Layer** | Krisha.kz / Kolesa.kz scrapers, Calendar connectors, CRM sync, Kaspi Pay                      | External data sync, listing updates, transaction settlement                          |
+| **Data Layer**        | Leads DB, Conversation History, Knowledge Base, Billing DB, Analytics Store                   | Data persistence with strict tenant isolation                                        |
+| **Platform Services** | Auth/JWT, Subscriptions, Queues (BullMQ), Observability (Pino, Traces)                        | Cross-cutting infrastructure                                                         |
 
 ---
 
-## 6. Техническая системная архитектура
+## 7. MVP Roadmap
 
-Система строится как **модульный монолит** на старте (с чёткими границами доменов для будущего выделения в сервисы), чтобы не платить сложность микросервисов до появления соответствующей нагрузки.
-
-### 6.1 Слои системы
-
-| Слой | Компоненты | Назначение |
-| :--- | :--- | :--- |
-| **Presentation** | Landing (Next.js/SSR), Onboarding Wizard, Dashboard (SPA) | Публичные и авторизованные интерфейсы; `niche_profile` определяет отображаемые виджеты |
-| **Channel Adapters** | WhatsApp Business API adapter, Instagram Graph API adapter, Telegram Bot API adapter | Нормализация входящих/исходящих сообщений в единый внутренний формат диалога |
-| **Core AI Engine** | Orchestrator, Niche Prompt/Policy Layer, Slot-Validation Engine, Follow-up Scheduler, Live Overflow Router | Логика квалификации, генерации ответа, валидации записи/слота, эскалации на менеджера |
-| **Integration Layer** | Krisha.kz / Kolesa.kz parser-коннекторы, Altegio/YCLIENTS/Google Calendar, amoCRM/Bitrix24, Kaspi Pay | Синхронизация внешних данных (объекты, авто, услуги, слоты) и обратная запись сделок |
-| **Data Layer** | Leads DB, Conversation History, Knowledge Base per `niche_profile`, Billing DB, Analytics/Event Store | Хранение и агрегация данных для дашборда и биллинга |
-| **Platform** | Auth/Access, Billing & Subscriptions (Kaspi Pay / карты), Notifications, Observability/Logs | Сквозные сервисы, общие для всех модулей |
-
----
-
-### 6.2 Сквозные потоки данных
-
-1. **Входящее сообщение клиента (WhatsApp/Instagram/Telegram):**
-   `Channel Adapter` нормализует → `Orchestrator` подтягивает `niche_profile` и контекст диалога → генерация ответа с учётом `Knowledge Base` и `Slot-Validation` → ответ уходит обратно через тот же канал; событие пишется в `Conversation History` и `Analytics`.
-2. **Онбординг:**
-   Ссылка на Krisha.kz/Kolesa.kz или файл прайс-листа → `Integration Layer` парсит и создаёт записи в `Knowledge Base` конкретного бизнеса → `Orchestrator` использует эти данные как источник истины для ответов бота.
-3. **Live Overflow:**
-   Таймер на диалоге без ответа менеджера → по истечении N секунд `Orchestrator` переключает диалог на бота и помечает событие для аналитики эскалаций.
-4. **Follow-up Scheduler:**
-   Диалоги без ответа клиента дольше X часов попадают в очередь → автоматическое повторное сообщение через 24/72 часа → результат (*ответил/не ответил*) идёт в отчёт по возврату остывших лидов.
-5. **Оплата:**
-   Бот формирует ссылку Kaspi Pay внутри диалога → вебхук об оплате обновляет статус сделки в CRM-таблице и аналитике.
-
----
-
-### 6.3 Принцип `niche_profile`
-
-Единая конфигурационная сущность `niche_profile` (значения: `realty`, `auto_sales`, `auto_service`, `beauty`, `clinic`, `other_calendar`) определяет:
-* Набор шагов онбординга
-* Поля карточки лида в CRM
-* Состав виджетов дашборда
-* Терминологию интерфейса
-* Системный промпт/политику AI-движка
-
-Это позволяет добавлять новые под-вертикали (например, *стоматологии* как под-вид `clinic`) без изменения ядра системы — только новой конфигурацией.
-
----
-
-### 6.4 Нефункциональные требования
-
-* **Скорость ответа бота:** Целевой показатель до **15–20 секунд** на входящее сообщение (ключевая метрика продажи продукта в обеих primary-нишах).
-* **Локализация:** Интерфейс и диалоги на русском, казахском и английском языках.
-* **Надёжность интеграций:** Устойчивость к недоступности внешних API (Krisha.kz/Kolesa.kz/Kaspi) через очереди и повторные попытки, без потери входящих сообщений клиентов.
-* **Наблюдаемость:** Логирование каждого решения бота (какой источник данных использован, был ли эскалирован диалог) для разбора жалоб и обучения через «дизлайк».
-
----
-
-## 7. Дорожная карта MVP
-
-| Этап | Содержание | Цель |
-| :--- | :--- | :--- |
-| **MVP-1** | Ветка **Недвижимость**: онбординг с парсингом Krisha.kz, WhatsApp/Instagram, базовый дашборд (Inbox, Объекты, Воронка) | Первые платящие агентства, проверка core-гипотезы *speed-to-lead* |
-| **MVP-2** | Ветка **Авто**: парсинг Kolesa.kz + расписание мастеров, Live Overflow, Slot-Validation | Расширение на вторую primary-нишу, повторное использование 70–80% движка |
-| **MVP-3** | Ветка **Calendar-бизнесы**: интеграция Altegio/YCLIENTS, Follow-up Scheduler, Kaspi Pay в диалоге | Быстрый набор объёма клиентов на зрелом горизонтальном сегменте |
-| **MVP-4** | Обучение без кода («дизлайк»), мультиязычность каз/eng, углублённая аналитика по нишам | Снижение оттока нетехнологичных клиентов, укрепление отличия от конкурентов |
+| Milestone | Scope                                                                                                                                  | Objective                                                        |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------- |
+| **MVP-1** | **Real Estate Vertical:** Onboarding with Krisha.kz scraper, WhatsApp/Instagram connectors, core dashboard (Inbox, Listings, Pipeline) | First paying agencies, validating speed-to-lead hypothesis       |
+| **MVP-2** | **Automotive Vertical:** Kolesa.kz scraper + repair bay schedule management, Live Overflow, Slot Validation                            | Expand to second primary vertical, reusing 70–80% of core engine |
+| **MVP-3** | **Calendar Vertical:** Altegio/YCLIENTS connectors, Follow-up Scheduler, Kaspi Pay checkout                                            | Scale paying customer base on mature appointment market          |
+| **MVP-4** | Continuous feedback tuning ("dislike" feedback loop), Kazakh/English language expansion, advanced vertical analytics                   | Maximize retention and defend market moat                        |

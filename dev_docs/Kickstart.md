@@ -1,60 +1,60 @@
 # Kvik — Kickstart Plan
 
-> **Документ:** Технический план начала разработки фронтенда  
-> **Стек:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4  
-> **Рынок:** Казахстан / СНГ  
-> **Связанный документ:** [`Product Architecture.md`](./Product%20Architecture.md)
+> **Document:** Frontend Development Kickstart Technical Plan  
+> **Stack:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4  
+> **Market:** Kazakhstan / CIS  
+> **Related Document:** [`Product Architecture.md`](./Product%20Architecture.md)
 
 ---
 
-## 📐 Часть 1 — Архитектура папок
+## 📐 Part 1 — Folder Architecture
 
-### Концепция
+### Concept
 
-Проект делится на две зоны, обе в одном Next.js приложении:
+The project is divided into two zones, both within a single Next.js application:
 
-| Домен | Назначение | Тип |
-|:------|:-----------|:----|
-| `kvik.kz` | Лендинг (публичный) | SSR, SEO |
-| `app.kvik.kz` | Логин, Регистрация, Онбординг, Дашборд | Auth-protected SPA |
+| Domain | Purpose | Type |
+|:-------|:--------|:-----|
+| `kvik.kz` | Landing Page (public) | SSR, SEO |
+| `app.kvik.kz` | Login, Registration, Onboarding, Dashboard | Auth-protected SPA |
 
-Разделение на поддомен реализуется через **Next.js Middleware** — один деплой, никаких отдельных репозиториев.
+Subdomain separation is implemented via **Next.js Middleware** — single deployment, no separate repositories.
 
 ---
 
-### Целевая структура папок
+### Target Folder Structure
 
 ```
 kvik/
 │
 ├── app/
 │   │
-│   ├── (marketing)/                     # Группа: лендинг — kvik.kz/
+│   ├── (marketing)/                     # Group: landing page — kvik.kz/
 │   │   ├── layout.tsx                   # Nav + footer
-│   │   ├── page.tsx                     # Главная страница (niche-switcher)
+│   │   ├── page.tsx                     # Main page (niche-switcher)
 │   │   └── _sections/
 │   │       ├── HeroSection.tsx
-│   │       ├── NicheSwitcher.tsx        # Переключатель ниши без перезагрузки
-│   │       ├── LiveDemoWidget.tsx       # Интерактивный демо-чат
+│   │       ├── NicheSwitcher.tsx        # Niche switcher without page reload
+│   │       ├── LiveDemoWidget.tsx       # Interactive demo chat
 │   │       ├── RoiCalculator.tsx
 │   │       ├── PricingSection.tsx
 │   │       └── FaqSection.tsx
 │   │
-│   ├── (auth)/                          # Группа: аутентификация — app.kvik.kz/login|register
-│   │   ├── layout.tsx                   # Минимальный layout: логотип по центру
+│   ├── (auth)/                          # Group: authentication — app.kvik.kz/login|register
+│   │   ├── layout.tsx                   # Minimal layout: centered logo
 │   │   ├── login/
-│   │   │   └── page.tsx                 # Форма логина
+│   │   │   └── page.tsx                 # Login form
 │   │   └── register/
-│   │       └── page.tsx                 # Форма регистрации
+│   │       └── page.tsx                 # Registration form
 │   │
-│   ├── (onboarding)/                    # Группа: онбординг — app.kvik.kz/onboarding
-│   │   ├── layout.tsx                   # Логотип + прогресс-бар + кнопка «Назад»
+│   ├── (onboarding)/                    # Group: onboarding — app.kvik.kz/onboarding
+│   │   ├── layout.tsx                   # Logo + progress bar + "Back" button
 │   │   └── onboarding/
-│   │       ├── page.tsx                 # Шаг 0: выбор ниши или автоматический редирект на текущий шаг
+│   │       ├── page.tsx                 # Step 0: niche selection or automatic redirect to current step
 │   │       └── [niche]/
 │   │           └── [step]/
-│   │               └── page.tsx         # Динамические шаги по нише
-│   │           # Компоненты шагов (private, префикс _):
+│   │               └── page.tsx         # Dynamic steps by niche
+│   │           # Step components (private, prefixed with _):
 │   │       └── _steps/
 │   │           ├── realty/
 │   │           │   ├── Step1KrishaUrl.tsx
@@ -76,15 +76,15 @@ kvik/
 │   │               ├── Step3Messengers.tsx
 │   │               └── Step4TestBot.tsx
 │   │
-│   ├── (dashboard)/                     # Группа: дашборд — app.kvik.kz/dashboard
+│   ├── (dashboard)/                     # Group: dashboard — app.kvik.kz/dashboard
 │   │   ├── layout.tsx                   # Sidebar + Topbar layout
 │   │   └── dashboard/
-│   │       ├── page.tsx                 # Главная: ключевые метрики
+│   │       ├── page.tsx                 # Home: key metrics
 │   │       ├── inbox/
-│   │       │   └── page.tsx            # Единый чат-инбокс
+│   │       │   └── page.tsx            # Unified chat inbox
 │   │       ├── leads/
-│   │       │   ├── page.tsx            # CRM-таблица лидов
-│   │       │   └── [id]/page.tsx       # Карточка лида
+│   │       │   ├── page.tsx            # CRM lead table
+│   │       │   └── [id]/page.tsx       # Lead profile card
 │   │       ├── analytics/
 │   │       │   └── page.tsx
 │   │       ├── objects/                 # [realty only]
@@ -94,30 +94,30 @@ kvik/
 │   │       ├── schedule/               # [auto / calendar only]
 │   │       │   └── page.tsx
 │   │       ├── settings/
-│   │       │   ├── page.tsx            # Бот / база знаний
-│   │       │   └── team/page.tsx       # Доступы сотрудников
+│   │       │   ├── page.tsx            # Bot / knowledge base
+│   │       │   └── team/page.tsx       # Team permissions & access
 │   │       └── billing/
 │   │           └── page.tsx
 │   │
 │   ├── api/                             # Next.js Route Handlers (BFF / Proxy)
 │   │   ├── auth/
-│   │   │   ├── login/route.ts           # POST → бекенд /auth/login → вернуть { user }, получить access token
-│   │   │   ├── register/route.ts        # POST → бекенд /auth/register
-│   │   │   ├── logout/route.ts          # POST → бекенд /auth/logout → очистить refresh cookie
-│   │   │   ├── refresh/route.ts         # POST → бекенд /auth/refresh → обновить access token в store
-│   │   │   └── me/route.ts              # GET  → бекенд /auth/me → текущий user (SSR guard)
+│   │   │   ├── login/route.ts           # POST → backend /auth/login → return { user }, obtain access token
+│   │   │   ├── register/route.ts        # POST → backend /auth/register
+│   │   │   ├── logout/route.ts          # POST → backend /auth/logout → clear refresh cookie
+│   │   │   ├── refresh/route.ts         # POST → backend /auth/refresh → update access token in store
+│   │   │   └── me/route.ts              # GET  → backend /auth/me → current user (SSR guard)
 │   │   ├── onboarding/
-│   │   │   ├── state/route.ts           # GET  → бекенд getState(workspaceId)
-│   │   │   ├── parse-krisha/route.ts    # POST → запуск асинхронной задачи парсинга { jobId }
-│   │   │   ├── parse-kolesa/route.ts    # POST → запуск асинхронной задачи парсинга { jobId }
-│   │   │   ├── parse-status/route.ts   # GET  → проверка статуса задачи { status, progress, data }
-│   │   │   ├── progress/route.ts        # POST → сохранение прогресса шага
-│   │   │   └── complete/route.ts        # POST → завершение онбординга
+│   │   │   ├── state/route.ts           # GET  → backend getState(workspaceId)
+│   │   │   ├── parse-krisha/route.ts    # POST → start async parsing job { jobId }
+│   │   │   ├── parse-kolesa/route.ts    # POST → start async parsing job { jobId }
+│   │   │   ├── parse-status/route.ts   # GET  → check job status { status, progress, data }
+│   │   │   ├── progress/route.ts        # POST → save step progress
+│   │   │   └── complete/route.ts        # POST → complete onboarding
 │   │   └── [proxy]/
-│   │       └── route.ts                # Универсальный прокси с token injection
+│   │       └── route.ts                # Universal proxy with token injection
 │   │
 │   ├── globals.css
-│   └── layout.tsx                      # Root layout: провайдеры (Zustand, SWR), шрифты
+│   └── layout.tsx                      # Root layout: providers (Zustand, SWR), fonts
 │
 ├── components/
 │   ├── ui/
@@ -139,12 +139,12 @@ kvik/
 ├── lib/
 │   ├── api/
 │   │   ├── client.ts                   # Axios instance (interceptors: inject token, 401 → refresh)
-│   │   ├── auth.ts                     # Функции: login(), register(), logout(), getMe()
+│   │   ├── auth.ts                     # Functions: login(), register(), logout(), getMe()
 │   │   ├── onboarding.ts               # getState(), parseKrisha(), checkParseStatus(), updateProgress()
 │   │   └── dashboard.ts
 │   └── utils/
-│       ├── niche.ts                    # getLabel(), getSteps(), getIcon() по niche_profile
-│       └── format.ts                   # Форматирование сумм KZT, дат
+│       ├── niche.ts                    # getLabel(), getSteps(), getIcon() by niche_profile
+│       └── format.ts                   # Formatting KZT amounts, dates
 │
 ├── types/
 │   ├── niche.ts                        # NicheProfile, OnboardingStep
@@ -153,9 +153,9 @@ kvik/
 │   └── api.ts                          # ApiResponse<T>, ApiError
 │
 ├── hooks/
-│   ├── useAuth.ts                      # Текущий user из Zustand + хелперы
-│   ├── useOnboarding.ts                # Состояние + навигация wizard
-│   └── useNicheConfig.ts               # Конфиг виджетов/сайдбара по niche_profile
+│   ├── useAuth.ts                      # Current user from Zustand + helpers
+│   ├── useOnboarding.ts                # Wizard state + navigation
+│   └── useNicheConfig.ts               # Widget/sidebar config by niche_profile
 │
 ├── store/
 │   ├── auth.store.ts                   # { user, accessToken, setTokens, clearAuth }
@@ -173,55 +173,55 @@ kvik/
 
 ---
 
-## 🔐 Часть 2 — Auth, Токены и Axios Proxy
+## 🔐 Part 2 — Auth, Tokens, and Axios Proxy
 
-### 2.1 Стратегия токенов (согласовано с бекендом)
+### 2.1 Token Strategy (Aligned with Backend)
 
-Бекенд использует схему **JWT Access + Refresh Token (HttpOnly Cookie)**:
+The backend uses a **JWT Access + Refresh Token (HttpOnly Cookie)** scheme:
 
-| Токен | Срок | Где хранится | Кто управляет |
-|:------|:-----|:-------------|:--------------|
-| **Access Token** | 15 мин | **Zustand store** (только в памяти JS) | Фронтенд: вставляет в каждый запрос через Axios interceptor |
-| **Refresh Token** | 7 дней | **HttpOnly Cookie** (ставится бекендом) | Браузер: уходит автоматически на `/auth/refresh` при `withCredentials: true` |
-| **User Info** | — | **Zustand store** | Фронтенд: заполняется из ответа `/auth/me` или `/auth/login` |
+| Token | Expiration | Storage Location | Managed By |
+|:------|:-----------|:-----------------|:-----------|
+| **Access Token** | 15 min | **Zustand store** (JS in-memory only) | Frontend: injected into each request via Axios interceptor |
+| **Refresh Token** | 7 days | **HttpOnly Cookie** (set by backend) | Browser: sent automatically to `/auth/refresh` with `withCredentials: true` |
+| **User Info** | — | **Zustand store** | Frontend: populated from `/auth/me` or `/auth/login` response |
 
-> ⚠️ **Access Token НИКОГДА не хранить в `localStorage` или Cookie** — только в памяти (Zustand). При перезагрузке страницы фронтенд тихо вызывает `/api/auth/refresh` для получения нового access token из refresh cookie.
+> ⚠️ **NEVER store Access Token in `localStorage` or Cookies** — strictly in memory (Zustand). On page reload, the frontend silently calls `/api/auth/refresh` to obtain a fresh access token from the refresh cookie.
 
-### 2.2 Эндпоинты бекенда (согласовано)
+### 2.2 Backend Endpoints (Agreed Contract)
 
 ```
 POST /auth/register   → { user, access_token, expires_in: 900 } + Set-Cookie: refresh_token (HttpOnly)
 POST /auth/login      → { user, access_token, expires_in: 900 } + Set-Cookie: refresh_token (HttpOnly)
-POST /auth/refresh    → { access_token, expires_in: 900 }  (refresh cookie уходит автоматически)
-POST /auth/logout     → очистка refresh_token в БД и удаление cookie
-GET  /auth/me         → { user }  (требует JWT guard)
+POST /auth/refresh    → { access_token, expires_in: 900 }  (refresh cookie sent automatically)
+POST /auth/logout     → clear refresh_token in DB and remove cookie
+GET  /auth/me         → { user }  (requires JWT guard)
 
-Публичные маршруты бекенда (@Public):
+Public backend routes (@Public):
   POST /auth/register, /auth/login, /auth/refresh, /auth/logout
   POST /webhooks/whatsapp, /webhooks/instagram
   GET  /health
-Всё остальное — требует JWT.
+Everything else requires JWT.
 ```
 
-### 2.3 Поток авторизации и онбординга
+### 2.3 Auth and Onboarding Flow
 
 ```
-Регистрация:
-  1. Юзер на app.kvik.kz/register → вводит email + password
-  2. POST /api/auth/register → бекенд создаёт аккаунт (ниши у юзера пока нет!)
-  3. Бекенд возвращает { user, access_token } + Set-Cookie: refresh_token
-  4. Фронтенд сохраняет access_token в Zustand
-  5. Автоматический редирект → app.kvik.kz/onboarding (так как ниша ещё не выбрана)
+Registration:
+  1. User is on app.kvik.kz/register → enters email + password
+  2. POST /api/auth/register → backend creates account (user has no niche yet!)
+  3. Backend returns { user, access_token } + Set-Cookie: refresh_token
+  4. Frontend stores access_token in Zustand
+  5. Automatic redirect → app.kvik.kz/onboarding (since niche is not selected yet)
 
-Логин существующего пользователя:
-  1. Юзер на app.kvik.kz/login → вводит credentials
-  2. POST /api/auth/login → бекенд отдаёт { user, access_token }
-  3. Фронтенд проверяет статус онбординга через GET /api/onboarding/state ( getState() ):
-     - Если state === 'DONE' → редирект на /dashboard
-     - Если state !== 'DONE' → редирект на нужный шаг /onboarding/...
+Existing User Login:
+  1. User is on app.kvik.kz/login → enters credentials
+  2. POST /api/auth/login → backend returns { user, access_token }
+  3. Frontend checks onboarding status via GET /api/onboarding/state ( getState() ):
+     - If state === 'DONE' → redirect to /dashboard
+     - If state !== 'DONE' → redirect to appropriate /onboarding/... step
 ```
 
-### 2.4 Axios Client — interceptors
+### 2.4 Axios Client — Interceptors
 
 ```ts
 // lib/api/client.ts
@@ -229,18 +229,18 @@ import axios from 'axios'
 import { useAuthStore } from '@/store/auth.store'
 
 export const apiClient = axios.create({
-  baseURL: '/api',            // Всё идёт через Next.js proxy
-  withCredentials: true,      // Refresh cookie уходит автоматически на /auth/refresh
+  baseURL: '/api',            // Everything goes through Next.js proxy
+  withCredentials: true,      // Refresh cookie sent automatically to /auth/refresh
 })
 
-// Вставляем access token в каждый запрос
+// Inject access token into every request
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
-// 401 → тихий refresh → retry
+// 401 → silent refresh → retry
 let isRefreshing = false
 apiClient.interceptors.response.use(
   (res) => res,
@@ -264,7 +264,7 @@ apiClient.interceptors.response.use(
 )
 ```
 
-### 2.5 Next.js Route Handler как BFF Proxy
+### 2.5 Next.js Route Handler as BFF Proxy
 
 ```ts
 // app/api/auth/refresh/route.ts
@@ -306,7 +306,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Защищённые пути (/dashboard, /onboarding): проверяем наличие refresh cookie
+  // Protected paths (/dashboard, /onboarding): check presence of refresh cookie
   const hasRefreshCookie = request.cookies.has('refresh_token')
 
   if (!hasRefreshCookie) {
@@ -325,136 +325,129 @@ export const config = {
 
 ---
 
-## 🧭 Часть 3 — Страницы Auth и Онбординг
+## 🧭 Part 3 — Auth Pages and Onboarding
 
-### 3.1 Состояния Онбординга (Onboarding State Machine)
+### 3.1 Onboarding State Machine
 
-На бекенде статус онбординга вычисляется функцией `getState(workspaceId)`:
+On the backend, onboarding status is calculated by `getState(workspaceId)`:
 
 ```ts
 export type OnboardingStepState =
-  | 'SELECT_NICHE'           // Ниша не выбрана → /onboarding
-  | 'DATA_SOURCE'            // Нет базы данных → /onboarding/[niche]/1 (Парсинг Krisha/Kolesa)
-  | 'CONNECT_CHANNEL'        // Нет мессенджера → /onboarding/[niche]/3 (WhatsApp/IG)
-  | 'QUALIFICATION'          // Нет правил ИИ → /onboarding/[niche]/4
-  | 'COMPLETE'               // Финальный тест-бот → /onboarding/[niche]/6
-  | 'DONE'                   // Всё заполнено и бот активен → /dashboard
+  | 'SELECT_NICHE'           // Niche not selected → /onboarding
+  | 'DATA_SOURCE'            // No database connected → /onboarding/[niche]/1 (Krisha/Kolesa parsing)
+  | 'CONNECT_CHANNEL'        // No messenger connected → /onboarding/[niche]/3 (WhatsApp/IG)
+  | 'QUALIFICATION'          // No AI rules configured → /onboarding/[niche]/4
+  | 'COMPLETE'               // Final test bot → /onboarding/[niche]/6
+  | 'DONE'                   // Everything filled and bot active → /dashboard
 ```
 
-#### Правило перенаправления:
-Если авторизованный пользователь переходит на `/onboarding`, фронтенд запрашивает `GET /api/onboarding/state`:
-- Если `state === 'DONE'` → мгновенный редирект на `/dashboard`.
-- Если `state !== 'DONE'` → автоматический переход на соответствующий незавершённый шаг (например, если у пользователя застряло на `CONNECT_CHANNEL`, открыть сразу Шаг 3 подключения каналов).
+#### Redirection Rule:
+If an authenticated user navigates to `/onboarding`, the frontend queries `GET /api/onboarding/state`:
+- If `state === 'DONE'` → instant redirect to `/dashboard`.
+- If `state !== 'DONE'` → automatic transition to the corresponding incomplete step (for example, if user is stuck at `CONNECT_CHANNEL`, navigate directly to Step 3 channel connection).
 
 ---
 
-### 3.2 Почему скрейпинг Krisha / Kolesa делается АСИНХРОННО (Async Jobs)
+### 3.2 Why Krisha / Kolesa Scraping is Handled ASYNCHRONOUSLY (Async Jobs)
 
-#### ❓ Что значит асинхронный парсинг и почему он лучше/быстрее?
+#### ❓ What does asynchronous parsing mean and why is it better/faster?
 
-* **Синхронный подход (ПЛОХО):**
-  Пользователь нажимает «Спарсить Krisha.kz» → Браузер делает `POST /api/parse` → Бекенд начинает скрейпить 50 объектов на месте → Соединение висит в ожидании **30–60 секунд** → Браузер показывает застывший spinner → Высокий риск HTTP Timeout (504 Gateway Timeout) в NGINX/Vercel → Потеря доверия юзера.
+* **Synchronous Approach (BAD):**
+  User clicks "Parse Krisha.kz" → Browser makes `POST /api/parse` → Backend begins scraping 50 listings on the spot → Connection hangs for **30–60 seconds** → Browser displays a frozen spinner → High risk of HTTP Timeout (504 Gateway Timeout) on NGINX/Vercel → Loss of user trust.
 
-* **Асинхронный подход с очередью (ПРАВИЛЬНО):**
-  1. Пользователь вводит ссылку на Krisha/Kolesa → нажатие кнопки.
-  2. `POST /api/onboarding/parse-krisha` сразу (за **50 миллисекунд**) возвращает `202 Accepted` и `{ jobId: "task_9981" }`.
-  3. Бекенд кладёт задачу в фоновую очередь (BullMQ/Redis), где её безопасно выполняет фоновый воркер с парсером.
-  4. Фронтенд показывает красивые анимированные карточки-скелетоны и делает **Polling** (запрос `GET /api/onboarding/parse-status?jobId=task_9981` каждые 2 секунды) или получает прогресс по WebSocket/SSE.
-  5. UI сразу показывает прогресс в реальном времени: *«Спарсено 12 из 40 объектов...»*.
-  6. После завершения задачи фронтенд отображает готовый сет объектов.
+* **Asynchronous Approach with Queue (CORRECT):**
+  1. User enters Krisha/Kolesa URL → clicks button.
+  2. `POST /api/onboarding/parse-krisha` immediately (in **50 milliseconds**) returns `202 Accepted` and `{ jobId: "task_9981" }`.
+  3. Backend places task in background queue (BullMQ/Redis), where it is safely processed by a background worker with parser.
+  4. Frontend displays animated skeleton cards and performs **Polling** (query `GET /api/onboarding/parse-status?jobId=task_9981` every 2 seconds) or receives progress via WebSocket/SSE.
+  5. UI immediately displays real-time progress: *"Parsed 12 of 40 listings..."*.
+  6. Upon task completion, frontend renders the completed property set.
 
-> **Выгода для UX:** Страница не лагает, веб-соединения не рвутся по таймауту, пользователь видит живой процесс с прогресс-баром.
+> **UX Benefit:** The page doesn't hang, web connections don't time out, and the user experiences a live process with an accurate progress bar.
 
 ---
 
-## ✅ Чеклист реализации
+## ✅ Implementation Checklist
 
-### Блок 1 — Базовая настройка
+### Block 1 — Base Setup
 
-- [x] Установить зависимости: `zustand`, `axios`, `swr`, `zod`, `clsx`
-- [x] Настроить `tsconfig.json`: path aliases `@/components`, `@/lib`, `@/types`, `@/store`, `@/hooks`
-- [x] Создать `.env.local`: `BACKEND_URL`, `NEXT_PUBLIC_APP_DOMAIN`
-- [x] Создать `.env.example` с описанием всех переменных
-- [x] Создать базовую структуру папок (пустые placeholder файлы)
-- [x] Создать `types/auth.ts`, `types/niche.ts`, `types/lead.ts`, `types/api.ts`
+- [x] Install dependencies: `zustand`, `axios`, `swr`, `zod`, `clsx`
+- [x] Configure `tsconfig.json`: path aliases `@/components`, `@/lib`, `@/types`, `@/store`, `@/hooks`
+- [x] Create `.env.local`: `BACKEND_URL`, `NEXT_PUBLIC_APP_DOMAIN`
+- [x] Create `.env.example` with descriptions of all variables
+- [x] Create base folder structure (placeholder files)
+- [x] Create `types/auth.ts`, `types/niche.ts`, `types/lead.ts`, `types/api.ts`
 
-### Блок 2 — Dev-окружение (subdomain локально)
+### Block 2 — Dev Environment (Local Subdomain)
 
-- [x] Добавить в Windows `hosts` файл: `127.0.0.1 app.localhost`
-- [x] Настроить `next.config.ts`: в dev пробрасывать `app.localhost:3000` как `app.*`
-- [x] Проверить: `http://app.localhost:3000/login` работает отдельно от `http://localhost:3000`
+- [x] Add to Windows `hosts` file: `127.0.0.1 app.localhost`
+- [x] Configure `next.config.ts`: in dev, forward `app.localhost:3000` as `app.*`
+- [x] Verify: `http://app.localhost:3000/login` works independently from `http://localhost:3000`
 
-### Блок 3 — Auth Store + Axios Client
+### Block 3 — Auth Store + Axios Client
 
 - [x] `store/auth.store.ts` — `{ user, accessToken, setTokens, setUser, clearAuth }`
 - [x] `lib/api/client.ts` — Axios instance, baseURL=`/api`, `withCredentials: true`
-- [x] Axios request interceptor: вставляет `Authorization: Bearer <accessToken>`
+- [x] Axios request interceptor: injects `Authorization: Bearer <accessToken>`
 - [x] Axios response interceptor: 401 → POST `/api/auth/refresh` → retry original
-- [x] Логика "silent refresh при старте": при монтировании root layout → если `accessToken` null → POST `/api/auth/refresh`
+- [x] "Silent refresh on startup" logic: on root layout mount → if `accessToken` is null → POST `/api/auth/refresh`
 - [x] `hooks/useAuth.ts` — `{ user, isLoading, isAuthenticated, logout }`
 
-### Блок 4 — Next.js API Routes (Auth & Onboarding BFF)
+### Block 4 — Next.js API Routes (Auth & Onboarding BFF)
 
-- [x] `app/api/auth/login/route.ts` — проксирует login, передаёт Set-Cookie
-- [x] `app/api/auth/register/route.ts` — регистрация без ниши
-- [x] `app/api/auth/logout/route.ts` — сброс cookie
-- [x] `app/api/auth/refresh/route.ts` — ротация access token
-- [x] `app/api/auth/me/route.ts` — получение профиля
-- [ ] `app/api/onboarding/state/route.ts` — GET `getState()`
-- [ ] `app/api/onboarding/parse-krisha/route.ts` — POST { url } → возвращает `{ jobId }`
-- [ ] `app/api/onboarding/parse-status/route.ts` — GET `{ jobId }` → status polling
-- [x] `app/api/[...proxy]/route.ts` — универсальный прокси
+- [x] `app/api/auth/login/route.ts` — proxies login, forwards Set-Cookie
+- [x] `app/api/auth/register/route.ts` — registration without niche
+- [x] `app/api/auth/logout/route.ts` — resets cookie
+- [x] `app/api/auth/refresh/route.ts` — rotates access token
+- [x] `app/api/auth/me/route.ts` — retrieves profile
+- [x] `lib/api/onboarding.ts` — functions for all 7 onboarding steps via catch-all proxy
+- [x] `app/api/[...proxy]/route.ts` — universal proxy (GET/POST/PUT/DELETE/PATCH)
 
-### Блок 5 — Middleware
+### Block 5 — Proxy (previously Middleware)
 
-- [ ] `middleware.ts` — определение `isApp` по hostname
-- [ ] Редирект `app.kvik.kz/` → `/dashboard`
-- [ ] Публичные пути (`/login`, `/register`) — пропускать
-- [ ] Защищённые пути (`/dashboard`, `/onboarding`) — проверить `refresh_token` cookie
-- [ ] Тест: без cookie → `/dashboard` → редирект `/login?from=/dashboard` ✓
+- [x] `proxy.ts` — migrated from `middleware.ts` (Next.js 16 new standard)
+- [x] Redirect `app.kvik.kz/` → `/dashboard`
+- [x] Public paths (`/login`, `/register`) — pass through without check
+- [x] Protected paths (`/dashboard`, `/onboarding`) — verify `refresh_token` cookie
+- [x] If no cookie → redirect `/login?from=<pathname>`
 
-### Блок 6 — Auth Pages (UI)
+### Block 6 — Auth Pages (UI)
 
-- [ ] `app/(auth)/layout.tsx` — центрированный layout с логотипом
-- [ ] `app/(auth)/login/page.tsx`:
-  - Форма: email + password
-  - При успехе: проверка `getState()` → редирект на `/dashboard` или незавершённый шаг онбординга
-- [ ] `app/(auth)/register/page.tsx`:
-  - Форма: email + password
-  - При успехе: редирект на `/onboarding` (Шаг 0: выбор ниши)
+- [x] `app/(auth)/layout.tsx` — glassmorphism layout with logo, glow effects, caption
+- [x] `app/(auth)/login/page.tsx` — email+password form, `getOnboardingState()` check after login, redirect to `/dashboard` (DONE) or `/onboarding`
+- [x] `app/(auth)/register/page.tsx` — email+password+confirmation form, redirect to `/onboarding`
 
-### Блок 7 — Онбординг (UI + Async Parsing Flow)
+### Block 7 — Onboarding (UI + Async Parsing Flow + Derived State)
 
-- [ ] `app/(onboarding)/layout.tsx` — логотип + `OnboardingProgress` + кнопка «Назад»
-- [ ] `app/(onboarding)/onboarding/page.tsx` — вызов `getState()`: если `'DONE'` → `/dashboard`, иначе перенаправить на соответствующий шаг
-- [ ] `store/onboarding.store.ts`
-- [ ] **Ветка Realty** (шаги 1–6):
-  - [ ] `Step1KrishaUrl.tsx` — ввод ссылки → POST `parse-krisha` → получить `jobId` → запустить polling `parse-status`
-  - [ ] `Step2ConfirmObjects.tsx` — отобразить спарсенные объекты из `jobId` + чекбоксы подтверждения
-  - [ ] `Step3ConnectChannel.tsx` — WhatsApp / Instagram / Telegram
-  - [ ] `Step4QualifySettings.tsx` — форма квалификации ИИ
-  - [ ] `Step5Calendar.tsx` — Google Calendar + Live Overflow
-  - [ ] `Step6TestBot.tsx` — тест-чат
-- [ ] **Ветка Auto** (шаги 1–4, аналогично через Async Job для Kolesa.kz)
-- [ ] **Ветка Calendar** (шаги 1–4)
-- [ ] Финализация: `POST /api/onboarding/complete` → редирект `/dashboard`
+- [x] `app/(onboarding)/layout.tsx` — header with logo and onboarding status
+- [x] `app/(onboarding)/onboarding/page.tsx` — unified 7-step wizard via Derived State
+- [x] `store/onboarding.store.ts` — Zustand store for all fields across all steps
+- [x] **Step 0 (SELECT_NICHE):** three niche cards (Realty, Auto, Calendar)
+- [x] **Step 1 (BUSINESS_PROFILE):** business profile form (name, city, phone, description, instagram)
+- [x] **Step 2 (DATA_SOURCE):** Krisha User ID input (`POST /onboarding/step/data-source`)
+- [x] **Step 3 (DATA_PREVIEW):** Polling `GET /onboarding/step/data-preview` every 2.5s, progress + property grid, `POST /onboarding/step/data-confirm`
+- [x] **Step 4 (CONNECT_CHANNEL):** WhatsApp / Instagram cards
+- [x] **Step 5 (QUALIFICATION):** qualification rule presets for niche
+- [x] **Step 6 (COMPLETE_TEST):** AI test chat (mock), `POST /onboarding/step/complete` → `/dashboard`
 
-### Блок 8 — Дашборд (скелет)
+### Block 8 — Dashboard (Skeleton)
 
-- [ ] `app/(dashboard)/layout.tsx` — Sidebar + Topbar + silent refresh при монтировании
-- [ ] Server Component guard в layout: вызов `/api/auth/me`, если 401 → redirect `/login`
-- [ ] `components/layout/Sidebar.tsx` — навигация по `niche_profile`
-- [ ] `app/(dashboard)/dashboard/page.tsx` — дашборд по нише
+- [x] `app/(dashboard)/layout.tsx` — Server Component with auth guard (refresh→me), redirect to `/login` on 401
+- [x] Sidebar with dynamic navigation by `niche_profile` (different items for Realty/Auto/Calendar)
+- [x] Topbar with AI agent activity indicator and subscription plan status
+- [x] `app/(dashboard)/dashboard/page.tsx` — KPI cards, token usage plan
+- [x] `lib/utils/niche.ts` — `getNicheLabel()`, `getNicheIcon()`, `getNicheNavItems()` by niche
+- [x] `lib/utils/format.ts` — `formatKZT()`, `formatDate()`, `formatRelativeTime()`
 
 ---
 
-## 📝 Все открытые вопросы ЗАКРЫТЫ ✅
+## 📝 All Open Questions CLOSED ✅
 
-| # | Вопрос | Ответ / Техническое решение |
-|:--|:-------|:----------------------------|
-| 1 | **JWT vs Opaque Token** | ✅ **JWT Access (15 мин) + Refresh Cookie (7 дней)** |
-| 2 | **Хранение Access Token** | ✅ **Zustand store (в памяти)** — без localStorage / cookies |
-| 3 | **Домен Auth & Onboarding** | ✅ **`app.kvik.kz/login`, `/register`, `/onboarding`** |
-| 4 | **Парсинг Krisha / Kolesa** | ✅ **Async Jobs (BullMQ)**: POST возвращает `{ jobId }`, фронт делает polling статуса |
-| 5 | **Повторный заход на `/onboarding`** | ✅ **Проверка через `getState()`**: если `'DONE'` → редирект в `/dashboard`, иначе продолжить незавершённый шаг |
-| 6 | **Ниша при регистрации** | ✅ **Регистрация без ниши**. Ниша выбирается на Шаге 0 онбординга (`SELECT_NICHE`) |
+| # | Question | Answer / Technical Solution |
+|:--|:---------|:----------------------------|
+| 1 | **JWT vs Opaque Token** | ✅ **JWT Access (15 min) + Refresh Cookie (7 days)** |
+| 2 | **Access Token Storage** | ✅ **Zustand store (in-memory)** — no localStorage / cookies |
+| 3 | **Auth & Onboarding Domain** | ✅ **`app.kvik.kz/login`, `/register`, `/onboarding`** |
+| 4 | **Krisha / Kolesa Parsing** | ✅ **Async Jobs (BullMQ)**: POST returns `{ jobId }`, frontend polls status |
+| 5 | **Re-visiting `/onboarding`** | ✅ **Check via `getState()`**: if `'DONE'` → redirect to `/dashboard`, otherwise resume incomplete step |
+| 6 | **Niche upon Registration** | ✅ **Registration without niche**. Niche is selected at Step 0 of onboarding (`SELECT_NICHE`) |
