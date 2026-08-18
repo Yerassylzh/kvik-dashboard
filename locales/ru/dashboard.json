@@ -1,0 +1,13 @@
+{
+  "nav": {
+    "dashboard": "Главная",
+    "inbox": "Чаты",
+    "leads": "Лиды",
+    "analytics": "Аналитика",
+    "objects": "Объекты",
+    "catalog": "Каталог",
+    "schedule": "Записи",
+    "settings": "Настройки",
+    "billing": "Тарифы"
+  }
+}

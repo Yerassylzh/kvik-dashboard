@@ -1,6 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/auth.store';
 import { ApiError } from '@/types/api';
+import { transformI18nMessages } from '@/lib/i18n/transformer';
+import { getCurrentLocale } from '@/lib/i18n/config';
 
 export const apiClient = axios.create({
   baseURL: '/api',
@@ -10,19 +12,22 @@ export const apiClient = axios.create({
   },
 });
 
-// Request Interceptor: Attach Access Token from Zustand store
+// Request Interceptor: Attach Access Token and Accept-Language
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = useAuthStore.getState().accessToken;
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    if (config.headers) {
+      config.headers['Accept-Language'] = getCurrentLocale();
+    }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle 401 & Silent Refresh
+// Response Interceptor: Handle 401 & Silent Refresh + i18n Translation
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
@@ -41,8 +46,17 @@ const processQueue = (error: unknown, token: string | null = null) => {
 };
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data) {
+      response.data = transformI18nMessages(response.data);
+    }
+    return response;
+  },
   async (error: AxiosError) => {
+    if (error.response?.data) {
+      error.response.data = transformI18nMessages(error.response.data);
+    }
+
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
@@ -103,3 +117,4 @@ apiClient.interceptors.response.use(
     return Promise.reject(new ApiError(status, message, error.response?.data));
   }
 );
+

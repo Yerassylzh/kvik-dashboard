@@ -1,0 +1,41 @@
+{
+  "auth": {
+    "login_success": "Login successful",
+    "logout_success": "You have been logged out",
+    "register_success": "Registration completed successfully",
+    "invalid_credentials": "Invalid email or password",
+    "email_already_exists": "A user with this email already exists",
+    "user_not_found": "User not found",
+    "access_denied": "Access denied",
+    "invalid_token_payload": "Invalid authentication token payload",
+    "refresh_token_not_found": "Session expired, please log in again",
+    "authentication_required": "Authentication required to perform this action"
+  },
+  "onboarding": {
+    "parsing_started": "Parsing started. Your listings will be ready in a few minutes.",
+    "user_not_found": "User ID not found on Krisha.kz. Please verify the ID from your profile URL.",
+    "invalid_step": "Cannot complete onboarding from the current step. Please complete previous steps first.",
+    "niche_saved": "Niche saved successfully",
+    "profile_saved": "Business profile saved successfully",
+    "data_confirmed": "Listing data confirmed successfully",
+    "channel_connected": "Channel connected successfully",
+    "qualification_saved": "Qualification rules saved successfully",
+    "completed": "Onboarding completed successfully"
+  },
+  "workspace": {
+    "not_found": "Workspace not found",
+    "updated": "Workspace settings updated"
+  },
+  "validation": {
+    "failed": "Please check the highlighted form fields",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least {min} characters long",
+    "required": "This field is required",
+    "invalid_format": "Invalid format"
+  },
+  "system": {
+    "internal_error": "An internal server error occurred. Please try again later.",
+    "service_unavailable": "Service is temporarily unavailable",
+    "too_many_requests": "Too many requests. Please wait a moment."
+  }
+}

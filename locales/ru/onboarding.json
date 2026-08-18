@@ -1,0 +1,15 @@
+{
+  "header": {
+    "title": "Настройка Kvik",
+    "logout": "Выйти"
+  },
+  "steps": {
+    "niche": "Выбор ниши",
+    "business_profile": "Профиль бизнеса",
+    "data_source": "Источник данных",
+    "data_preview": "Импорт объектов",
+    "channel": "Канал связи",
+    "qualification": "Квалификация",
+    "complete": "Тест агента"
+  }
+}

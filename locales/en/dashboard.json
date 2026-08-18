@@ -1,0 +1,13 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "inbox": "Inbox",
+    "leads": "Leads",
+    "analytics": "Analytics",
+    "objects": "Properties",
+    "catalog": "Catalog",
+    "schedule": "Schedule",
+    "settings": "Settings",
+    "billing": "Billing"
+  }
+}
