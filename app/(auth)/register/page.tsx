@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -7,12 +7,18 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/onboarding');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ export default function RegisterPage() {
     try {
       await register({ email, password });
       // New user always goes to onboarding (Step 0: Select Niche)
-      router.push('/onboarding');
+      router.replace('/onboarding');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка при регистрации. Возможно, этот email уже зарегистрирован.');
     } finally {

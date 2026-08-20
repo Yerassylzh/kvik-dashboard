@@ -1,13 +1,4 @@
-import React from 'react';
-import { redirect } from 'next/navigation';
-import { getServerUser } from '@/lib/auth/server';
-
-export default async function OnboardingLayout({ children }: { children: React.ReactNode }) {
-  const user = await getServerUser();
-
-  if (!user) {
-    redirect('/login?from=/onboarding');
-  }
+export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative overflow-hidden">

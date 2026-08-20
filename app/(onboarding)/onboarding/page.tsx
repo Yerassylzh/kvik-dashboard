@@ -71,7 +71,7 @@ export default function OnboardingPage() {
   const applyState = useCallback(
     (res: OnboardingStateResponse): boolean => {
       if (res.step === 'DONE') {
-        router.push('/');
+        router.replace('/');
         return true;
       }
       const display = resolveDisplayStep(res.step, res.parsingStatus);

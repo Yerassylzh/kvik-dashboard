@@ -11,11 +11,17 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '';
 
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.replace(from || '/onboarding');
+    }
+  }, [isAuthenticated, from, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,12 +35,12 @@ function LoginForm() {
       try {
         const stateRes = await getOnboardingState();
         if (stateRes.step === 'DONE') {
-          router.push(from || '/');
+          router.replace(from || '/');
         } else {
-          router.push('/onboarding');
+          router.replace('/onboarding');
         }
       } catch {
-        router.push(from || '/');
+        router.replace(from || '/onboarding');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка входа. Проверьте почту и пароль.');

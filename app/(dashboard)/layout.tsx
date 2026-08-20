@@ -1,13 +1,10 @@
+'use client';
+
 import React from 'react';
-import { redirect } from 'next/navigation';
-import { getServerUser } from '@/lib/auth/server';
+import { useAuth } from '@/hooks/useAuth';
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await getServerUser();
-
-  if (!user) {
-    redirect('/login');
-  }
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
 
   const niche = user?.workspace?.nicheProfile;
 

@@ -20,15 +20,21 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(newPath, request.url));
   }
 
-  // 3. Public Auth Pages: /login and /register (always allow access, never loop)
+  // 3. Public Auth Pages: /login and /register
   const isPublicAuthPage = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const hasRefreshCookie = request.cookies.has('refresh_token');
+
   if (isPublicAuthPage) {
+    // If the user is already authenticated, redirect away from /login or /register
+    if (hasRefreshCookie) {
+      const from = request.nextUrl.searchParams.get('from');
+      return NextResponse.redirect(new URL(from || '/onboarding', request.url));
+    }
     return NextResponse.next();
   }
 
   // 4. ALL OTHER PAGES ARE PROTECTED
   // Unauthorized users trying to access "/", "/onboarding", or any other route get redirected to /login
-  const hasRefreshCookie = request.cookies.has('refresh_token');
   if (!hasRefreshCookie) {
     const loginUrl = new URL('/login', request.url);
     if (pathname !== '/') {
