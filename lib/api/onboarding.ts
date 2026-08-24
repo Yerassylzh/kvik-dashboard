@@ -1,9 +1,10 @@
-﻿import { apiClient } from './client';
+import { apiClient } from './client';
 import {
   OnboardingStateResponse,
   NicheProfile,
   BusinessProfileDto,
   DataSourceDto,
+  DataSourceResponseDto,
   DataPreviewResponse,
   ChannelDto,
   QualificationDto,
@@ -28,8 +29,8 @@ export async function submitBusinessProfile(dto: BusinessProfileDto): Promise<On
 
 export async function submitDataSource(
   dto: DataSourceDto
-): Promise<OnboardingStateResponse & { message?: string }> {
-  const { data } = await apiClient.post<OnboardingStateResponse & { message?: string }>(
+): Promise<DataSourceResponseDto> {
+  const { data } = await apiClient.post<DataSourceResponseDto>(
     '/onboarding/step/data-source',
     dto
   );

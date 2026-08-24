@@ -52,12 +52,12 @@ function LoginForm() {
   return (
     <div>
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Вход в систему</h1>
-        <p className="text-sm text-slate-400 mt-1">Введите данные вашего аккаунта Kvik</p>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Вход в систему</h1>
+        <p className="text-sm text-muted-foreground mt-1">Введите данные вашего аккаунта Kvik</p>
       </div>
 
       {error && (
-        <div className="mb-5 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
+        <div className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive-foreground text-xs flex items-start gap-2">
           <span className="font-bold">⚠️</span>
           <span>{error}</span>
         </div>
@@ -65,7 +65,7 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
             Email
           </label>
           <input
@@ -74,13 +74,13 @@ function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="name@company.com"
-            className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Пароль
             </label>
           </div>
@@ -90,14 +90,14 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full px-4 py-2.5 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-500/25 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full mt-2 py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm rounded-xl shadow-md focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
@@ -113,9 +113,9 @@ function LoginForm() {
         </button>
       </form>
 
-      <div className="mt-6 pt-6 border-t border-slate-800/80 text-center text-xs text-slate-400">
+      <div className="mt-6 pt-6 border-t border-border text-center text-xs text-muted-foreground">
         Ещё нет аккаунта?{' '}
-        <Link href="/register" className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">
+        <Link href="/register" className="font-semibold text-accent-brand hover:underline transition-colors">
           Зарегистрироваться
         </Link>
       </div>
@@ -125,7 +125,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <React.Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Загрузка...</div>}>
+    <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Загрузка...</div>}>
       <LoginForm />
     </React.Suspense>
   );

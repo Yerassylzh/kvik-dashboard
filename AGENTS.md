@@ -8,18 +8,24 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+# Development Guidelines
 
-# Frontend Design System & Styling Rules
+## Styling & Color System
+- **Single Source of Truth:** All design tokens, theme variables, and color palettes are defined exclusively in `global.css` (or `globals.css`).
+- **No Hardcoded Values:** Do not invent or hardcode hex/RGB values directly in component files or inline styles unless specifically requested.
+- **Color Inspection Protocol:**
+  - When creating or modifying UI components, inspect `global.css` to locate the correct CSS custom properties or Tailwind utility classes (e.g., `bg-primary`, `text-muted`, `border-border`).
+  - Read the inline comments inside `global.css` to determine the correct semantic usage for each color token (e.g., background surfaces, muted text, active/hover states, destructive alerts).
+- **Tailwind Integration:** Always prefer semantic Tailwind utility classes mapped to CSS variables over raw CSS property overrides.
 
-## Color Palette Constraints (CRITICAL)
-- **STRICT RULE:** NEVER use arbitrary hex colors (e.g., `bg-[#0f172a]`, `text-[#059669]`, or `style={{ color: ... }}`) in JSX/TSX files.
-- ALL color styling MUST use semantic Tailwind classes backed by our global CSS tokens.
-- **Allowed Backgrounds:** `bg-background`, `bg-card`, `bg-muted`
-- **Allowed Text:** `text-foreground`, `text-muted-foreground`, `text-primary`
-- **Allowed Actions/Buttons:** `bg-primary`, `text-primary-foreground`
-- **AI Agent Status/Triggers ONLY:** Use `bg-sky-500/10 text-sky-600 border-sky-200` or `var(--accent-ai)`.
-- **Lead Conversion/Calendar Success ONLY:** Use `bg-emerald-500/10 text-emerald-600` or `var(--accent-success)`.
 
-## Theme Rules
-- Build ALL UI components for LIGHT MODE first.
-- Ensure high contrast: Dark slate text (`text-slate-900`) on white/light-gray backgrounds (`bg-slate-50` or `bg-white`).
+## General Implementation Rules
+- Do not write code, which's size larger than 400 lines of code. If it's possible to split that into logical components, split that. Try to reuse components which repeat. Do not repeat yourself
+- If you don't have any context about this project, what it does, features, look at dev_docs/Project Architecture.md file. You also can view some other files inside dev_docs/ folder. Look at their names first, don't waste tokens reading irrelevant files.
+
+
+## Translation Rules
+- **UI String Resolution:** Always use `useTranslations('<namespace>')` (Client Components) or `getTranslations('<namespace>')` (Server Components) from `next-intl` for user-facing UI text. Do not hardcode raw UI strings directly in TSX.
+- **Key Tracking:** Each time you write text that should be translated, follow `dev_docs/002_TRANSLATION_SYSTEM.md`. Add new message keys and their corresponding English values as a JSON object to `translation_keys_new.json`.
+- **Existing Keys:** Grep available keys in `translation_keys_existing.txt`. 
+- **File Access:** NEVER touch files inside the `locales/` directory directly.

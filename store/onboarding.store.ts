@@ -100,11 +100,10 @@ export const useOnboardingStore = create<OnboardingStoreState>()(
     }),
     {
       name: 'kvik-onboarding',
-      // Персистим только "ввод пользователя" и текущий шаг.
-      // Живые данные парсинга (dataPreview) не храним — они перечитываются с бэкенда.
+      // Персистим только черновик ввода пользователя (nicheProfile, businessProfile, krishaUserId).
+      // Состояние шага (step, stepIndex) и данные парсинга НЕ храним в localStorage —
+      // бэкенд является единственным источником истины (Derived State из GET /onboarding/state).
       partialize: (state) => ({
-        step: state.step,
-        stepIndex: state.stepIndex,
         nicheProfile: state.nicheProfile,
         businessProfile: state.businessProfile,
         krishaUserId: state.krishaUserId,

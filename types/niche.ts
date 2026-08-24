@@ -1,4 +1,4 @@
-﻿export type NicheProfile =
+export type NicheProfile =
   | 'REALTY'
   | 'AUTO_SALES'
   | 'AUTO_SERVICE'
@@ -57,6 +57,12 @@ export interface QualificationDto {
   urgency?: 'low' | 'medium' | 'high';
 }
 
+export interface DataSourceResponseDto extends OnboardingStateResponse {
+  code: string;
+  message: string;
+  isRaw?: boolean;
+}
+
 export interface RealtyListingData {
   operation?: string;
   category?: string;
@@ -71,12 +77,28 @@ export interface RealtyListingData {
   options?: Record<string, string>;
 }
 
+export interface AutoListingData {
+  brand?: string;
+  model?: string;
+  year?: number;
+  price?: number;
+  mileage?: number;
+  bodyType?: string;
+  engineVolume?: number;
+  transmission?: string;
+  city?: string;
+  description?: string;
+  mainPhoto?: string;
+  photos?: string[];
+  options?: Record<string, string>;
+}
+
 export interface KnowledgeEntryItem {
   id: string;
   type: string;
   externalId?: string;
   sourceUrl?: string;
-  data: RealtyListingData;
+  data: RealtyListingData & AutoListingData & Record<string, unknown>;
 }
 
 export interface DataPreviewResponse {
@@ -87,3 +109,4 @@ export interface DataPreviewResponse {
   error?: string;
   entries: KnowledgeEntryItem[];
 }
+

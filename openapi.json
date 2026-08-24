@@ -1,0 +1,750 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "AppController_healthCheck",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        },
+        "summary": "Register a new business owner",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully"
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        },
+        "summary": "Log in with email and password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Tokens rotated successfully"
+          },
+          "401": {
+            "description": "Invalid or missing refresh token"
+          }
+        },
+        "security": [
+          {
+            "refresh_token": []
+          }
+        ],
+        "summary": "Rotate access and refresh tokens using HttpOnly cookie",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log out user and clear refresh token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Profile retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile and workspace state",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/onboarding/state": {
+      "get": {
+        "operationId": "OnboardingController_getState",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current onboarding step (Derived State)",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/niche": {
+      "post": {
+        "operationId": "OnboardingController_selectNiche",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectNicheDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 0: Select niche profile",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/business-profile": {
+      "post": {
+        "operationId": "OnboardingController_saveBusinessProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 1: Save business profile info",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/data-source": {
+      "post": {
+        "operationId": "OnboardingController_submitDataSource",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataSourceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 2: Submit data source (Krisha userId) and start background crawl",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/data-preview": {
+      "get": {
+        "operationId": "OnboardingController_getDataPreview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataPreviewResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 3: Preview parsed knowledge entries and parsing progress",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/data-confirm": {
+      "post": {
+        "operationId": "OnboardingController_confirmData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 3: Confirm data is correct",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/channel": {
+      "post": {
+        "operationId": "OnboardingController_connectChannel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectChannelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 4: Connect a messaging channel",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/qualification": {
+      "post": {
+        "operationId": "OnboardingController_saveQualification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Save lead qualification rules",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/complete": {
+      "post": {
+        "operationId": "OnboardingController_complete",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 6: Complete onboarding and activate bot",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Kvik Backend API",
+    "description": "AI SaaS Sales Agent for Kazakhstan and CIS Market",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "refresh_token"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "OnboardingStateResponseDto": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "SELECT_NICHE",
+              "BUSINESS_PROFILE",
+              "DATA_SOURCE",
+              "DATA_PREVIEW",
+              "CONNECT_CHANNEL",
+              "QUALIFICATION",
+              "COMPLETE_TEST",
+              "DONE"
+            ],
+            "example": "DATA_PREVIEW"
+          },
+          "stepIndex": {
+            "type": "number",
+            "example": 3,
+            "description": "0..7"
+          },
+          "completed": {
+            "type": "boolean",
+            "example": false
+          },
+          "parsingStatus": {
+            "type": "string",
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
+            "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
+          },
+          "parsedCount": {
+            "type": "number",
+            "example": 12
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 47
+          },
+          "failedCount": {
+            "type": "number",
+            "example": 1
+          },
+          "error": {
+            "type": "string",
+            "description": "Заполнено при parsingStatus === FAILED",
+            "example": "All listings failed to parse"
+          }
+        },
+        "required": [
+          "step",
+          "stepIndex",
+          "completed"
+        ]
+      },
+      "SelectNicheDto": {
+        "type": "object",
+        "properties": {
+          "nicheProfile": {
+            "type": "string",
+            "enum": [
+              "REALTY",
+              "AUTO_SALES",
+              "AUTO_SERVICE",
+              "BEAUTY",
+              "CLINIC",
+              "OTHER_CALENDAR"
+            ]
+          }
+        },
+        "required": [
+          "nicheProfile"
+        ]
+      },
+      "BusinessProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DataSourceDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DataSourceResponseDto": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "SELECT_NICHE",
+              "BUSINESS_PROFILE",
+              "DATA_SOURCE",
+              "DATA_PREVIEW",
+              "CONNECT_CHANNEL",
+              "QUALIFICATION",
+              "COMPLETE_TEST",
+              "DONE"
+            ],
+            "example": "DATA_PREVIEW"
+          },
+          "stepIndex": {
+            "type": "number",
+            "example": 3,
+            "description": "0..7"
+          },
+          "completed": {
+            "type": "boolean",
+            "example": false
+          },
+          "parsingStatus": {
+            "type": "string",
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
+            "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
+          },
+          "parsedCount": {
+            "type": "number",
+            "example": 12
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 47
+          },
+          "failedCount": {
+            "type": "number",
+            "example": 1
+          },
+          "error": {
+            "type": "string",
+            "description": "Заполнено при parsingStatus === FAILED",
+            "example": "All listings failed to parse"
+          },
+          "code": {
+            "type": "string",
+            "example": "onboarding.parsing_started"
+          },
+          "message": {
+            "type": "string",
+            "example": "Parsing started. Your listings will be ready in a few minutes. You can proceed to the next step."
+          },
+          "isRaw": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "step",
+          "stepIndex",
+          "completed",
+          "code",
+          "message"
+        ]
+      },
+      "DataPreviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Первые 20 распарсенных объектов (KnowledgeEntry) для превью"
+          },
+          "parsingStatus": {
+            "type": "string",
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
+            "example": "PROCESSING"
+          },
+          "parsedCount": {
+            "type": "number",
+            "example": 12,
+            "description": "Успешно распарсено (авторитетно)"
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 47,
+            "description": "Ожидается всего по матрице обхода"
+          },
+          "failedCount": {
+            "type": "number",
+            "example": 1
+          },
+          "error": {
+            "type": "string",
+            "description": "Заполнено при parsingStatus === FAILED"
+          }
+        },
+        "required": [
+          "entries",
+          "parsingStatus",
+          "parsedCount",
+          "totalCount",
+          "failedCount"
+        ]
+      },
+      "ConnectChannelDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "QualificationDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

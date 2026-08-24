@@ -18,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kvik — AI Sales Automation",
   description: "Verticalized AI Sales Agent for real estate, automotive, and appointments",
+  icons: {
+    icon: "/tab-logo.png",
+    apple: "/tab-logo.png",
+  },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

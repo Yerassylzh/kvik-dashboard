@@ -35,7 +35,7 @@ const STEP_TITLES: Record<OnboardingStepState, { index: number; title: string; s
   SELECT_NICHE: { index: 0, title: 'Выбор ниши бизнеса', subtitle: 'Выберите сферу вашей деятельности для активации специализированного ИИ' },
   BUSINESS_PROFILE: { index: 1, title: 'Профиль бизнеса', subtitle: 'Укажите основную информацию о вашем агентстве или компании' },
   DATA_SOURCE: { index: 2, title: 'Подключение Krisha.kz', subtitle: 'Укажите ID пользователя или агентства для автоимпорта объявлений' },
-  DATA_PREVIEW: { index: 3, title: 'Импорт и просмотр объектов', subtitle: 'ИИ автоматически парсит и структурирует ваши объявления в базу знаний' },
+  DATA_PREVIEW: { index: 3, title: 'Импорт и просмотр объектов', subtitle: 'ИИ автоматически загружает и структурирует ваши объявления в базу знаний' },
   CONNECT_CHANNEL: { index: 4, title: 'Подключение мессенджера', subtitle: 'Подключите WhatsApp или Instagram для автоответов клиентам' },
   QUALIFICATION: { index: 5, title: 'Правила квалификации ИИ', subtitle: 'Настройте вопросы, которые ИИ будет задавать покупателям' },
   COMPLETE_TEST: { index: 6, title: 'Тестирование и запуск', subtitle: 'Протестируйте диалог с ИИ-агентом и активируйте его' },
@@ -292,7 +292,23 @@ export default function OnboardingPage() {
     );
   }
 
-  const currentMeta = STEP_TITLES[store.step] || STEP_TITLES.SELECT_NICHE;
+  let currentMeta = STEP_TITLES[store.step] || STEP_TITLES.SELECT_NICHE;
+  if (store.step === 'DATA_SOURCE') {
+    if (store.nicheProfile === 'AUTO_SALES') {
+      currentMeta = {
+        index: 2,
+        title: 'Подключение Kolesa.kz',
+        subtitle: 'Укажите ID продавца или URL автосалона на Kolesa.kz для автоимпорта автомобилей',
+      };
+    } else if (store.nicheProfile === 'AUTO_SERVICE') {
+      currentMeta = {
+        index: 2,
+        title: 'Подключение источника данных СТО',
+        subtitle: 'Укажите ссылку на 2GIS, Instagram или прайс-лист для автоимпорта услуг автосервиса',
+      };
+    }
+  }
+
   const currentStepIdx = currentMeta.index;
   const progressPercent = Math.min(100, Math.round(((currentStepIdx + 1) / TOTAL_STEPS) * 100));
 
@@ -300,11 +316,11 @@ export default function OnboardingPage() {
     <div className="w-full flex flex-col items-center">
       {/* Progress Bar */}
       <div className="w-full mb-8">
-        <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2">
+        <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground mb-2">
           <span>Шаг {currentStepIdx + 1} из {TOTAL_STEPS}</span>
-          <span className="text-indigo-400 font-bold">{progressPercent}% Завершено</span>
+          <span className="text-accent-brand font-bold">{progressPercent}% Завершено</span>
         </div>
-        <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+        <div className="w-full h-2 bg-muted rounded-full overflow-hidden border border-border">
           <div
             className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 transition-all duration-500 ease-out"
             style={{ width: `${progressPercent}%` }}
@@ -314,20 +330,20 @@ export default function OnboardingPage() {
 
       {/* Step Title & Subtitle */}
       <div className="text-center mb-8 max-w-xl px-1">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{currentMeta.title}</h1>
-        <p className="text-sm text-slate-400 mt-2">{currentMeta.subtitle}</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">{currentMeta.title}</h1>
+        <p className="text-sm text-muted-foreground mt-2">{currentMeta.subtitle}</p>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="w-full max-w-2xl mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
+        <div className="w-full max-w-2xl mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive-foreground text-sm flex items-start gap-3">
           <span className="text-lg">⚠️</span>
           <span>{error}</span>
         </div>
       )}
 
       {/* Main Glass Card */}
-      <div className="w-full max-w-3xl bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+      <div className={`w-full ${store.step === 'SELECT_NICHE' ? 'max-w-5xl' : 'max-w-3xl'} bg-card border border-border rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl transition-all duration-300`}>
         {store.step === 'SELECT_NICHE' && (
           <StepSelectNiche onSelect={handleSelectNiche} loading={actionLoading} />
         )}
@@ -341,6 +357,7 @@ export default function OnboardingPage() {
         {store.step === 'DATA_SOURCE' && (
           <StepDataSource
             initialKrishaUserId={store.krishaUserId}
+            nicheProfile={store.nicheProfile}
             onSubmit={handleSubmitDataSource}
             loading={actionLoading}
           />
@@ -348,6 +365,7 @@ export default function OnboardingPage() {
         {store.step === 'DATA_PREVIEW' && (
           <StepDataPreview
             dataPreview={store.dataPreview}
+            nicheProfile={store.nicheProfile}
             onConfirm={handleConfirmDataPreview}
             onRetry={handleRetryDataSource}
             onEditId={handleEditDataSource}

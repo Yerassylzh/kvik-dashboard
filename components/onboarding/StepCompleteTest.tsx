@@ -33,14 +33,14 @@ export function StepCompleteTest({ onComplete, loading }: StepCompleteTestProps)
   return (
     <div className="space-y-6">
       {/* Mini Chat simulator */}
-      <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-4 space-y-3 h-64 overflow-y-auto">
+      <div className="rounded-xl border border-border bg-card p-4 space-y-3 h-64 overflow-y-auto">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
                 m.role === 'user'
-                  ? 'bg-indigo-600 text-white rounded-br-none'
-                  : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none'
+                  ? 'bg-primary text-primary-foreground rounded-br-none'
+                  : 'bg-muted border border-border text-foreground rounded-bl-none'
               }`}
             >
               {m.text}
@@ -55,11 +55,11 @@ export function StepCompleteTest({ onComplete, loading }: StepCompleteTestProps)
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           placeholder="Напишите тестовое сообщение ИИ-ассистенту..."
-          className="flex-1 px-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 text-xs transition-colors"
+          className="flex-1 px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary text-xs transition-colors"
         />
         <button
           type="submit"
-          className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl transition-colors"
+          className="px-4 py-2.5 bg-secondary hover:bg-muted text-secondary-foreground font-semibold text-xs rounded-xl transition-colors"
         >
           Отправить
         </button>
