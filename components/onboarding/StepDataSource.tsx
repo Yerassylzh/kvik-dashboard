@@ -62,8 +62,8 @@ export function StepDataSource({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-xs text-primary-foreground">
-        💡 <span className="font-semibold">{config.helpTitle}</span> {config.helpText}
+      <div className="p-4 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
+        💡 <span className="font-bold text-slate-900 dark:text-slate-100">{config.helpTitle}</span> {config.helpText}
       </div>
 
       <div>

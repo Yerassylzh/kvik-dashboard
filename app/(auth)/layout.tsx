@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           alt="Kvik.ai"
           width={120}
           height={60}
-          className="object-contain invert"
+          className="object-contain"
           priority
         />
         <p className="text-xs text-muted-foreground mt-3 font-medium tracking-wide">

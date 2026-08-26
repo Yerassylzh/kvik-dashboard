@@ -20,7 +20,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
             alt="Kvik.ai"
             width={80}
             height={36}
-            className="object-contain invert"
+            className="object-contain"
             priority
           />
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700">
@@ -34,9 +34,8 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
           </span>
           <button
             onClick={logout}
-            className="px-3 py-1.5 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive-foreground hover:bg-destructive/20 transition-colors flex items-center gap-1 cursor-pointer font-semibold"
+            className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 dark:bg-rose-500/10 dark:border-rose-500/20 dark:text-rose-400 font-semibold transition-colors flex items-center gap-1.5 cursor-pointer text-xs shadow-sm"
           >
-            <span>🚪</span>
             <span>Выйти</span>
           </button>
         </div>

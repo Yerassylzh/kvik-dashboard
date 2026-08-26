@@ -55,7 +55,7 @@ export default function RegisterPage() {
       </div>
 
       {error && (
-        <div className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive-foreground text-xs flex items-start gap-2">
+        <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-300 text-xs flex items-start gap-2">
           <span className="font-bold">⚠️</span>
           <span>{error}</span>
         </div>

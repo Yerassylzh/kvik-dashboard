@@ -35,8 +35,8 @@ export function StepQualification({ onSubmit, loading }: StepQualificationProps)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-xs text-primary-foreground">
-        🎯 <span className="font-semibold">Автоматический квалификатор ИИ:</span> ИИ не просто
+      <div className="p-4 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs text-slate-800 dark:text-slate-200 leading-relaxed">
+        🎯 <span className="font-bold text-slate-900 dark:text-slate-100">Автоматический квалификатор ИИ:</span> ИИ не просто
         отвечает на вопросы, а аккуратно ведёт лида к сделке, собирая эти ключевые метрики. Значения
         предзаполнены — оставьте как есть или отредактируйте.
       </div>

@@ -36,7 +36,7 @@ export function StepConnectChannel({ onConnect, loading }: StepConnectChannelPro
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-2xl">📸</span>
-              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary-foreground text-[10px] font-bold border border-primary/20">
+              <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold border border-indigo-200 dark:border-indigo-500/20">
                 DIRECT
               </span>
             </div>
@@ -46,7 +46,7 @@ export function StepConnectChannel({ onConnect, loading }: StepConnectChannelPro
           <button
             onClick={() => onConnect('INSTAGRAM')}
             disabled={loading}
-            className="w-full py-2 bg-primary/20 hover:bg-primary/30 text-primary-foreground font-semibold text-xs rounded-xl border border-primary/30 transition-colors disabled:opacity-50"
+            className="w-full py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer"
           >
             Войти через Meta
           </button>
