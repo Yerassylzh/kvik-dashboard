@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
+const rawBackendUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+const BACKEND_URL = rawBackendUrl.replace(/\/+$/, '');
+
+const HOP_BY_HOP_HEADERS = new Set([
+  'content-encoding',
+  'content-length',
+  'transfer-encoding',
+  'connection',
+  'keep-alive',
+]);
 
 async function handleProxy(request: NextRequest, params: { proxy: string[] }) {
   const path = params.proxy ? params.proxy.join('/') : '';
@@ -9,10 +18,16 @@ async function handleProxy(request: NextRequest, params: { proxy: string[] }) {
 
   const headers = new Headers(request.headers);
   headers.delete('host');
+  headers.delete('connection');
 
   let body: BodyInit | undefined = undefined;
   if (request.method !== 'GET' && request.method !== 'HEAD') {
-    body = await request.text();
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data') || contentType.includes('application/octet-stream')) {
+      body = await request.arrayBuffer();
+    } else {
+      body = await request.text();
+    }
   }
 
   try {
@@ -29,7 +44,9 @@ async function handleProxy(request: NextRequest, params: { proxy: string[] }) {
     });
 
     backendRes.headers.forEach((value, key) => {
-      response.headers.set(key, value);
+      if (!HOP_BY_HOP_HEADERS.has(key.toLowerCase())) {
+        response.headers.set(key, value);
+      }
     });
 
     return response;
