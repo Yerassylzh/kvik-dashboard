@@ -2,13 +2,7 @@
 
 import React from 'react';
 
-interface DemoOverviewProps {
-  niche: string;
-}
-
-export function DemoOverview({ niche }: DemoOverviewProps) {
-  const isRealty = niche === 'REALTY';
-
+export function DemoOverview() {
   return (
     <div className="space-y-6">
       {/* Metric Cards Grid */}
@@ -29,15 +23,15 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
 
         <div className="p-5 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-muted-foreground text-xs font-semibold">
-            <span>Квалифицировано лидов</span>
+            <span>Записей подтверждено</span>
             <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center text-lg shadow-sm">
-              🎯
+              📅
             </div>
           </div>
-          <p className="text-3xl font-extrabold text-indigo-600 mt-3 tracking-tight">112</p>
+          <p className="text-3xl font-extrabold text-emerald-600 mt-3 tracking-tight">87</p>
           <div className="flex items-center gap-1.5 mt-2 text-[11px]">
-            <span className="font-extrabold text-indigo-600">75.6%</span>
-            <span className="text-muted-foreground font-normal">конверсия в целевую заявку</span>
+            <span className="font-extrabold text-emerald-600">59%</span>
+            <span className="text-muted-foreground font-normal">диалогов завершились записью</span>
           </div>
         </div>
 
@@ -57,15 +51,15 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
 
         <div className="p-5 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-muted-foreground text-xs font-semibold">
-            <span>Импортировано {isRealty ? 'с Krisha.kz' : 'с Kolesa.kz'}</span>
+            <span>Записей в базе знаний</span>
             <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center text-lg shadow-sm">
-              {isRealty ? '🏠' : '🚗'}
+              📚
             </div>
           </div>
-          <p className="text-3xl font-extrabold text-foreground mt-3 tracking-tight">24</p>
+          <p className="text-3xl font-extrabold text-foreground mt-3 tracking-tight">42</p>
           <div className="flex items-center gap-1.5 mt-2 text-[11px]">
-            <span className="font-extrabold text-emerald-600">100% Синхро</span>
-            <span className="text-muted-foreground font-normal">автообновление цен</span>
+            <span className="font-extrabold text-emerald-600">2GIS + Сайт</span>
+            <span className="text-muted-foreground font-normal">услуги, цены, мастера</span>
           </div>
         </div>
       </div>
@@ -81,7 +75,7 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
               </div>
               <div>
                 <h3 className="font-bold text-sm text-foreground">Живой автоответчик WhatsApp ИИ</h3>
-                <p className="text-xs text-muted-foreground">Демонстрация автоответа клиенту в реальном времени</p>
+                <p className="text-xs text-muted-foreground">Демонстрация записи клиента в реальном времени</p>
               </div>
             </div>
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center gap-1.5 shadow-sm">
@@ -94,11 +88,9 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
           <div className="p-4.5 rounded-xl bg-slate-900 text-white space-y-4 text-xs font-sans shadow-inner">
             {/* Incoming Client Message */}
             <div className="flex flex-col items-start max-w-[85%]">
-              <span className="text-[10px] text-slate-400 mb-1">Покупатель (WhatsApp): +7 (701) 948-22-11</span>
+              <span className="text-[10px] text-slate-400 mb-1">Клиент (WhatsApp): +7 (701) 948-22-11</span>
               <div className="p-3.5 rounded-2xl bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700 shadow-sm leading-relaxed">
-                {isRealty
-                  ? 'Здравствуйте! Подскажите, 2-комнатная квартира в ЖК "Гагарин Парк" на Krisha еще продается? Какая ипотека подходит?'
-                  : 'Здравствуйте! Toyota Camry 75 2022 года с Kolesa ещё в наличии? Можно ли взять в рассрочку или Трейд-ин?'}
+                Здравствуйте! Хочу записаться на маникюр на этой неделе. Сколько это стоит и есть ли окно завтра?
               </div>
               <span className="text-[9px] text-slate-500 mt-1">12:44</span>
             </div>
@@ -112,21 +104,11 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
                 </span>
               </span>
               <div className="p-3.5 rounded-2xl bg-indigo-600 text-white rounded-tr-none shadow-md space-y-2 leading-relaxed">
-                {isRealty ? (
-                  <>
-                    <p>Добрый день! Да, квартира на <b>Гагарин Парк (72 кв.м, 10 этаж)</b> в активной продаже! 🏢</p>
-                    <p>💰 <b>Цена:</b> 48,500,000 ₸. Документы чистые, подходят под <b>7-20-25, Баспана и любой банк</b>.</p>
-                    <p>Хотите посмотреть планировку или записаться на показ завтра в 15:00?</p>
-                  </>
-                ) : (
-                  <>
-                    <p>Добрый день! Да, <b>Toyota Camry 75 (2.5L, Luxe, 2022 г.)</b> в наличии в автосалоне! 🚗</p>
-                    <p>💰 <b>Цена:</b> 14,800,000 ₸. Трейд-ин с оценкой вашего авто за 15 минут, кредит от 5% перв. взноса.</p>
-                    <p>Удобно приехать на тест-драйв сегодня до 19:00?</p>
-                  </>
-                )}
+                <p>Добрый день! 👋 Маникюр с покрытием — <b>8 000 ₸</b>, длительность 90 минут.</p>
+                <p>📅 У мастера Анны есть свободное окно <b>завтра в 11:30 или 16:00</b>.</p>
+                <p>На какое время вас записать?</p>
               </div>
-              <span className="text-[9px] text-slate-500 mt-1">12:44 · Квалификация пройдена</span>
+              <span className="text-[9px] text-slate-500 mt-1">12:44 · Слот проверен в календаре</span>
             </div>
           </div>
         </div>
@@ -140,8 +122,8 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
                 ✅
               </div>
               <div>
-                <p className="font-bold text-foreground">Запись на показ подтверждена</p>
-                <p className="text-muted-foreground text-[11px]">Арман К. (+7 777 392-**-**)</p>
+                <p className="font-bold text-foreground">Запись подтверждена</p>
+                <p className="text-muted-foreground text-[11px]">Арман К. — завтра, 15:00, стрижка</p>
                 <span className="text-[10px] text-slate-400 mt-0.5 block">2 минуты назад</span>
               </div>
             </div>
@@ -151,8 +133,8 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
                 🔄
               </div>
               <div>
-                <p className="font-bold text-foreground">Синхронизация с {isRealty ? 'Krisha.kz' : 'Kolesa.kz'}</p>
-                <p className="text-muted-foreground text-[11px]">Обновлено 24 активных объекта</p>
+                <p className="font-bold text-foreground">Follow-up отправлен</p>
+                <p className="text-muted-foreground text-[11px]">Динара Н. — напоминание о записи через 24ч</p>
                 <span className="text-[10px] text-slate-400 mt-0.5 block">15 минут назад</span>
               </div>
             </div>
@@ -163,7 +145,7 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
               </div>
               <div>
                 <p className="font-bold text-foreground">Горячий лид квалифицирован</p>
-                <p className="text-muted-foreground text-[11px]">Готовность к покупке: В течение недели</p>
+                <p className="text-muted-foreground text-[11px]">Готов записаться: на этой неделе</p>
                 <span className="text-[10px] text-slate-400 mt-0.5 block">40 минут назад</span>
               </div>
             </div>
@@ -173,5 +155,3 @@ export function DemoOverview({ niche }: DemoOverviewProps) {
     </div>
   );
 }
-
-

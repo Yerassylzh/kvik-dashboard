@@ -1,15 +1,13 @@
 import ruApi from '@/locales/ru/api.json';
-import enApi from '@/locales/en/api.json';
 import { SupportedLocale } from '@/types/i18n';
 
 // Registry of backend API error & response dictionaries
 export const API_DICTIONARIES: Record<SupportedLocale, Record<string, any>> = {
   ru: ruApi,
-  en: enApi,
   kk: {}, // Placeholder for Kazakh API dictionary
 };
 
-export const SUPPORTED_LOCALES: SupportedLocale[] = ['ru', 'en', 'kk'];
+export const SUPPORTED_LOCALES: SupportedLocale[] = ['ru', 'kk'];
 export const DEFAULT_LOCALE: SupportedLocale = 'ru';
 
 let activeLocale: SupportedLocale = DEFAULT_LOCALE;
@@ -57,22 +55,6 @@ export function translateKey(
     } else {
       current = undefined;
       break;
-    }
-  }
-
-  // Fallback to English if not found in active locale
-  if (typeof current !== 'string' && locale !== 'en') {
-    let fallback: any = API_DICTIONARIES.en;
-    for (const k of keys) {
-      if (fallback && typeof fallback === 'object' && k in fallback) {
-        fallback = fallback[k];
-      } else {
-        fallback = undefined;
-        break;
-      }
-    }
-    if (typeof fallback === 'string') {
-      current = fallback;
     }
   }
 

@@ -13,13 +13,25 @@ export function DemoSettings() {
       </div>
 
       <div className="p-6 rounded-2xl bg-card border border-border space-y-4">
-        <h3 className="font-bold text-sm text-foreground">Подключенные источники данных</h3>
+        <h3 className="font-bold text-sm text-foreground">Источники базы знаний</h3>
         <div className="p-4 rounded-xl bg-muted/50 border border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🏠</span>
+            <span className="text-2xl">📍</span>
             <div>
-              <p className="font-bold text-xs text-foreground">Krisha.kz Авто-импорт</p>
-              <p className="text-[11px] text-muted-foreground">ID Агентства: 15837549 · 24 объявления</p>
+              <p className="font-bold text-xs text-foreground">2GIS Каталог</p>
+              <p className="text-[11px] text-muted-foreground">Aura Beauty Studio · 42 услуги и цены</p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+            Активно
+          </span>
+        </div>
+        <div className="p-4 rounded-xl bg-muted/50 border border-border flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🌐</span>
+            <div>
+              <p className="font-bold text-xs text-foreground">Веб-сайт</p>
+              <p className="text-[11px] text-muted-foreground">aurabeauty.kz · прайс-лист и описание услуг</p>
             </div>
           </div>
           <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">

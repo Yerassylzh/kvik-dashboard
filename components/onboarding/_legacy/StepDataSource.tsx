@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { NicheProfile } from '@/types/niche';
 
 interface StepDataSourceProps {
   initialKrishaUserId?: string;
-  nicheProfile?: NicheProfile | null;
+  nicheProfile?: string | null;
   onSubmit: (userId: string) => void;
   loading: boolean;
 }
 
 export function StepDataSource({
   initialKrishaUserId = '',
-  nicheProfile,
   onSubmit,
   loading,
 }: StepDataSourceProps) {
@@ -22,33 +20,6 @@ export function StepDataSource({
   };
 
   const getSourceConfig = () => {
-    if (nicheProfile === 'REALTY') {
-      return {
-        label: 'Krisha.kz Profile ID / URL',
-        placeholder: 'например: 12345678 или https://krisha.kz/a/show/...',
-        helpTitle: 'Где найти ID пользователя Krisha.kz?',
-        helpText:
-          'Перейдите в личный кабинет на Krisha.kz или откройте любое ваше объявление. В ссылке профиля будет ID (например: 12345678).',
-      };
-    }
-    if (nicheProfile === 'AUTO_SALES') {
-      return {
-        label: 'Kolesa.kz Profile ID / URL',
-        placeholder: 'например: 12345678 или https://kolesa.kz/a/show/...',
-        helpTitle: 'Где найти ID продавца на Kolesa.kz?',
-        helpText:
-          'Перейдите в кабинет продавца/автосалона на Kolesa.kz или откройте объявление вашего автосалона. Скопируйте ID или полную ссылку.',
-      };
-    }
-    if (nicheProfile === 'AUTO_SERVICE') {
-      return {
-        label: '2GIS / Instagram Profile или URL прайс-листа',
-        placeholder: 'например: https://2gis.kz/almaty/firm/... или @autoservice_kz',
-        helpTitle: 'Источники данных автосервиса (СТО)',
-        helpText:
-          'Укажите ссылку на страницу в 2GIS, Instagram профиль или прайс-лист. ИИ настроит квалификацию и запись на обслуживание.',
-      };
-    }
     return {
       label: 'ID / Ссылка на профиль бизнеса',
       placeholder: 'например: 12345678 или ссылка на профиль',

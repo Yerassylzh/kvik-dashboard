@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Deprecated realty/auto verticals, quarantined for reference only:
+    "components/onboarding/_legacy/**",
+    "components/dashboard/_legacy/**",
   ]),
 ]);
 

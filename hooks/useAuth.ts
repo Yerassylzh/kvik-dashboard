@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect } from 'react';
-import { useAuthStore } from '@/store/auth.store';
-import { loginApi, registerApi, logoutApi, refreshApi, getMeApi } from '@/lib/api/auth';
-import { LoginDto, RegisterDto } from '@/types/auth';
+import { useCallback, useEffect } from "react";
+import { useAuthStore } from "@/store/auth.store";
+import { useOnboardingStore } from "@/store/onboarding.store";
+import {
+  loginApi,
+  registerApi,
+  logoutApi,
+  refreshApi,
+  getMeApi,
+} from "@/lib/api/auth";
+import { LoginDto, RegisterDto } from "@/types/auth";
 
 export function useAuth() {
   const {
@@ -23,6 +30,7 @@ export function useAuth() {
       setLoading(true);
       try {
         const res = await loginApi(dto);
+        useOnboardingStore.getState().resetOnboarding();
         setAuth(res.user, res.access_token);
         return res;
       } catch (error) {
@@ -32,7 +40,7 @@ export function useAuth() {
         setLoading(false);
       }
     },
-    [setAuth, clearAuth, setLoading]
+    [setAuth, clearAuth, setLoading],
   );
 
   const register = useCallback(
@@ -40,6 +48,7 @@ export function useAuth() {
       setLoading(true);
       try {
         const res = await registerApi(dto);
+        useOnboardingStore.getState().resetOnboarding();
         setAuth(res.user, res.access_token);
         return res;
       } catch (error) {
@@ -49,7 +58,7 @@ export function useAuth() {
         setLoading(false);
       }
     },
-    [setAuth, clearAuth, setLoading]
+    [setAuth, clearAuth, setLoading],
   );
 
   const logout = useCallback(async () => {
@@ -59,6 +68,7 @@ export function useAuth() {
     } catch {
       // Ignore logout errors
     } finally {
+      useOnboardingStore.getState().resetOnboarding();
       clearAuth();
     }
   }, [clearAuth, setLoading]);
@@ -76,11 +86,17 @@ export function useAuth() {
       const userData = await getMeApi();
       setUser(userData);
     } catch {
+      useOnboardingStore.getState().resetOnboarding();
       clearAuth();
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const pathname = window.location.pathname;
-        if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
-          const from = encodeURIComponent(pathname + window.location.search);
+        if (
+          !pathname.startsWith("/login") &&
+          !pathname.startsWith("/register")
+        ) {
+          const from = encodeURIComponent(
+            pathname + window.location.search,
+          );
           window.location.href = `/login?from=${from}`;
         }
       }

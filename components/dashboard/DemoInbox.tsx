@@ -2,12 +2,7 @@
 
 import React, { useState } from 'react';
 
-interface DemoInboxProps {
-  niche: string;
-}
-
-export function DemoInbox({ niche }: DemoInboxProps) {
-  const isRealty = niche === 'REALTY';
+export function DemoInbox() {
   const [selectedChat, setSelectedChat] = useState('1');
 
   const chats = [
@@ -15,16 +10,16 @@ export function DemoInbox({ niche }: DemoInboxProps) {
       id: '1',
       name: 'Арман Сериков',
       phone: '+7 (701) 948-22-11',
-      lastMsg: isRealty ? 'Хорошо, давайте завтра в 15:00 на Гагарина' : 'Хорошо, приеду в автосалон на тест-драйв',
+      lastMsg: 'Хорошо, давайте завтра в 15:00',
       time: '12:45',
-      badge: 'Показ назначен',
+      badge: 'Запись подтверждена',
       unread: false,
     },
     {
       id: '2',
       name: 'Динара Нурланова',
       phone: '+7 (777) 310-44-88',
-      lastMsg: isRealty ? 'А возможна ли небольшая скидка при наличном расчете?' : 'А есть ли машины других цветов в наличии?',
+      lastMsg: 'А есть ли окно в среду после 14:00?',
       time: '11:20',
       badge: 'Квалификация',
       unread: true,
@@ -33,9 +28,9 @@ export function DemoInbox({ niche }: DemoInboxProps) {
       id: '3',
       name: 'Бауржан Аскаров',
       phone: '+7 (705) 555-12-34',
-      lastMsg: 'Отправьте, пожалуйста, контакты менеджера',
+      lastMsg: 'Отправьте, пожалуйста, прайс на массаж',
       time: '09:15',
-      badge: 'Отбасы Банк',
+      badge: 'Прайс-лист',
       unread: false,
     },
   ];
@@ -106,9 +101,7 @@ export function DemoInbox({ niche }: DemoInboxProps) {
           {/* Incoming */}
           <div className="flex flex-col items-start max-w-[80%]">
             <div className="p-3.5 rounded-2xl bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700">
-              {isRealty
-                ? 'Здравствуйте! Хочу узнать подробнее про 2-комнатную на Гагарина за 48.5 млн ₸. На каком этаже и проходит ли ипотека 7-20-25?'
-                : 'Здравствуйте! Интересует Toyota Camry 75 2022 года за 14.8 млн ₸. Каковы условия по Трейд-ин?'}
+              Здравствуйте! Хочу подстричься. Сколько стоит и когда есть свободное время?
             </div>
             <span className="text-[9px] text-slate-500 mt-1">12:40</span>
           </div>
@@ -116,19 +109,9 @@ export function DemoInbox({ niche }: DemoInboxProps) {
           {/* AI Response */}
           <div className="flex flex-col items-end max-w-[85%] ml-auto">
             <div className="p-3.5 rounded-2xl bg-indigo-600 text-white rounded-tr-none space-y-2 shadow-md">
-              {isRealty ? (
-                <>
-                  <p>Здравствуйте, Арман! 👋 Квартира расположена на 10 этаже 16-этажного дома в ЖК "Гагарин Парк".</p>
-                  <p>✅ Документы полностью готовы, обременений нет, под ипотеку 7-20-25 и Баспана проходит идеально!</p>
-                  <p>Хотите, я забронирую время для личного просмотра с менеджером?</p>
-                </>
-              ) : (
-                <>
-                  <p>Здравствуйте, Арман! 👋 По Трейд-ин вы можете сдать свой текущий автомобиль в качестве первоначального взноса.</p>
-                  <p>✅ Оценка занимает 15 минут, разницу можно оформить в выгодный автокредит под 5%!</p>
-                  <p>Удобно подъехать на бесплатную оценку сегодня?</p>
-                </>
-              )}
+              <p>Здравствуйте, Арман! 👋 Мужская стрижка — <b>5 000 ₸</b>, около 60 минут.</p>
+              <p>📅 Свободные окна: <b>сегодня в 18:30</b> или <b>завтра в 11:00 и 15:00</b>.</p>
+              <p>Какое время вам удобно?</p>
             </div>
             <span className="text-[9px] text-slate-400 mt-1 flex items-center gap-1">
               <span>🤖 Kvik AI Agent</span> · 12:41
@@ -147,8 +130,8 @@ export function DemoInbox({ niche }: DemoInboxProps) {
           <div className="flex flex-col items-end max-w-[85%] ml-auto">
             <div className="p-3.5 rounded-2xl bg-indigo-600 text-white rounded-tr-none space-y-2 shadow-md">
               <p>Замечательно! Записал вас на завтра, в 15:00 🗓️</p>
-              <p>📍 {isRealty ? 'Адрес: г. Алматы, пр. Гагарина 236, подъезд 2.' : 'Адрес автосалона: г. Алматы, пр. Суюнбая 150.'}</p>
-              <p>Менеджер встретит вас у входа. Отправил вам геолокацию 📌</p>
+              <p>📍 Адрес: г. Алматы, пр. Достык 120, 2 этаж.</p>
+              <p>За день до визита отправлю напоминание. Ждём вас!</p>
             </div>
             <span className="text-[9px] text-slate-400 mt-1 flex items-center gap-1">
               <span>🤖 Kvik AI Agent</span> · 12:45

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { getOnboardingState } from '@/lib/api/onboarding';
-import { NicheProfile } from '@/types/niche';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,7 +11,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout } = useAuth();
 
   const [isDemo, setIsDemo] = useState(false);
-  const [demoNiche, setDemoNiche] = useState<NicheProfile>('REALTY');
 
   const currentTab = searchParams.get('tab') || 'overview';
 
@@ -28,10 +26,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         setIsDemo(true);
         if (isDemoUrl) {
           localStorage.setItem('kvik_demo_mode', 'true');
-        }
-        const nicheParam = searchParams.get('niche') as NicheProfile;
-        if (nicheParam && ['REALTY', 'AUTO_SALES', 'AUTO_SERVICE'].includes(nicheParam)) {
-          setDemoNiche(nicheParam);
         }
         return;
       }
@@ -63,18 +57,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  const niche = isDemo ? demoNiche : user?.workspace?.nicheProfile || 'REALTY';
+  const niche = user?.workspace?.nicheProfile || 'OTHER_CALENDAR';
+
+  const nicheBadges: Record<string, string> = {
+    BEAUTY: '💅 Бьюти',
+    CLINIC: '🏥 Клиника',
+    FITNESS: '🏋️ Фитнес',
+    CONSULTING: '💼 Консалтинг',
+    OTHER_CALENDAR: '📅 Запись на услуги',
+  };
 
   const navItems = [
     { id: 'overview', href: '/?demo=1&tab=overview', label: 'Дашборд', icon: '📊' },
     { id: 'inbox', href: '/?demo=1&tab=inbox', label: 'Диалоги', icon: '💬' },
     { id: 'leads', href: '/?demo=1&tab=leads', label: 'Лиды (CRM)', icon: '👥' },
-    ...(niche === 'REALTY' ? [
-      { id: 'objects', href: '/?demo=1&tab=objects', label: 'Объекты Krisha', icon: '🏠' },
-    ] : []),
-    ...(niche === 'AUTO_SALES' || niche === 'AUTO_SERVICE' ? [
-      { id: 'objects', href: '/?demo=1&tab=objects', label: 'Авто Kolesa', icon: '🚗' },
-    ] : []),
     { id: 'analytics', href: '/?demo=1&tab=analytics', label: 'Аналитика', icon: '📈' },
     { id: 'settings', href: '/?demo=1&tab=settings', label: 'Настройки', icon: '⚙️' },
   ];
@@ -91,33 +87,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span>Показ интерактивного дашборда для презентации</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-white/80 text-[11px]">Ниша:</span>
-            <div className="flex items-center bg-black/20 p-0.5 rounded-lg border border-white/20">
-              <button
-                onClick={() => setDemoNiche('REALTY')}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                  demoNiche === 'REALTY' ? 'bg-white text-indigo-900 shadow-sm' : 'text-white/80 hover:text-white'
-                }`}
-              >
-                🏠 Krisha.kz (Недвижимость)
-              </button>
-              <button
-                onClick={() => setDemoNiche('AUTO_SALES')}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                  demoNiche === 'AUTO_SALES' ? 'bg-white text-indigo-900 shadow-sm' : 'text-white/80 hover:text-white'
-                }`}
-              >
-                🚗 Kolesa.kz (Автопродажи)
-              </button>
-            </div>
-            <button
-              onClick={toggleDemoMode}
-              className="text-[11px] underline opacity-80 hover:opacity-100 ml-2"
-            >
-              Выйти из Demo
-            </button>
-          </div>
+          <button
+            onClick={toggleDemoMode}
+            className="text-[11px] underline opacity-80 hover:opacity-100"
+          >
+            Выйти из Demo
+          </button>
         </div>
       )}
 
@@ -136,15 +111,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Niche Badge */}
             <div className="mb-5 mx-2 px-3.5 py-2.5 rounded-xl bg-indigo-50/60 border border-indigo-200/60 text-xs shadow-sm">
-              <p className="text-indigo-600 font-semibold text-[11px]">Активная ниша</p>
-              <p className="text-slate-900 font-bold mt-0.5">
-                {niche === 'REALTY' && '🏠 Недвижимость (Krisha.kz)'}
-                {niche === 'AUTO_SALES' && '🚗 Автопродажи (Kolesa.kz)'}
-                {niche === 'AUTO_SERVICE' && '🔧 Автосервис'}
-                {niche === 'BEAUTY' && '💅 Бьюти'}
-                {niche === 'CLINIC' && '🏥 Клиника'}
-                {niche === 'OTHER_CALENDAR' && '📅 Запись на услуги'}
-              </p>
+              <p className="text-indigo-600 font-semibold text-[11px]">Тип бизнеса</p>
+              <p className="text-slate-900 font-bold mt-0.5">{nicheBadges[niche] || nicheBadges.OTHER_CALENDAR}</p>
             </div>
 
             {/* Navigation */}

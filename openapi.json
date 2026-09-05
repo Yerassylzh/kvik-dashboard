@@ -10,9 +10,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/health": {
@@ -24,9 +22,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/auth/register": {
@@ -52,9 +48,7 @@
           }
         },
         "summary": "Register a new business owner",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/login": {
@@ -80,9 +74,7 @@
           }
         },
         "summary": "Log in with email and password",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/refresh": {
@@ -103,9 +95,7 @@
           }
         ],
         "summary": "Rotate access and refresh tokens using HttpOnly cookie",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/logout": {
@@ -123,9 +113,7 @@
           }
         ],
         "summary": "Log out user and clear refresh token",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/me": {
@@ -146,9 +134,7 @@
           }
         ],
         "summary": "Get current user profile and workspace state",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/onboarding/state": {
@@ -176,9 +162,7 @@
           }
         ],
         "summary": "Get current onboarding step (Derived State)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/niche": {
@@ -216,9 +200,7 @@
           }
         ],
         "summary": "Step 0: Select niche profile",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/business-profile": {
@@ -259,13 +241,51 @@
           }
         ],
         "summary": "Step 1: Save business profile info",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
+      },
+      "put": {
+        "operationId": "OnboardingController_updateBusinessProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 1: Update business profile info (PUT)",
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-source": {
       "post": {
+        "deprecated": true,
         "operationId": "OnboardingController_submitDataSource",
         "parameters": [],
         "requestBody": {
@@ -290,7 +310,7 @@
             }
           },
           "400": {
-            "description": "Validation failed"
+            "description": "Endpoint is deprecated"
           },
           "401": {
             "description": "Unauthorized"
@@ -301,10 +321,8 @@
             "bearer": []
           }
         ],
-        "summary": "Step 2: Submit data source (Krisha userId) and start background crawl",
-        "tags": [
-          "Onboarding"
-        ]
+        "summary": "Step 2: [DEPRECATED] Submit direct listing crawl ID (deprecated in favor of 2GIS/Website/Docs)",
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-preview": {
@@ -332,9 +350,7 @@
           }
         ],
         "summary": "Step 3: Preview parsed knowledge entries and parsing progress",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-confirm": {
@@ -362,9 +378,7 @@
           }
         ],
         "summary": "Step 3: Confirm data is correct",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/channel": {
@@ -405,9 +419,7 @@
           }
         ],
         "summary": "Step 4: Connect a messaging channel",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/qualification": {
@@ -448,9 +460,64 @@
           }
         ],
         "summary": "Step 5: Save lead qualification rules",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/qualification-rules": {
+      "post": {
+        "operationId": "OnboardingController_saveQualificationRules",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Save lead qualification rules (alias)",
+        "tags": ["Onboarding"]
+      },
+      "get": {
+        "operationId": "OnboardingController_getQualificationRules",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current qualification rules",
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/complete": {
@@ -478,9 +545,552 @@
           }
         ],
         "summary": "Step 6: Complete onboarding and activate bot",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/website-scraping": {
+      "post": {
+        "operationId": "OnboardingController_startWebsiteScraping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteScrapingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Website scraping started successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Start background website scraping (async)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/2gis-scraping": {
+      "post": {
+        "operationId": "OnboardingController_start2GisScraping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoGisScrapingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "2GIS catalog scraping started successfully"
+          },
+          "400": {
+            "description": "Validation failed or unsupported niche"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Start background 2GIS catalog scraping (async)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/scraping/status": {
+      "get": {
+        "operationId": "OnboardingController_getScrapingStatus",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": ["website", "2gis"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scraping progress status"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get async scraping status (website or 2gis)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/knowledge-notes": {
+      "post": {
+        "operationId": "OnboardingController_addKnowledgeNotes",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeNotesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Save manual knowledge notes (indexed to pgvector)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/notes": {
+      "post": {
+        "operationId": "OnboardingController_addNotes",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeNotesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Save manual knowledge notes (alias)",
+        "tags": ["Onboarding"]
+      },
+      "get": {
+        "operationId": "OnboardingController_listNotes",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List manual knowledge notes (alias)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/knowledge-notes": {
+      "get": {
+        "operationId": "OnboardingController_listKnowledgeNotes",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List manual knowledge notes",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/notes/{id}": {
+      "delete": {
+        "operationId": "OnboardingController_deleteNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a note by ID",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/knowledge-documents": {
+      "post": {
+        "operationId": "OnboardingController_uploadDocument",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a knowledge document (async processing)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/knowledge-files": {
+      "post": {
+        "operationId": "OnboardingController_uploadKnowledgeFile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a knowledge document (alias)",
+        "tags": ["Onboarding"]
+      },
+      "get": {
+        "operationId": "OnboardingController_listKnowledgeFiles",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List uploaded documents (alias)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/knowledge-documents": {
+      "get": {
+        "operationId": "OnboardingController_listDocuments",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List uploaded documents with processing status",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/knowledge-files/{id}": {
+      "delete": {
+        "operationId": "OnboardingController_deleteKnowledgeFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "File not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a knowledge file by ID",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/knowledge/{id}": {
+      "delete": {
+        "operationId": "OnboardingController_deleteKnowledgeEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Knowledge entry not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a knowledge entry (and its file, if any)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/knowledge/search": {
+      "get": {
+        "operationId": "OnboardingController_searchKnowledge",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "k",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 5,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Debug] Semantic vector search over knowledge chunks",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/knowledge-entries": {
+      "get": {
+        "operationId": "OnboardingController_listKnowledgeEntries",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "REALTY_LISTING",
+                "CAR_LISTING",
+                "LOCAL_LISTING",
+                "WEBSITE_CONTENT",
+                "DOCUMENT",
+                "MANUAL_NOTE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeEntryListResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List knowledge base entries (scraped pages, 2GIS catalog, files, notes) with pagination",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/knowledge-entries/{id}": {
+      "get": {
+        "operationId": "OnboardingController_getKnowledgeEntryById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeEntryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Knowledge entry not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get full details of a specific knowledge entry (including raw & structuredText data)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/business-context": {
+      "get": {
+        "operationId": "OnboardingController_getBusinessContext",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessContextResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get AI-extracted business summary (businessContext JSON for system prompt review)",
+        "tags": ["Onboarding"]
       }
     }
   },
@@ -542,13 +1152,7 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
+            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
             "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
           },
           "parsedCount": {
@@ -569,11 +1173,7 @@
             "example": "All listings failed to parse"
           }
         },
-        "required": [
-          "step",
-          "stepIndex",
-          "completed"
-        ]
+        "required": ["step", "stepIndex", "completed"]
       },
       "SelectNicheDto": {
         "type": "object",
@@ -581,18 +1181,17 @@
           "nicheProfile": {
             "type": "string",
             "enum": [
-              "REALTY",
-              "AUTO_SALES",
-              "AUTO_SERVICE",
               "BEAUTY",
               "CLINIC",
+              "FITNESS",
+              "CONSULTING",
               "OTHER_CALENDAR"
-            ]
+            ],
+            "description": "Calendar-based business vertical profile",
+            "example": "BEAUTY"
           }
         },
-        "required": [
-          "nicheProfile"
-        ]
+        "required": ["nicheProfile"]
       },
       "BusinessProfileDto": {
         "type": "object",
@@ -630,13 +1229,7 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
+            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
             "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
           },
           "parsedCount": {
@@ -669,13 +1262,7 @@
             "example": false
           }
         },
-        "required": [
-          "step",
-          "stepIndex",
-          "completed",
-          "code",
-          "message"
-        ]
+        "required": ["step", "stepIndex", "completed", "code", "message"]
       },
       "DataPreviewResponseDto": {
         "type": "object",
@@ -689,13 +1276,7 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
+            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
             "example": "PROCESSING"
           },
           "parsedCount": {
@@ -730,20 +1311,216 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ]
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "QualificationDto": {
         "type": "object",
         "properties": {}
+      },
+      "WebsiteScrapingDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TwoGisScrapingDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "KnowledgeNotesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "KnowledgeEntryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "c7a8b234-91df-4e2b-b8a1-123456789abc"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "REALTY_LISTING",
+              "CAR_LISTING",
+              "LOCAL_LISTING",
+              "WEBSITE_CONTENT",
+              "DOCUMENT",
+              "MANUAL_NOTE"
+            ],
+            "example": "WEBSITE_CONTENT"
+          },
+          "title": {
+            "type": "object",
+            "example": "Services & Prices",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "sourceUrl": {
+            "type": "object",
+            "example": "https://example.kz/services",
+            "nullable": true
+          },
+          "fileKey": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "fileMimeType": {
+            "type": "object",
+            "example": "application/pdf",
+            "nullable": true
+          },
+          "fileSize": {
+            "type": "object",
+            "example": 1048576,
+            "nullable": true
+          },
+          "processingStatus": {
+            "type": "string",
+            "enum": ["PENDING", "PROCESSING", "COMPLETED", "FAILED"],
+            "example": "COMPLETED"
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "externalId",
+          "sourceUrl",
+          "fileKey",
+          "fileMimeType",
+          "fileSize",
+          "processingStatus",
+          "active",
+          "data",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "KnowledgeEntryListResponseDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeEntryResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 12
+          },
+          "limit": {
+            "type": "number",
+            "example": 20
+          },
+          "offset": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": ["entries", "total", "limit", "offset"]
+      },
+      "BusinessContextResponseDto": {
+        "type": "object",
+        "properties": {
+          "businessType": {
+            "type": "object",
+            "example": "Beauty Salon & Spa",
+            "nullable": true
+          },
+          "specialization": {
+            "type": "object",
+            "example": "Haircare and Cosmetology",
+            "nullable": true
+          },
+          "keyDifferentiators": {
+            "example": ["Eco-friendly organic products", "Online booking 24/7"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "servicesOffered": {
+            "example": ["Haircut | from 5000 KZT", "Manicure | 4000 KZT"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pricingPolicy": {
+            "type": "object",
+            "example": "Fixed pricing list with optional package discounts",
+            "nullable": true
+          },
+          "restrictions": {
+            "example": ["No pet grooming services"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "teamSummary": {
+            "type": "object",
+            "example": "5 senior stylists and 2 cosmetologists",
+            "nullable": true
+          },
+          "bookingPolicy": {
+            "type": "object",
+            "example": "Online booking via website or WhatsApp, 10% advance deposit",
+            "nullable": true
+          },
+          "cancellationPolicy": {
+            "type": "object",
+            "example": "Free cancellation up to 2 hours before appointment",
+            "nullable": true
+          },
+          "contactInfo": {
+            "type": "object",
+            "example": "+7 (707) 123-45-67, info@beautysalon.kz",
+            "nullable": true
+          },
+          "workingHours": {
+            "type": "object",
+            "example": "Mon-Sun 09:00 - 21:00",
+            "nullable": true
+          }
+        },
+        "required": [
+          "businessType",
+          "specialization",
+          "keyDifferentiators",
+          "servicesOffered",
+          "pricingPolicy",
+          "restrictions",
+          "teamSummary",
+          "bookingPolicy",
+          "cancellationPolicy",
+          "contactInfo",
+          "workingHours"
+        ]
       }
     }
   }

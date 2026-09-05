@@ -1,100 +1,82 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   getOnboardingState,
   selectNicheStep,
   submitBusinessProfile,
-  submitDataSource,
   getDataPreview,
   confirmDataPreview,
   submitChannel,
   submitQualification,
   completeOnboarding,
-} from '@/lib/api/onboarding';
-import { useOnboardingStore } from '@/store/onboarding.store';
+} from "@/lib/api/onboarding";
+import { useOnboardingStore } from "@/store/onboarding.store";
 import {
   NicheProfile,
-  OnboardingStepState,
   OnboardingStateResponse,
   BusinessProfileDto,
   ChannelDto,
   QualificationDto,
-} from '@/types/niche';
+} from "@/types/niche";
 
-import { StepSelectNiche } from '@/components/onboarding/StepSelectNiche';
-import { StepBusinessProfile } from '@/components/onboarding/StepBusinessProfile';
-import { StepDataSource } from '@/components/onboarding/StepDataSource';
-import { StepDataPreview } from '@/components/onboarding/StepDataPreview';
-import { StepConnectChannel } from '@/components/onboarding/StepConnectChannel';
-import { StepQualification } from '@/components/onboarding/StepQualification';
-import { StepCompleteTest } from '@/components/onboarding/StepCompleteTest';
-
-const STEP_TITLES: Record<OnboardingStepState, { index: number; title: string; subtitle: string }> = {
-  SELECT_NICHE: { index: 0, title: 'Выбор ниши бизнеса', subtitle: 'Выберите сферу вашей деятельности для активации специализированного ИИ' },
-  BUSINESS_PROFILE: { index: 1, title: 'Профиль бизнеса', subtitle: 'Укажите основную информацию о вашем агентстве или компании' },
-  DATA_SOURCE: { index: 2, title: 'Подключение Krisha.kz', subtitle: 'Укажите ID пользователя или агентства для автоимпорта объявлений' },
-  DATA_PREVIEW: { index: 3, title: 'Импорт и просмотр объектов', subtitle: 'ИИ автоматически загружает и структурирует ваши объявления в базу знаний' },
-  CONNECT_CHANNEL: { index: 4, title: 'Подключение мессенджера', subtitle: 'Подключите WhatsApp или Instagram для автоответов клиентам' },
-  QUALIFICATION: { index: 5, title: 'Правила квалификации ИИ', subtitle: 'Настройте вопросы, которые ИИ будет задавать покупателям' },
-  COMPLETE_TEST: { index: 6, title: 'Тестирование и запуск', subtitle: 'Протестируйте диалог с ИИ-агентом и активируйте его' },
-  DONE: { index: 7, title: 'Завершено', subtitle: 'Перенаправление в дашборд...' },
-};
-
-const TOTAL_STEPS = 7;
-
-/**
- * Бэкенд держит raw step = DATA_SOURCE, пока воркер не запишет первую запись,
- * хотя парсинг уже идёт. Показываем экран превью (с прогрессом), как только
- * парсинг стартовал (parsingStatus вышел из IDLE).
- */
-function resolveDisplayStep(
-  step: OnboardingStepState,
-  parsingStatus?: OnboardingStateResponse['parsingStatus']
-): OnboardingStepState {
-  if (step === 'DATA_SOURCE' && parsingStatus && parsingStatus !== 'IDLE') {
-    return 'DATA_PREVIEW';
-  }
-  return step;
-}
+import { StepSelectNiche } from "@/components/onboarding/StepSelectNiche";
+import { StepBusinessProfile } from "@/components/onboarding/StepBusinessProfile";
+import { StepKnowledgeSource } from "@/components/onboarding/StepKnowledgeSource";
+import { StepDataPreview } from "@/components/onboarding/StepDataPreview";
+import { StepConnectChannel } from "@/components/onboarding/StepConnectChannel";
+import { StepQualification } from "@/components/onboarding/StepQualification";
+import { StepCompleteTest } from "@/components/onboarding/StepCompleteTest";
+import { StepTransition } from "@/components/ui/motion/StepTransition";
+import {
+  OnboardingHeader,
+  STEP_META,
+} from "@/components/onboarding/OnboardingHeader";
+import { useToast } from "@/components/ui/toast/ToastContext";
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const store = useOnboardingStore();
+  const toast = useToast();
+  const currentStep = useOnboardingStore((s) => s.step);
+  const businessProfile = useOnboardingStore((s) => s.businessProfile);
+  const knowledgeSource = useOnboardingStore((s) => s.knowledgeSource);
+  const dataPreview = useOnboardingStore((s) => s.dataPreview);
 
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [direction, setDirection] = useState(1);
+  const prevStepIdxRef = useRef(0);
 
-  // Применяем состояние из ЛЮБОГО ответа бэкенда (GET /state или POST-шаги).
-  const applyState = useCallback(
-    (res: OnboardingStateResponse): boolean => {
-      if (res.step === 'DONE') {
-        router.replace('/');
-        return true;
-      }
-      const display = resolveDisplayStep(res.step, res.parsingStatus);
-      store.setStepState(display, STEP_TITLES[display].index);
+  const applyState = (res: OnboardingStateResponse): boolean => {
+    if (res.step === "DONE") {
+      router.replace("/");
+      return true;
+    }
+    const newIndex = STEP_META[res.step]?.index ?? 0;
+    setDirection(newIndex >= prevStepIdxRef.current ? 1 : -1);
+    prevStepIdxRef.current = newIndex;
 
-      if (res.parsingStatus) {
-        store.setDataPreview({
-          parsingStatus: res.parsingStatus,
-          parsedCount: res.parsedCount ?? 0,
-          totalCount: res.totalCount ?? 0,
-          failedCount: res.failedCount ?? 0,
-          error: res.error,
-        });
-      }
-      return false;
-    },
-    // store-методы стабильны у zustand; router стабилен
-    [router, store]
-  );
+    const store = useOnboardingStore.getState();
+    if (res.step === "SELECT_NICHE") {
+      store.resetOnboarding();
+    }
+    store.setStepState(res.step, newIndex);
 
-  // Загрузка начального состояния с бэкенда (источник истины).
-  // Async-IIFE: любые setState происходят только ПОСЛЕ первого await —
-  // это не синхронный setState в теле эффекта (react-hooks/set-state-in-effect).
+    if (res.parsingStatus) {
+      store.setDataPreview({
+        parsingStatus: res.parsingStatus,
+        parsedCount: res.parsedCount ?? 0,
+        totalCount: res.totalCount ?? 0,
+        failedCount: res.failedCount ?? 0,
+        error: res.error,
+      });
+    }
+    return false;
+  };
+
+  // Initial load runs strictly once on mount
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -104,7 +86,12 @@ export default function OnboardingPage() {
         applyState(stateRes);
       } catch (err) {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Ошибка загрузки состояния онбординга');
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "Ошибка загрузки состояния онбординга";
+        setError(msg);
+        toast.error(msg);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -115,10 +102,11 @@ export default function OnboardingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Polling превью парсинга: крутим, пока показан экран DATA_PREVIEW,
-  // и останавливаемся, когда воркер выставил DONE или FAILED.
+  // Polling for parsing status during knowledge base steps (every 3 seconds)
   useEffect(() => {
-    if (store.step !== 'DATA_PREVIEW') return;
+    const isKnowledgeActive =
+      currentStep === "DATA_SOURCE" || currentStep === "DATA_PREVIEW";
+    if (!isKnowledgeActive) return;
 
     let cancelled = false;
     let interval: ReturnType<typeof setInterval> | null = null;
@@ -128,7 +116,7 @@ export default function OnboardingPage() {
         const res = await getDataPreview();
         if (cancelled) return;
 
-        store.setDataPreview({
+        useOnboardingStore.getState().setDataPreview({
           parsingStatus: res.parsingStatus,
           parsedCount: res.parsedCount,
           totalCount: res.totalCount,
@@ -137,36 +125,50 @@ export default function OnboardingPage() {
           entries: res.entries || [],
         });
 
-        // Завершение ловим по авторитетному статусу воркера, не по счётчикам.
-        if (res.parsingStatus === 'DONE' || res.parsingStatus === 'FAILED') {
+        const hasPendingEntries = (res.entries || []).some(
+          (e) =>
+            e.processingStatus === "PENDING" ||
+            e.processingStatus === "PROCESSING"
+        );
+        const isGlobalParsing =
+          res.parsingStatus === "QUEUED" || res.parsingStatus === "PROCESSING";
+
+        if (!isGlobalParsing && !hasPendingEntries) {
           if (interval) clearInterval(interval);
         }
-      } catch (err) {
-        if (cancelled) return;
-        // Не роняем флоу из-за одного сбоя опроса, но и не молчим.
-        setError(err instanceof Error ? err.message : 'Ошибка получения статуса импорта');
+      } catch {
+        // Silent catch for background polling
       }
     };
 
     tick();
-    interval = setInterval(tick, 2500);
+    interval = setInterval(tick, 3000);
 
     return () => {
       cancelled = true;
       if (interval) clearInterval(interval);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store.step]);
+  }, [currentStep]);
 
-  // --- Handlers ---
+  // Step Navigation Helpers
+  const goToStep = (step: typeof currentStep, index: number, dir: 1 | -1) => {
+    setDirection(dir);
+    prevStepIdxRef.current = index;
+    useOnboardingStore.getState().setStepState(step, index);
+  };
+
+  // Step Handlers
   const handleSelectNiche = async (niche: NicheProfile) => {
     try {
       setActionLoading(true);
       setError(null);
-      store.setNicheProfile(niche);
-      applyState(await selectNicheStep(niche));
+      useOnboardingStore.getState().setNicheProfile(niche);
+      applyState(await selectNicheStep({ nicheProfile: niche }));
+      toast.success("Сфера бизнеса сохранена");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка сохранения ниши');
+      const msg = err instanceof Error ? err.message : "Ошибка сохранения ниши";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setActionLoading(false);
     }
@@ -176,79 +178,59 @@ export default function OnboardingPage() {
     try {
       setActionLoading(true);
       setError(null);
-      store.setBusinessProfile(data);
+      useOnboardingStore.getState().setBusinessProfile(data);
       applyState(await submitBusinessProfile(data));
+      toast.success("Профиль бизнеса успешно сохранён");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка сохранения профиля');
+      const msg =
+        err instanceof Error ? err.message : "Ошибка сохранения профиля";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleSubmitDataSource = async (userId: string) => {
-    try {
-      setActionLoading(true);
-      setError(null);
-      store.setKrishaUserId(userId);
-      // Сбрасываем прошлое превью, парсинг стартует заново.
-      store.setDataPreview({
-        parsingStatus: 'QUEUED',
-        parsedCount: 0,
-        totalCount: 0,
-        failedCount: 0,
-        error: undefined,
-        entries: [],
-      });
-      applyState(await submitDataSource({ userId }));
-      // Даже если бэкенд ещё держит step=DATA_SOURCE, показываем превью с прогрессом.
-      store.setStepState('DATA_PREVIEW', STEP_TITLES.DATA_PREVIEW.index);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'ID пользователя не найден на Krisha.kz');
-      // Возвращаем на форму ввода ID.
-      store.setStepState('DATA_SOURCE', STEP_TITLES.DATA_SOURCE.index);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Повторный запуск парсинга (после FAILED) с тем же ID.
-  const handleRetryDataSource = () => handleSubmitDataSource(store.krishaUserId);
-
-  // Вернуться к форме ввода ID (изменить ID).
-  const handleEditDataSource = () => {
-    setError(null);
-    store.setDataPreview({
-      parsingStatus: 'IDLE',
-      parsedCount: 0,
-      totalCount: 0,
-      failedCount: 0,
+  const handleScrapingStarted = () => {
+    useOnboardingStore.getState().setDataPreview({
+      parsingStatus: "PROCESSING",
       error: undefined,
-      entries: [],
     });
-    store.setStepState('DATA_SOURCE', STEP_TITLES.DATA_SOURCE.index);
   };
 
+  // Confirm knowledge base and advance to CONNECT_CHANNEL (Step 5)
   const handleConfirmDataPreview = async () => {
     try {
       setActionLoading(true);
       setError(null);
       applyState(await confirmDataPreview());
+      toast.success("База знаний подтверждена");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка подтверждения данных');
+      const msg =
+        err instanceof Error ? err.message : "Ошибка подтверждения данных";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleConnectChannel = async (type: ChannelDto['type']) => {
+  const handleConnectChannel = async (type: ChannelDto["type"]) => {
     try {
       setActionLoading(true);
       setError(null);
-      // Реальный OAuth/QR — Фаза 4. Пока помечаем канал как подключённый вручную,
-      // бэкенду достаточно непустого объекта credentials для создания Channel.
-      applyState(await submitChannel({ type, credentials: { connectedVia: 'onboarding' } }));
+      applyState(
+        await submitChannel({
+          type,
+          credentials: { connectedVia: "onboarding" },
+        }),
+      );
+      toast.success("Канал связи успешно подключён");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка подключения канала');
+      const msg =
+        err instanceof Error ? err.message : "Ошибка подключения канала";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setActionLoading(false);
     }
@@ -259,8 +241,14 @@ export default function OnboardingPage() {
       setActionLoading(true);
       setError(null);
       applyState(await submitQualification(data));
+      toast.success("Правила квалификации сохранены");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка сохранения правил квалификации');
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Ошибка сохранения правил квалификации";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setActionLoading(false);
     }
@@ -271,13 +259,14 @@ export default function OnboardingPage() {
       setActionLoading(true);
       setError(null);
       const res = await completeOnboarding();
-      // Бэкенд разрешает complete только на шаге COMPLETE_TEST и вернёт DONE.
+      toast.success("🎉 Онбординг завершен! Ассистент активирован.");
       if (!applyState(res)) {
-        // На всякий случай: если бэкенд не вернул DONE, синхронизируемся.
         applyState(await getOnboardingState());
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка активации бота');
+      const msg = err instanceof Error ? err.message : "Ошибка активации бота";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setActionLoading(false);
     }
@@ -285,102 +274,90 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
+      <div className="flex flex-col items-center justify-center py-32 gap-4">
         <div className="h-10 w-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-        <p className="text-sm text-slate-400 font-medium">Загрузка данных онбординга...</p>
+        <p className="text-sm text-slate-400 font-medium">
+          Загрузка данных онбординга...
+        </p>
       </div>
     );
   }
 
-  let currentMeta = STEP_TITLES[store.step] || STEP_TITLES.SELECT_NICHE;
-  if (store.step === 'DATA_SOURCE') {
-    if (store.nicheProfile === 'AUTO_SALES') {
-      currentMeta = {
-        index: 2,
-        title: 'Подключение Kolesa.kz',
-        subtitle: 'Укажите ID продавца или URL автосалона на Kolesa.kz для автоимпорта автомобилей',
-      };
-    } else if (store.nicheProfile === 'AUTO_SERVICE') {
-      currentMeta = {
-        index: 2,
-        title: 'Подключение источника данных СТО',
-        subtitle: 'Укажите ссылку на 2GIS, Instagram или прайс-лист для автоимпорта услуг автосервиса',
-      };
-    }
-  }
-
-  const currentStepIdx = currentMeta.index;
-  const progressPercent = Math.min(100, Math.round(((currentStepIdx + 1) / TOTAL_STEPS) * 100));
-
   return (
-    <div className="w-full flex flex-col items-center">
-      {/* Progress Bar */}
-      <div className="w-full mb-8">
-        <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground mb-2">
-          <span>Шаг {currentStepIdx + 1} из {TOTAL_STEPS}</span>
-          <span className="text-accent-brand font-bold">{progressPercent}% Завершено</span>
-        </div>
-        <div className="w-full h-2 bg-muted rounded-full overflow-hidden border border-border">
-          <div
-            className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 transition-all duration-500 ease-out"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
+    <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+      <OnboardingHeader currentStep={currentStep} error={error} />
 
-      {/* Step Title & Subtitle */}
-      <div className="text-center mb-8 max-w-xl px-1">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">{currentMeta.title}</h1>
-        <p className="text-sm text-muted-foreground mt-2">{currentMeta.subtitle}</p>
-      </div>
-
-      {/* Error Alert */}
-      {error && (
-        <div className="w-full max-w-2xl mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive-foreground text-sm flex items-start gap-3">
-          <span className="text-lg">⚠️</span>
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* Main Glass Card */}
-      <div className={`w-full ${store.step === 'SELECT_NICHE' ? 'max-w-5xl' : 'max-w-3xl'} bg-card border border-border rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl transition-all duration-300`}>
-        {store.step === 'SELECT_NICHE' && (
-          <StepSelectNiche onSelect={handleSelectNiche} loading={actionLoading} />
-        )}
-        {store.step === 'BUSINESS_PROFILE' && (
-          <StepBusinessProfile
-            initialValues={store.businessProfile}
-            onSubmit={handleSubmitBusinessProfile}
-            loading={actionLoading}
-          />
-        )}
-        {store.step === 'DATA_SOURCE' && (
-          <StepDataSource
-            initialKrishaUserId={store.krishaUserId}
-            nicheProfile={store.nicheProfile}
-            onSubmit={handleSubmitDataSource}
-            loading={actionLoading}
-          />
-        )}
-        {store.step === 'DATA_PREVIEW' && (
-          <StepDataPreview
-            dataPreview={store.dataPreview}
-            nicheProfile={store.nicheProfile}
-            onConfirm={handleConfirmDataPreview}
-            onRetry={handleRetryDataSource}
-            onEditId={handleEditDataSource}
-            loading={actionLoading}
-          />
-        )}
-        {store.step === 'CONNECT_CHANNEL' && (
-          <StepConnectChannel onConnect={handleConnectChannel} loading={actionLoading} />
-        )}
-        {store.step === 'QUALIFICATION' && (
-          <StepQualification onSubmit={handleSubmitQualification} loading={actionLoading} />
-        )}
-        {store.step === 'COMPLETE_TEST' && (
-          <StepCompleteTest onComplete={handleComplete} loading={actionLoading} />
-        )}
+      {/* Open, Unboxed Step Content Container (Consistent max-w-4xl, no width jumps) */}
+      <div className="w-full">
+        <StepTransition stepKey={currentStep} direction={direction}>
+          <div className="w-full">
+            {currentStep === "SELECT_NICHE" && (
+              <StepSelectNiche
+                onSelect={handleSelectNiche}
+                loading={actionLoading}
+              />
+            )}
+            {currentStep === "BUSINESS_PROFILE" && (
+              <div className="max-w-2xl mx-auto">
+                <StepBusinessProfile
+                  initialValues={businessProfile}
+                  onSubmit={handleSubmitBusinessProfile}
+                  onBack={() => goToStep("SELECT_NICHE", 0, -1)}
+                  loading={actionLoading}
+                />
+              </div>
+            )}
+            {currentStep === "DATA_SOURCE" && (
+              <StepKnowledgeSource
+                draft={knowledgeSource}
+                defaultProfileWebsite={businessProfile.websiteUrl}
+                dataPreview={dataPreview}
+                onDraftChange={useOnboardingStore.getState().setKnowledgeSource}
+                onScrapingStarted={handleScrapingStarted}
+                onContinue={() => goToStep("DATA_PREVIEW", 3, 1)}
+                onBack={() => goToStep("BUSINESS_PROFILE", 1, -1)}
+                loading={actionLoading}
+              />
+            )}
+            {currentStep === "DATA_PREVIEW" && (
+              <div className="max-w-3xl mx-auto">
+                <StepDataPreview
+                  dataPreview={dataPreview}
+                  onConfirm={handleConfirmDataPreview}
+                  onBack={() => goToStep("DATA_SOURCE", 2, -1)}
+                  loading={actionLoading}
+                />
+              </div>
+            )}
+            {currentStep === "CONNECT_CHANNEL" && (
+              <div className="max-w-3xl mx-auto">
+                <StepConnectChannel
+                  onConnect={handleConnectChannel}
+                  onBack={() => goToStep("DATA_PREVIEW", 3, -1)}
+                  loading={actionLoading}
+                />
+              </div>
+            )}
+            {currentStep === "QUALIFICATION" && (
+              <div className="max-w-2xl mx-auto">
+                <StepQualification
+                  onSubmit={handleSubmitQualification}
+                  onBack={() => goToStep("CONNECT_CHANNEL", 4, -1)}
+                  loading={actionLoading}
+                />
+              </div>
+            )}
+            {currentStep === "COMPLETE_TEST" && (
+              <div className="max-w-2xl mx-auto">
+                <StepCompleteTest
+                  onComplete={handleComplete}
+                  onBack={() => goToStep("QUALIFICATION", 5, -1)}
+                  loading={actionLoading}
+                />
+              </div>
+            )}
+          </div>
+        </StepTransition>
       </div>
     </div>
   );

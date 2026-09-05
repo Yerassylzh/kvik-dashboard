@@ -2,60 +2,66 @@
 
 import React from 'react';
 
-interface DemoLeadsProps {
-  niche: string;
+interface DemoLead {
+  id: string;
+  name: string;
+  phone: string;
+  service: string;
+  master: string;
+  slot: string;
+  status: 'HOT' | 'QUALIFIED' | 'WARM';
+  statusText: string;
+  time: string;
 }
 
-export function DemoLeads({ niche }: DemoLeadsProps) {
-  const isRealty = niche === 'REALTY';
+const sampleLeads: DemoLead[] = [
+  {
+    id: 'L-101',
+    name: 'Арман Сериков',
+    phone: '+7 (701) 948-22-11',
+    service: 'Стрижка + борода',
+    master: 'Мастер Ерлан',
+    slot: 'Завтра, 15:00',
+    status: 'HOT',
+    statusText: '🔥 Запись подтверждена',
+    time: '10 минут назад',
+  },
+  {
+    id: 'L-102',
+    name: 'Динара Нурланова',
+    phone: '+7 (777) 310-44-88',
+    service: 'Маникюр + покрытие',
+    master: 'Мастер Анна',
+    slot: 'Ср, 11:30',
+    status: 'QUALIFIED',
+    statusText: '🎯 Квалифицирован',
+    time: '35 минут назад',
+  },
+  {
+    id: 'L-103',
+    name: 'Бауржан Аскаров',
+    phone: '+7 (705) 555-12-34',
+    service: 'Массаж спины, 60 мин',
+    master: 'Любой свободный',
+    slot: 'Уточняется',
+    status: 'WARM',
+    statusText: '💬 Консультация ИИ',
+    time: '2 часа назад',
+  },
+  {
+    id: 'L-104',
+    name: 'Айгерим Касымова',
+    phone: '+7 (747) 888-99-00',
+    service: 'Окрашивание, сложное',
+    master: 'Мастер Сауле',
+    slot: 'Пт, 16:00',
+    status: 'QUALIFIED',
+    statusText: '🎯 Квалифицирован',
+    time: 'Вчера, 18:20',
+  },
+];
 
-  const sampleLeads = [
-    {
-      id: 'L-101',
-      name: 'Арман Сериков',
-      phone: '+7 (701) 948-22-11',
-      interest: isRealty ? '2-комн., ЖК Гагарин Парк' : 'Toyota Camry 75 (2022)',
-      budget: isRealty ? '48,500,000 ₸' : '14,800,000 ₸',
-      status: 'HOT',
-      statusText: '🔥 Показ назначен',
-      payment: isRealty ? 'Ипотека (7-20-25)' : 'Трейд-ин + Кредит',
-      time: '10 минут назад',
-    },
-    {
-      id: 'L-102',
-      name: 'Динара Нурланова',
-      phone: '+7 (777) 310-44-88',
-      interest: isRealty ? '3-комн. пентхаус, ЖК Esentai' : 'Hyundai Tucson (2023)',
-      budget: isRealty ? '120,000,000 ₸' : '17,500,000 ₸',
-      status: 'QUALIFIED',
-      statusText: '🎯 Квалифицирован',
-      payment: 'Наличный расчёт',
-      time: '35 минут назад',
-    },
-    {
-      id: 'L-103',
-      name: 'Бауржан Аскаров',
-      phone: '+7 (705) 555-12-34',
-      interest: isRealty ? '1-комн. квартира, мкр. Самал' : 'Kia Sportage (2021)',
-      budget: isRealty ? '28,000,000 ₸' : '12,200,000 ₸',
-      status: 'WARM',
-      statusText: '💬 Консультация ИИ',
-      payment: 'Ипотека Отбасы Банк',
-      time: '2 часа назад',
-    },
-    {
-      id: 'L-104',
-      name: 'Айгерим Касымова',
-      phone: '+7 (747) 888-99-00',
-      interest: isRealty ? 'Коммерция (Офис 110 кв.м)' : 'Lexus RX 350 (2020)',
-      budget: isRealty ? '85,000,000 ₸' : '26,000,000 ₸',
-      status: 'QUALIFIED',
-      statusText: '🎯 Квалифицирован',
-      payment: 'Банковский перевод',
-      time: 'Вчера, 18:20',
-    },
-  ];
-
+export function DemoLeads() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -79,8 +85,8 @@ export function DemoLeads({ niche }: DemoLeadsProps) {
             <thead className="bg-muted/50 border-b border-border text-muted-foreground font-semibold">
               <tr>
                 <th className="p-4">Клиент</th>
-                <th className="p-4">Интересующий объект</th>
-                <th className="p-4">Бюджет / Способ оплаты</th>
+                <th className="p-4">Интересующая услуга</th>
+                <th className="p-4">Мастер / Слот записи</th>
                 <th className="p-4">Статус ИИ</th>
                 <th className="p-4">Время</th>
                 <th className="p-4 text-right">Действия</th>
@@ -94,11 +100,11 @@ export function DemoLeads({ niche }: DemoLeadsProps) {
                     <div className="text-muted-foreground text-[11px] font-mono mt-0.5">{lead.phone}</div>
                   </td>
                   <td className="p-4 font-medium text-foreground">
-                    {lead.interest}
+                    {lead.service}
                   </td>
                   <td className="p-4">
-                    <div className="font-bold text-indigo-600 dark:text-indigo-400">{lead.budget}</div>
-                    <div className="text-[11px] text-muted-foreground">{lead.payment}</div>
+                    <div className="font-bold text-indigo-600 dark:text-indigo-400">{lead.master}</div>
+                    <div className="text-[11px] text-muted-foreground">{lead.slot}</div>
                   </td>
                   <td className="p-4">
                     <span
