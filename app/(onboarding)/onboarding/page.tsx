@@ -215,13 +215,21 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleConnectChannel = async (type: ChannelDto["type"]) => {
+  /**
+   * Called when user clicks "Continue" in StepConnectChannel after ≥1 channel
+   * is connected. Advances the onboarding state machine to the next step.
+   * Individual channel connections are handled inside StepConnectChannel itself
+   * via the /channels/* API endpoints.
+   */
+  const handleChannelStepContinue = async () => {
     try {
       setActionLoading(true);
       setError(null);
+      // Submit a sentinel to advance the step — actual credentials are already
+      // persisted by the individual /channels/* connect calls.
       applyState(
         await submitChannel({
-          type,
+          type: "WHATSAPP" as ChannelDto["type"],
           credentials: { connectedVia: "onboarding" },
         }),
       );
@@ -327,10 +335,10 @@ export default function OnboardingPage() {
               </div>
             )}
             {currentStep === "CONNECT_CHANNEL" && (
-              <div className="max-w-3xl mx-auto">
+              <div className="max-w-4xl mx-auto">
                 <StepConnectChannel
-                  onConnect={handleConnectChannel}
-                  loading={actionLoading}
+                  onContinue={handleChannelStepContinue}
+                  continueLoading={actionLoading}
                 />
               </div>
             )}

@@ -10,7 +10,9 @@
             "description": ""
           }
         },
-        "tags": ["App"]
+        "tags": [
+          "App"
+        ]
       }
     },
     "/health": {
@@ -22,7 +24,9 @@
             "description": ""
           }
         },
-        "tags": ["App"]
+        "tags": [
+          "App"
+        ]
       }
     },
     "/auth/register": {
@@ -48,7 +52,9 @@
           }
         },
         "summary": "Register a new business owner",
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/auth/login": {
@@ -74,7 +80,9 @@
           }
         },
         "summary": "Log in with email and password",
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/auth/refresh": {
@@ -95,7 +103,9 @@
           }
         ],
         "summary": "Rotate access and refresh tokens using HttpOnly cookie",
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/auth/logout": {
@@ -113,7 +123,9 @@
           }
         ],
         "summary": "Log out user and clear refresh token",
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/auth/me": {
@@ -134,7 +146,9 @@
           }
         ],
         "summary": "Get current user profile and workspace state",
-        "tags": ["Auth"]
+        "tags": [
+          "Auth"
+        ]
       }
     },
     "/onboarding/state": {
@@ -162,7 +176,9 @@
           }
         ],
         "summary": "Get current onboarding step (Derived State)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/niche": {
@@ -200,7 +216,9 @@
           }
         ],
         "summary": "Step 0: Select niche profile",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/business-profile": {
@@ -241,7 +259,9 @@
           }
         ],
         "summary": "Step 1: Save business profile info",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       },
       "put": {
         "operationId": "OnboardingController_updateBusinessProfile",
@@ -280,7 +300,9 @@
           }
         ],
         "summary": "Step 1: Update business profile info (PUT)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/data-source": {
@@ -322,7 +344,9 @@
           }
         ],
         "summary": "Step 2: [DEPRECATED] Submit direct listing crawl ID (deprecated in favor of 2GIS/Website/Docs)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/data-preview": {
@@ -350,7 +374,9 @@
           }
         ],
         "summary": "Step 3: Preview parsed knowledge entries and parsing progress",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/data-confirm": {
@@ -378,7 +404,9 @@
           }
         ],
         "summary": "Step 3: Confirm data is correct",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/channel": {
@@ -419,7 +447,9 @@
           }
         ],
         "summary": "Step 4: Connect a messaging channel",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/qualification": {
@@ -460,7 +490,9 @@
           }
         ],
         "summary": "Step 5: Save lead qualification rules",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/qualification-rules": {
@@ -501,7 +533,9 @@
           }
         ],
         "summary": "Step 5: Save lead qualification rules (alias)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       },
       "get": {
         "operationId": "OnboardingController_getQualificationRules",
@@ -517,7 +551,9 @@
           }
         ],
         "summary": "Get current qualification rules",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/complete": {
@@ -545,7 +581,9 @@
           }
         ],
         "summary": "Step 6: Complete onboarding and activate bot",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/website-scraping": {
@@ -579,7 +617,9 @@
           }
         ],
         "summary": "Start background website scraping (async)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/2gis-scraping": {
@@ -613,7 +653,9 @@
           }
         ],
         "summary": "Start background 2GIS catalog scraping (async)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/scraping/status": {
@@ -625,7 +667,10 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": ["website", "2gis"],
+              "enum": [
+                "website",
+                "2gis"
+              ],
               "type": "string"
             }
           }
@@ -644,7 +689,9 @@
           }
         ],
         "summary": "Get async scraping status (website or 2gis)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/knowledge-notes": {
@@ -675,7 +722,9 @@
           }
         ],
         "summary": "Save manual knowledge notes (indexed to pgvector)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/notes": {
@@ -706,7 +755,9 @@
           }
         ],
         "summary": "Save manual knowledge notes (alias)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       },
       "get": {
         "operationId": "OnboardingController_listNotes",
@@ -722,7 +773,9 @@
           }
         ],
         "summary": "List manual knowledge notes (alias)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/knowledge-notes": {
@@ -740,7 +793,9 @@
           }
         ],
         "summary": "List manual knowledge notes",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/notes/{id}": {
@@ -770,7 +825,9 @@
           }
         ],
         "summary": "Delete a note by ID",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/knowledge-documents": {
@@ -807,7 +864,9 @@
           }
         ],
         "summary": "Upload a knowledge document (async processing)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/knowledge-files": {
@@ -844,7 +903,9 @@
           }
         ],
         "summary": "Upload a knowledge document (alias)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       },
       "get": {
         "operationId": "OnboardingController_listKnowledgeFiles",
@@ -860,7 +921,9 @@
           }
         ],
         "summary": "List uploaded documents (alias)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/knowledge-documents": {
@@ -878,7 +941,9 @@
           }
         ],
         "summary": "List uploaded documents with processing status",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/step/knowledge-files/{id}": {
@@ -908,7 +973,9 @@
           }
         ],
         "summary": "Delete a knowledge file by ID",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/knowledge/{id}": {
@@ -938,7 +1005,9 @@
           }
         ],
         "summary": "Delete a knowledge entry (and its file, if any)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/knowledge/search": {
@@ -974,7 +1043,9 @@
           }
         ],
         "summary": "[Debug] Semantic vector search over knowledge chunks",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/knowledge-entries": {
@@ -1022,7 +1093,9 @@
           }
         ],
         "summary": "List knowledge base entries (scraped pages, 2GIS catalog, files, notes) with pagination",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/knowledge-entries/{id}": {
@@ -1062,7 +1135,9 @@
           }
         ],
         "summary": "Get full details of a specific knowledge entry (including raw & structuredText data)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
       }
     },
     "/onboarding/business-context": {
@@ -1090,7 +1165,339 @@
           }
         ],
         "summary": "Get AI-extracted business summary (businessContext JSON for system prompt review)",
-        "tags": ["Onboarding"]
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/channels/meta/config": {
+      "get": {
+        "operationId": "ChannelsController_getMetaConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetaConfigResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get public Meta App configuration for Facebook JS SDK",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels": {
+      "get": {
+        "operationId": "ChannelsController_listChannels",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelsListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all messaging channels for current workspace",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/{type}": {
+      "get": {
+        "operationId": "ChannelsController_getChannel",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "WHATSAPP",
+                "INSTAGRAM",
+                "TELEGRAM"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Channel not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get details and status for a specific channel type",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/whatsapp/connect": {
+      "post": {
+        "operationId": "ChannelsController_connectWhatsApp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectWhatsAppDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelConnectResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or code exchange error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Connect WhatsApp channel via Meta Embedded Signup code",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/instagram/connect": {
+      "post": {
+        "operationId": "ChannelsController_connectInstagram",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectInstagramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelConnectResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or OAuth exchange error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Connect Instagram Business channel via Facebook Login OAuth code",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/telegram/connect": {
+      "post": {
+        "operationId": "ChannelsController_connectTelegram",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectTelegramDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelConnectResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid bot token or webhook error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Connect Telegram bot via BotFather token and register webhook",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/{type}/disconnect": {
+      "post": {
+        "operationId": "ChannelsController_disconnectChannel",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "WHATSAPP",
+                "INSTAGRAM",
+                "TELEGRAM"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelDisconnectResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Channel not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Disconnect channel and clean up webhooks",
+        "tags": [
+          "Channels"
+        ]
+      }
+    },
+    "/channels/{type}/health": {
+      "get": {
+        "operationId": "ChannelsController_checkChannelHealth",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "WHATSAPP",
+                "INSTAGRAM",
+                "TELEGRAM"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelHealthResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Channel not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check channel health and webhook status",
+        "tags": [
+          "Channels"
+        ]
       }
     }
   },
@@ -1152,7 +1559,13 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
             "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
           },
           "parsedCount": {
@@ -1173,7 +1586,11 @@
             "example": "All listings failed to parse"
           }
         },
-        "required": ["step", "stepIndex", "completed"]
+        "required": [
+          "step",
+          "stepIndex",
+          "completed"
+        ]
       },
       "SelectNicheDto": {
         "type": "object",
@@ -1191,7 +1608,9 @@
             "example": "BEAUTY"
           }
         },
-        "required": ["nicheProfile"]
+        "required": [
+          "nicheProfile"
+        ]
       },
       "BusinessProfileDto": {
         "type": "object",
@@ -1229,7 +1648,13 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
             "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
           },
           "parsedCount": {
@@ -1262,7 +1687,13 @@
             "example": false
           }
         },
-        "required": ["step", "stepIndex", "completed", "code", "message"]
+        "required": [
+          "step",
+          "stepIndex",
+          "completed",
+          "code",
+          "message"
+        ]
       },
       "DataPreviewResponseDto": {
         "type": "object",
@@ -1276,7 +1707,13 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
             "example": "PROCESSING"
           },
           "parsedCount": {
@@ -1311,10 +1748,16 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ]
           }
         },
-        "required": ["type"]
+        "required": [
+          "type"
+        ]
       },
       "QualificationDto": {
         "type": "object",
@@ -1383,7 +1826,12 @@
           },
           "processingStatus": {
             "type": "string",
-            "enum": ["PENDING", "PROCESSING", "COMPLETED", "FAILED"],
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "COMPLETED",
+              "FAILED"
+            ],
             "example": "COMPLETED"
           },
           "active": {
@@ -1441,7 +1889,12 @@
             "example": 0
           }
         },
-        "required": ["entries", "total", "limit", "offset"]
+        "required": [
+          "entries",
+          "total",
+          "limit",
+          "offset"
+        ]
       },
       "BusinessContextResponseDto": {
         "type": "object",
@@ -1457,14 +1910,20 @@
             "nullable": true
           },
           "keyDifferentiators": {
-            "example": ["Eco-friendly organic products", "Online booking 24/7"],
+            "example": [
+              "Eco-friendly organic products",
+              "Online booking 24/7"
+            ],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "servicesOffered": {
-            "example": ["Haircut | from 5000 KZT", "Manicure | 4000 KZT"],
+            "example": [
+              "Haircut | from 5000 KZT",
+              "Manicure | 4000 KZT"
+            ],
             "type": "array",
             "items": {
               "type": "string"
@@ -1476,7 +1935,9 @@
             "nullable": true
           },
           "restrictions": {
-            "example": ["No pet grooming services"],
+            "example": [
+              "No pet grooming services"
+            ],
             "type": "array",
             "items": {
               "type": "string"
@@ -1520,6 +1981,231 @@
           "cancellationPolicy",
           "contactInfo",
           "workingHours"
+        ]
+      },
+      "MetaConfigResponseDto": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "nullable": true,
+            "example": "123456789012345"
+          },
+          "whatsappConfigId": {
+            "type": "string",
+            "nullable": true,
+            "example": "987654321098765"
+          },
+          "apiVersion": {
+            "type": "string",
+            "example": "v26.0"
+          },
+          "instagramScopes": {
+            "example": [
+              "instagram_basic",
+              "instagram_manage_messages",
+              "pages_show_list",
+              "pages_manage_metadata"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "apiVersion",
+          "instagramScopes"
+        ]
+      },
+      "ChannelDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a3b8e4f1-6c2d-4e5f-9a1b-2c3d4e5f6a7b"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ],
+            "example": "WHATSAPP"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CONNECTED",
+              "DISCONNECTED",
+              "ERROR",
+              "REVOKED"
+            ],
+            "example": "CONNECTED"
+          },
+          "externalAccountId": {
+            "type": "object",
+            "nullable": true,
+            "example": "100234567890123"
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "example": {
+              "wabaId": "100234567890123",
+              "phoneNumberId": "105987654321098",
+              "displayPhoneNumber": "+7 777 123 4567"
+            }
+          },
+          "tokenExpiresAt": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "lastError": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-07T12:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-07T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "status",
+          "active",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ChannelsListResponseDto": {
+        "type": "object",
+        "properties": {
+          "channels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChannelDto"
+            }
+          }
+        },
+        "required": [
+          "channels"
+        ]
+      },
+      "ConnectWhatsAppDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ChannelConnectResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "channels.whatsapp_connected"
+          },
+          "message": {
+            "type": "string",
+            "example": "WhatsApp channel successfully connected"
+          },
+          "channel": {
+            "$ref": "#/components/schemas/ChannelDto"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "channel"
+        ]
+      },
+      "ConnectInstagramDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ConnectTelegramDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ChannelDisconnectResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "channels.channel_disconnected"
+          },
+          "message": {
+            "type": "string",
+            "example": "Channel successfully disconnected"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ],
+            "example": "TELEGRAM"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "type"
+        ]
+      },
+      "ChannelHealthResponseDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ],
+            "example": "TELEGRAM"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CONNECTED",
+              "DISCONNECTED",
+              "ERROR",
+              "REVOKED"
+            ],
+            "example": "CONNECTED"
+          },
+          "isHealthy": {
+            "type": "boolean",
+            "example": true
+          },
+          "details": {
+            "type": "object",
+            "example": {
+              "webhookUrl": "https://api.kvik.kz/webhooks/telegram/12345",
+              "pendingUpdateCount": 0
+            }
+          }
+        },
+        "required": [
+          "type",
+          "status",
+          "isHealthy"
         ]
       }
     }

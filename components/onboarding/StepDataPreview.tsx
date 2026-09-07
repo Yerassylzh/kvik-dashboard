@@ -247,16 +247,9 @@ export function StepDataPreview({
 
       {/* Source Filter Tabs & Entries List */}
       <FadeIn delay={0.1} className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
-            {t("knowledge.preview.entries_title", {
-              count: filteredEntries.length,
-            })}
-          </h3>
-
-          {/* Clean Segmented Filter Tabs without scrollbars */}
-          {entries.length > 0 && (
-            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-1 rounded-xl bg-muted/40 border border-border/70">
+        {/* Clean Segmented Filter Tabs without scrollbars */}
+        {entries.length > 0 && (
+          <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-1 rounded-xl bg-muted/40 border border-border/70 w-full sm:w-fit">
               {FILTER_TABS.map((tab) => {
                 const count =
                   tab.id === "ALL"
@@ -295,7 +288,6 @@ export function StepDataPreview({
               })}
             </div>
           )}
-        </div>
 
         {/* Entries List */}
         <div className="themed-scroll space-y-3 max-h-[30rem] overflow-y-auto pr-1">

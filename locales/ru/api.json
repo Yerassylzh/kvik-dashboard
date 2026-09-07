@@ -20,7 +20,9 @@
     "data_confirmed": "Данные объявлений успешно подтверждены",
     "channel_connected": "Канал успешно подключен",
     "qualification_saved": "Правила квалификации сохранены",
-    "completed": "Онбординг успешно завершен"
+    "completed": "Онбординг успешно завершен",
+    "niche_deprecated": "Выбранная ниша устарела и больше не поддерживается. Пожалуйста, выберите нишу с записью по календарю.",
+    "data_source_deprecated": "Парсинг объявлений устарел. Используйте 2ГИС, сайт, документы или заметки."
   },
   "workspace": {
     "not_found": "Рабочее пространство не найдено",
@@ -37,5 +39,23 @@
     "internal_error": "Произошла внутренняя ошибка сервера. Пожалуйста, повторите попытку позже.",
     "service_unavailable": "Сервис временно недоступен",
     "too_many_requests": "Слишком много запросов. Пожалуйста, подождите."
+  },
+  "channels": {
+    "whatsapp_connected": "WhatsApp успешно подключен",
+    "instagram_connected": "Instagram успешно подключен",
+    "telegram_connected": "Telegram-бот успешно подключен",
+    "channel_disconnected": "Канал успешно отключен",
+    "channel_not_found": "Канал не найден или не подключен",
+    "whatsapp_code_expired": "Срок действия кода авторизации WhatsApp истек. Пожалуйста, повторите попытку.",
+    "whatsapp_registration_failed": "Не удалось зарегистрировать номер телефона в WhatsApp Cloud API.",
+    "whatsapp_subscription_failed": "Не удалось оформить подписку на вебхуки WhatsApp.",
+    "instagram_no_page_found": "Не найдено доступных страниц Facebook для данного аккаунта.",
+    "instagram_no_business_account": "К выбранной странице Facebook не привязан бизнес-аккаунт Instagram.",
+    "instagram_token_exchange_failed": "Не удалось обменять токен доступа Instagram.",
+    "instagram_pages_fetch_failed": "Не удалось получить список страниц Facebook.",
+    "instagram_subscription_failed": "Не удалось оформить подписку на вебхуки Instagram.",
+    "telegram_invalid_token": "Указан неверный токен Telegram-бота. Проверьте токен в @BotFather.",
+    "telegram_webhook_failed": "Не удалось установить вебхук для Telegram-бота.",
+    "meta_config_missing": "Конфигурация Meta App ID и Secret не настроена на сервере."
   }
 }

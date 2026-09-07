@@ -1,1 +1,64 @@
-{}
+{
+  "onboarding.channel.recommended_badge": "РЕКОМЕНДУЕТСЯ",
+  "onboarding.channel.direct_badge": "DIRECT",
+  "onboarding.channel.telegram_badge": "ПРОСТО",
+
+  "onboarding.channel.whatsapp_title": "WhatsApp Business",
+  "onboarding.channel.whatsapp_desc": "Автоответы в WhatsApp 24/7 по вашей базе знаний",
+  "onboarding.channel.instagram_title": "Instagram Direct",
+  "onboarding.channel.instagram_desc": "Авто-ответы на сообщения в Direct и комментарии",
+  "onboarding.channel.telegram_title": "Telegram Bot",
+  "onboarding.channel.telegram_desc": "Подключите бота: клиенты пишут вашему боту в Telegram",
+
+  "onboarding.channel.whatsapp_connect_btn": "Подключить WhatsApp",
+  "onboarding.channel.instagram_connect_btn": "Подключить Instagram",
+  "onboarding.channel.telegram_connect_btn": "Подключить Telegram",
+
+  "onboarding.channel.status_connected": "Подключён",
+  "onboarding.channel.status_connecting": "Подключение...",
+  "onboarding.channel.status_error": "Ошибка подключения",
+  "onboarding.channel.status_not_connected": "Не подключён",
+
+  "onboarding.channel.disconnect_btn": "Отключить",
+
+  "onboarding.channel.connected_count": "{count, plural, one {# канал подключён} few {# канала подключено} many {# каналов подключено} other {# канала подключено}}",
+  "onboarding.channel.at_least_one_hint": "Подключите хотя бы один канал, чтобы продолжить",
+
+  "onboarding.channel.continue_btn": "Продолжить →",
+  "onboarding.channel.continue_loading": "Сохранение...",
+
+  "onboarding.channel.footer_hint": "Нужно подключить хотя бы один канал. Дополнительные каналы можно добавить позже в настройках.",
+
+  "onboarding.channel.whatsapp_flow_title": "Подключение WhatsApp Business",
+  "onboarding.channel.whatsapp_flow_desc": "Пройдите быструю авторизацию через Meta. Откроется всплывающее окно — выберите ваш WhatsApp Business аккаунт и номер телефона.",
+  "onboarding.channel.whatsapp_flow_req1": "Аккаунт WhatsApp Business (не личный)",
+  "onboarding.channel.whatsapp_flow_req2": "Доступ администратора к Meta Business Manager",
+  "onboarding.channel.whatsapp_flow_btn": "Войти через Meta →",
+  "onboarding.channel.whatsapp_flow_loading": "Загрузка Meta SDK...",
+  "onboarding.channel.whatsapp_flow_connecting": "Подключение...",
+  "onboarding.channel.whatsapp_flow_popup_open": "Ожидание авторизации...",
+  "onboarding.channel.whatsapp_flow_hint": "Вы будете перенаправлены на страницу авторизации Meta",
+  "onboarding.channel.whatsapp_flow_sdk_error": "Не удалось загрузить Facebook SDK. Проверьте соединение.",
+  "onboarding.channel.whatsapp_flow_missing_data": "Не удалось получить данные WABA. Попробуйте ещё раз.",
+  "onboarding.channel.whatsapp_flow_error": "Ошибка подключения WhatsApp. Попробуйте снова.",
+
+  "onboarding.channel.instagram_flow_title": "Подключение Instagram Direct",
+  "onboarding.channel.instagram_flow_prereq_title": "Требования",
+  "onboarding.channel.instagram_flow_prereq1": "Instagram-аккаунт должен быть бизнес-аккаунтом или аккаунтом автора (не личным)",
+  "onboarding.channel.instagram_flow_prereq2": "Аккаунт Instagram должен быть привязан к странице Facebook, которой вы управляете",
+  "onboarding.channel.instagram_flow_btn": "Войти через Meta →",
+  "onboarding.channel.instagram_flow_connecting": "Подключение...",
+  "onboarding.channel.instagram_flow_popup_open": "Ожидание авторизации...",
+  "onboarding.channel.instagram_flow_hint": "Откроется всплывающее окно входа в Facebook",
+  "onboarding.channel.instagram_flow_error": "Ошибка подключения Instagram. Попробуйте снова.",
+
+  "onboarding.channel.telegram_flow_title": "Подключение Telegram-бота",
+  "onboarding.channel.telegram_flow_step1": "Откройте Telegram и напишите @BotFather",
+  "onboarding.channel.telegram_flow_step2": "Отправьте /newbot — выберите название и юзернейм бота (должен заканчиваться на _bot)",
+  "onboarding.channel.telegram_flow_step3": "Скопируйте токен, который выдаст BotFather, и вставьте ниже",
+  "onboarding.channel.telegram_flow_token_label": "Токен бота от @BotFather",
+  "onboarding.channel.telegram_flow_token_placeholder": "123456789:AAFlkjhsdf897sdf_example",
+  "onboarding.channel.telegram_flow_btn": "Подключить бота →",
+  "onboarding.channel.telegram_flow_connecting": "Проверка токена...",
+  "onboarding.channel.telegram_flow_error": "Ошибка подключения Telegram-бота. Проверьте токен."
+}

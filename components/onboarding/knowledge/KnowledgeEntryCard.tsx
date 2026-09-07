@@ -79,14 +79,28 @@ function extractServicesList(
 function cleanEntryTitle(
   entry: KnowledgeEntry,
   default2gisLabel: string,
-  defaultNoteLabel: string
+  defaultNoteLabel: string,
+  defaultWebsiteLabel: string
 ): string {
   if (entry.type === "MANUAL_NOTE") {
     // For manual notes, don't use the whole note text as title
     const d = (entry.data || {}) as Record<string, any>;
-    if (entry.title && entry.title.length < 50) return entry.title;
-    if (d.title && typeof d.title === "string" && d.title.length < 50) return d.title;
+    if (entry.title && entry.title.length < 50 && !entry.title.includes("\n")) return entry.title;
+    if (d.title && typeof d.title === "string" && d.title.length < 50 && !d.title.includes("\n")) return d.title;
     return defaultNoteLabel;
+  }
+
+  if (entry.type === "WEBSITE_CONTENT") {
+    // For website content, do not use the full description, just state it is from website
+    if (entry.sourceUrl) {
+      try {
+        const hostname = new URL(entry.sourceUrl).hostname.replace(/^www\./, "");
+        if (hostname) return `${defaultWebsiteLabel} (${hostname})`;
+      } catch {
+        // Fallback to default
+      }
+    }
+    return defaultWebsiteLabel;
   }
 
   const data = (entry.data || {}) as Record<string, any>;
@@ -133,7 +147,13 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
   const typeLabel = t(typeConfig.translationKey as any) || entry.type;
   const default2gisTitle = t("knowledge.preview.twogis_catalog_label");
   const defaultNoteTitle = t("knowledge.preview.note_card_title");
-  const title = cleanEntryTitle(entry, default2gisTitle, defaultNoteTitle);
+  const defaultWebsiteTitle = t("knowledge.preview.website_label");
+  const title = cleanEntryTitle(
+    entry,
+    default2gisTitle,
+    defaultNoteTitle,
+    defaultWebsiteTitle
+  );
 
   const data = (entry.data || {}) as Record<string, any>;
   const structuredText = extractStructuredText(entry);

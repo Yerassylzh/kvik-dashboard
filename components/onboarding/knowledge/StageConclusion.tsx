@@ -317,44 +317,53 @@ export function StageConclusion({
       {/* Structured Knowledge Entries Preview */}
       {!isParsing && (
         <FadeIn delay={0.2} className="space-y-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
-              {t("knowledge.preview.entries_title", {
-                count: filteredEntries.length,
-              })}
-            </h3>
-            {entries.length > 0 && (
-              <div className="flex gap-1 text-[11px] flex-wrap">
-                {[
-                  "ALL",
-                  "LOCAL_LISTING",
-                  "WEBSITE_CONTENT",
-                  "DOCUMENT",
-                  "MANUAL_NOTE",
-                ].map((k) => {
-                  const labelKey = TYPE_FILTER_KEYS[k];
-                  const label = labelKey ? t(labelKey as any) : k;
-                  return (
-                    <button
-                      key={k}
-                      type="button"
-                      onClick={() => {
-                        setFilterType(k);
-                        setPage(1);
-                      }}
-                      className={`px-2.5 py-0.5 rounded-lg font-medium transition-colors cursor-pointer ${
-                        filterType === k
-                          ? "bg-primary text-primary-foreground font-semibold shadow-xs"
-                          : "bg-muted text-muted-foreground hover:text-foreground"
+          {entries.length > 0 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-1 rounded-xl bg-muted/40 border border-border/70 w-full sm:w-fit">
+              {[
+                "ALL",
+                "LOCAL_LISTING",
+                "WEBSITE_CONTENT",
+                "DOCUMENT",
+                "MANUAL_NOTE",
+              ].map((k) => {
+                const count =
+                  k === "ALL"
+                    ? entries.length
+                    : entries.filter((e) => e.type === k).length;
+                if (count === 0 && k !== "ALL") return null;
+
+                const labelKey = TYPE_FILTER_KEYS[k];
+                const label = labelKey ? t(labelKey as any) : k;
+                const isActive = filterType === k;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => {
+                      setFilterType(k);
+                      setPage(1);
+                    }}
+                    className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 select-none ${
+                      isActive
+                        ? "bg-card text-foreground font-semibold shadow-xs border border-border"
+                        : "text-muted-foreground hover:text-foreground hover:bg-card/40"
+                    }`}
+                  >
+                    <span>{label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Entries List */}
           <div className="themed-scroll space-y-3 max-h-[26rem] overflow-y-auto pr-1">
