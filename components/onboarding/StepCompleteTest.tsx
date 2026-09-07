@@ -7,13 +7,11 @@ import { motion } from "motion/react";
 
 interface StepCompleteTestProps {
   onComplete: () => void;
-  onBack?: () => void;
   loading: boolean;
 }
 
 export function StepCompleteTest({
   onComplete,
-  onBack,
   loading,
 }: StepCompleteTestProps) {
   const t = useTranslations("onboarding");
@@ -102,21 +100,12 @@ export function StepCompleteTest({
         </form>
       </FadeIn>
 
-      {/* Finish CTA & Back button */}
-      <FadeIn delay={0.15} className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-full sm:w-auto py-3.5 px-5 bg-muted hover:bg-muted/80 text-foreground border border-border font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer"
-          >
-            ← Назад
-          </button>
-        )}
+      {/* Finish CTA */}
+      <FadeIn delay={0.15} className="pt-2">
         <button
           onClick={onComplete}
           disabled={loading}
-          className="w-full sm:flex-1 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold text-xs sm:text-sm rounded-xl hover:from-emerald-600 hover:to-cyan-600 shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold text-sm rounded-xl hover:from-emerald-600 hover:to-cyan-600 shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
         >
           {loading ? (
             <>

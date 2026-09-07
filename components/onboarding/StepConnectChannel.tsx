@@ -8,13 +8,11 @@ import { InteractiveCard } from "@/components/ui/motion/InteractiveCard";
 
 interface StepConnectChannelProps {
   onConnect: (type: ChannelDto["type"]) => void;
-  onBack?: () => void;
   loading: boolean;
 }
 
 export function StepConnectChannel({
   onConnect,
-  onBack,
   loading,
 }: StepConnectChannelProps) {
   const t = useTranslations("onboarding");
@@ -83,17 +81,8 @@ export function StepConnectChannel({
         </InteractiveCard>
       </FadeIn>
 
-      <FadeIn delay={0.15} className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-        {onBack ? (
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-full sm:w-auto text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer py-2 px-3 rounded-lg hover:bg-muted/60 transition-colors"
-          >
-            ← Назад к базе знаний
-          </button>
-        ) : <div />}
-        <p className="text-[11px] text-muted-foreground text-center sm:text-right">
+      <FadeIn delay={0.15} className="pt-2 text-center">
+        <p className="text-[11px] text-muted-foreground">
           {t("channel.footer_hint")}
         </p>
       </FadeIn>

@@ -118,10 +118,13 @@ onboarding.knowledge.global_btn_continue
 onboarding.knowledge.global_btn_skip
 onboarding.knowledge.notes.btn_add_note
 onboarding.knowledge.notes.btn_back
+onboarding.knowledge.notes.btn_check_kb
 onboarding.knowledge.notes.btn_next
 onboarding.knowledge.notes.btn_save
+onboarding.knowledge.notes.btn_save_and_proceed
 onboarding.knowledge.notes.btn_saving
 onboarding.knowledge.notes.btn_skip
+onboarding.knowledge.notes.btn_skip_to_check
 onboarding.knowledge.notes.delete_note
 onboarding.knowledge.notes.desc
 onboarding.knowledge.notes.error_save
@@ -153,6 +156,7 @@ onboarding.knowledge.preview.error_failed_desc
 onboarding.knowledge.preview.error_failed_title
 onboarding.knowledge.preview.expand_less
 onboarding.knowledge.preview.expand_more
+onboarding.knowledge.preview.extracted_content
 onboarding.knowledge.preview.files_count
 onboarding.knowledge.preview.files_uploaded
 onboarding.knowledge.preview.filter_all
@@ -165,6 +169,7 @@ onboarding.knowledge.preview.loading_title
 onboarding.knowledge.preview.no_files
 onboarding.knowledge.preview.no_notes
 onboarding.knowledge.preview.not_added
+onboarding.knowledge.preview.note_card_title
 onboarding.knowledge.preview.note_label
 onboarding.knowledge.preview.notes_count
 onboarding.knowledge.preview.notes_saved

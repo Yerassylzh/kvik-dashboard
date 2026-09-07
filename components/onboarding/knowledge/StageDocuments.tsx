@@ -16,7 +16,6 @@ interface StageDocumentsProps {
   onAddUploadedFile: (file: UploadedFileItem) => void;
   onRemoveUploadedFile?: (index: number) => void;
   onNext: () => void;
-  onPrev: () => void;
 }
 
 function formatBytes(size: number): string {
@@ -39,7 +38,6 @@ export function StageDocuments({
   onAddUploadedFile,
   onRemoveUploadedFile,
   onNext,
-  onPrev,
 }: StageDocumentsProps) {
   const t = useTranslations("onboarding");
   const toast = useToast();
@@ -311,15 +309,7 @@ export function StageDocuments({
       )}
 
       {/* Stage Step Actions */}
-      <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="w-full sm:w-auto text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer py-2 px-3 rounded-lg hover:bg-muted/60 transition-colors"
-        >
-          ← Назад к сайту
-        </button>
-
+      <div className="pt-4 border-t border-border flex items-center justify-end">
         <button
           type="button"
           onClick={onNext}

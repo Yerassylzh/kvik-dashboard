@@ -15,7 +15,6 @@ interface StageNotesProps {
   onAddNote: (note: string) => void;
   onRemoveNote?: (index: number) => void;
   onNext: () => void;
-  onPrev: () => void;
   hasAnySource: boolean;
 }
 
@@ -34,7 +33,6 @@ export function StageNotes({
   onAddNote,
   onRemoveNote,
   onNext,
-  onPrev,
   hasAnySource,
 }: StageNotesProps) {
   const t = useTranslations("onboarding");
@@ -107,23 +105,13 @@ export function StageNotes({
     };
   }, []);
 
-  const handleSaveNote = async () => {
-    const trimmed = currentNote.trim();
-    if (!trimmed) {
-      toast.error("Пожалуйста, введите текст заметки");
-      return;
-    }
+  const saveSingleNote = async (text: string): Promise<boolean> => {
+    const trimmed = text.trim();
+    if (!trimmed) return true;
 
-    setSubmitting(true);
     try {
       const res = await addKnowledgeNote({ notes: [trimmed] });
-
-      // Immediately add to parent state (optimistic)
       onAddNote(trimmed);
-      setCurrentNote("");
-      toast.success("Заметка сохранена! ИИ обрабатывает её в фоне.");
-
-      // Register returned notes for status tracking
       if (res?.notes?.length) {
         setNoteStatuses((prev) => {
           const next = { ...prev };
@@ -134,12 +122,50 @@ export function StageNotes({
         });
         startPolling();
       }
+      return true;
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : t("knowledge.notes.error_save")
       );
+      return false;
+    }
+  };
+
+  const handleSaveNote = async () => {
+    const trimmed = currentNote.trim();
+    if (!trimmed) {
+      toast.error("Пожалуйста, введите текст заметки");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const ok = await saveSingleNote(trimmed);
+      if (ok) {
+        setCurrentNote("");
+        toast.success("Заметка сохранена! ИИ обрабатывает её в фоне.");
+      }
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleProceed = async () => {
+    const trimmed = currentNote.trim();
+    if (trimmed) {
+      setSubmitting(true);
+      try {
+        const ok = await saveSingleNote(trimmed);
+        if (ok) {
+          setCurrentNote("");
+          toast.success("Заметка сохранена! ИИ обрабатывает её в фоне.");
+          onNext();
+        }
+      } finally {
+        setSubmitting(false);
+      }
+    } else {
+      onNext();
     }
   };
 
@@ -148,6 +174,7 @@ export function StageNotes({
   };
 
   const hasNotes = savedNotes.length > 0;
+  const hasTypedNote = Boolean(currentNote.trim());
 
   const pendingCount = Object.values(noteStatuses).filter(
     (n) => n.processingStatus === "PENDING" || n.processingStatus === "PROCESSING"
@@ -280,29 +307,31 @@ export function StageNotes({
       )}
 
       {/* Stage Step Actions */}
-      <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="pt-4 border-t border-border flex items-center justify-end">
         <button
           type="button"
-          onClick={onPrev}
-          className="w-full sm:w-auto text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer py-2 px-3 rounded-lg hover:bg-muted/60 transition-colors"
-        >
-          ← Назад к документам
-        </button>
-
-        <button
-          type="button"
-          onClick={onNext}
+          onClick={handleProceed}
+          disabled={submitting}
           className={`w-full sm:w-auto py-3.5 px-6 font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 ${
-            hasAnySource || hasNotes
+            hasAnySource || hasNotes || hasTypedNote
               ? "bg-primary hover:bg-primary/90 text-primary-foreground"
               : "bg-muted hover:bg-muted/80 text-foreground border border-border"
           }`}
         >
-          <span>
-            {hasAnySource || hasNotes
-              ? "Проверить базу знаний →"
-              : "Пропустить и перейти к проверке →"}
-          </span>
+          {submitting ? (
+            <>
+              <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              <span>{t("knowledge.notes.btn_saving")}</span>
+            </>
+          ) : (
+            <span>
+              {hasTypedNote
+                ? t("knowledge.notes.btn_save_and_proceed")
+                : hasAnySource || hasNotes
+                ? t("knowledge.notes.btn_check_kb")
+                : t("knowledge.notes.btn_skip_to_check")}
+            </span>
+          )}
         </button>
       </div>
     </div>

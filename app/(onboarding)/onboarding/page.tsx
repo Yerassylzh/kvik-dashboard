@@ -302,7 +302,6 @@ export default function OnboardingPage() {
                 <StepBusinessProfile
                   initialValues={businessProfile}
                   onSubmit={handleSubmitBusinessProfile}
-                  onBack={() => goToStep("SELECT_NICHE", 0, -1)}
                   loading={actionLoading}
                 />
               </div>
@@ -315,7 +314,6 @@ export default function OnboardingPage() {
                 onDraftChange={useOnboardingStore.getState().setKnowledgeSource}
                 onScrapingStarted={handleScrapingStarted}
                 onContinue={() => goToStep("DATA_PREVIEW", 3, 1)}
-                onBack={() => goToStep("BUSINESS_PROFILE", 1, -1)}
                 loading={actionLoading}
               />
             )}
@@ -324,7 +322,6 @@ export default function OnboardingPage() {
                 <StepDataPreview
                   dataPreview={dataPreview}
                   onConfirm={handleConfirmDataPreview}
-                  onBack={() => goToStep("DATA_SOURCE", 2, -1)}
                   loading={actionLoading}
                 />
               </div>
@@ -333,7 +330,6 @@ export default function OnboardingPage() {
               <div className="max-w-3xl mx-auto">
                 <StepConnectChannel
                   onConnect={handleConnectChannel}
-                  onBack={() => goToStep("DATA_PREVIEW", 3, -1)}
                   loading={actionLoading}
                 />
               </div>
@@ -342,7 +338,6 @@ export default function OnboardingPage() {
               <div className="max-w-2xl mx-auto">
                 <StepQualification
                   onSubmit={handleSubmitQualification}
-                  onBack={() => goToStep("CONNECT_CHANNEL", 4, -1)}
                   loading={actionLoading}
                 />
               </div>
@@ -351,7 +346,6 @@ export default function OnboardingPage() {
               <div className="max-w-2xl mx-auto">
                 <StepCompleteTest
                   onComplete={handleComplete}
-                  onBack={() => goToStep("QUALIFICATION", 5, -1)}
                   loading={actionLoading}
                 />
               </div>

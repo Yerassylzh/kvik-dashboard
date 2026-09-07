@@ -20,7 +20,6 @@ export interface KnowledgePreviewState {
 interface StepDataPreviewProps {
   dataPreview: KnowledgePreviewState;
   onConfirm: () => void;
-  onBack?: () => void;
   loading: boolean;
 }
 
@@ -76,13 +75,12 @@ function ContextRow({
 export function StepDataPreview({
   dataPreview,
   onConfirm,
-  onBack,
   loading,
 }: StepDataPreviewProps) {
   const t = useTranslations("onboarding");
   const { parsingStatus, error } = dataPreview;
   const [entries, setEntries] = useState<KnowledgeEntry[]>(
-    dataPreview.entries || [],
+    dataPreview.entries || []
   );
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("ALL");
   const [page, setPage] = useState(1);
@@ -146,12 +144,12 @@ export function StepDataPreview({
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredEntries.length / ITEMS_PER_PAGE),
+    Math.ceil(filteredEntries.length / ITEMS_PER_PAGE)
   );
   const safePage = Math.min(Math.max(1, page), totalPages);
   const visible = filteredEntries.slice(
     (safePage - 1) * ITEMS_PER_PAGE,
-    safePage * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
   );
 
   if (isFailed) {
@@ -165,15 +163,6 @@ export function StepDataPreview({
           <p className="text-xs mt-1.5 opacity-90">
             {error || t("knowledge.preview.error_failed_desc")}
           </p>
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              className="mt-4 px-4 py-2 bg-background border border-border text-foreground text-xs font-semibold rounded-xl hover:bg-muted cursor-pointer"
-            >
-              {t("knowledge.preview.btn_back_to_sources")}
-            </button>
-          )}
         </div>
       </FadeIn>
     );
@@ -202,9 +191,12 @@ export function StepDataPreview({
 
   return (
     <div className="space-y-6">
-      {/* Background Processing Banner */}
+      {/* Background Processing Notice */}
       {isBackgroundBusy && entries.length > 0 && (
-        <FadeIn delay={0.02} className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-3 text-xs text-foreground shadow-xs">
+        <FadeIn
+          delay={0.02}
+          className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-3 text-xs text-foreground shadow-xs"
+        >
           <div className="h-4 w-4 border-2 border-accent-brand/40 border-t-accent-brand rounded-full animate-spin flex-shrink-0" />
           <span>{t("knowledge.preview.bg_processing_banner")}</span>
         </FadeIn>
@@ -255,16 +247,16 @@ export function StepDataPreview({
 
       {/* Source Filter Tabs & Entries List */}
       <FadeIn delay={0.1} className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">
             {t("knowledge.preview.entries_title", {
               count: filteredEntries.length,
             })}
           </h3>
 
-          {/* Source Tabs Filter */}
+          {/* Clean Segmented Filter Tabs without scrollbars */}
           {entries.length > 0 && (
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-1 rounded-xl bg-muted/40 border border-border/70">
               {FILTER_TABS.map((tab) => {
                 const count =
                   tab.id === "ALL"
@@ -281,16 +273,20 @@ export function StepDataPreview({
                       setSelectedFilter(tab.id);
                       setPage(1);
                     }}
-                    className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer flex items-center gap-1 flex-shrink-0 ${
+                    className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 select-none ${
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-xs"
-                        : "bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted"
+                        ? "bg-card text-foreground font-semibold shadow-xs border border-border"
+                        : "text-muted-foreground hover:text-foreground hover:bg-card/40"
                     }`}
                   >
                     <span>{tab.icon}</span>
                     <span>{t(tab.labelKey as any)}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
                     >
                       {count}
                     </span>
@@ -301,8 +297,8 @@ export function StepDataPreview({
           )}
         </div>
 
-        {/* Entries Grid */}
-        <div className="themed-scroll space-y-3 max-h-[28rem] overflow-y-auto pr-1">
+        {/* Entries List */}
+        <div className="themed-scroll space-y-3 max-h-[30rem] overflow-y-auto pr-1">
           {visible.length > 0 ? (
             visible.map((entry) => (
               <KnowledgeEntryCard key={entry.id} entry={entry} />
@@ -320,7 +316,6 @@ export function StepDataPreview({
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
               <button
                 key={pg}
-                type="button"
                 onClick={() => setPage(pg)}
                 className={`h-7 w-7 rounded-lg font-bold text-xs transition-colors cursor-pointer ${
                   pg === safePage
@@ -335,27 +330,13 @@ export function StepDataPreview({
         )}
       </FadeIn>
 
-      {/* Action Buttons: Back to sources & Confirm */}
-      <FadeIn
-        delay={0.15}
-        className="pt-2 flex flex-col sm:flex-row items-center gap-3"
-      >
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            disabled={loading}
-            className="w-full sm:w-auto py-3.5 px-5 bg-muted hover:bg-muted/80 text-foreground border border-border font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer disabled:opacity-50"
-          >
-            {t("knowledge.preview.btn_back_to_sources")}
-          </button>
-        )}
-
+      {/* Prominent Action Button (No Back Button) */}
+      <FadeIn delay={0.15} className="pt-2">
         <button
           type="button"
           onClick={onConfirm}
           disabled={loading}
-          className="w-full sm:flex-1 py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm rounded-xl shadow-lg transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
             <>

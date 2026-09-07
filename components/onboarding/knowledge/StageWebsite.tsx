@@ -17,7 +17,6 @@ interface StageWebsiteProps {
     count?: number,
   ) => void;
   onNext: () => void;
-  onPrev: () => void;
 }
 
 export function StageWebsite({
@@ -28,7 +27,6 @@ export function StageWebsite({
   onChangeUrl,
   onStatusChange,
   onNext,
-  onPrev,
 }: StageWebsiteProps) {
   const t = useTranslations("onboarding");
   const toast = useToast();
@@ -294,15 +292,7 @@ export function StageWebsite({
       )}
 
       {/* Stage Step Actions */}
-      <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="w-full sm:w-auto text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer py-2 px-3 rounded-lg hover:bg-muted/60 transition-colors"
-        >
-          ← Назад к 2GIS
-        </button>
-
+      <div className="pt-4 border-t border-border flex items-center justify-end">
         <button
           type="button"
           onClick={onNext}

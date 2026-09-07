@@ -7,13 +7,11 @@ import { FadeIn } from "@/components/ui/motion/FadeIn";
 
 interface StepQualificationProps {
   onSubmit: (data: QualificationDto) => void;
-  onBack?: () => void;
   loading: boolean;
 }
 
 export function StepQualification({
   onSubmit,
-  onBack,
   loading,
 }: StepQualificationProps) {
   const t = useTranslations("onboarding");
@@ -112,28 +110,19 @@ export function StepQualification({
         />
       </FadeIn>
 
-      <FadeIn delay={0.2} className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-full sm:w-auto py-3.5 px-5 bg-muted hover:bg-muted/80 text-foreground border border-border font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer"
-          >
-            ← Назад
-          </button>
-        )}
+      <FadeIn delay={0.2} className="pt-2">
         <button
           type="submit"
           disabled={loading}
-          className="w-full sm:flex-1 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {t("qualification.btn_submitting")}
+              <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              <span>{t("qualification.btn_submitting")}</span>
             </>
           ) : (
-            t("qualification.btn_submit")
+            <span>{t("qualification.btn_submit")}</span>
           )}
         </button>
       </FadeIn>

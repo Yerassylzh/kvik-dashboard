@@ -1,23 +1,46 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { KnowledgeEntry } from '@/types/niche';
-import { StructuredMarkdownView } from './StructuredMarkdownView';
+import React, { useState } from "react";
+import { useTranslations } from "next-intl";
+import { KnowledgeEntry } from "@/types/niche";
+import { StructuredMarkdownView } from "./StructuredMarkdownView";
 
 interface KnowledgeEntryCardProps {
   entry: KnowledgeEntry;
 }
 
-const TYPE_META: Record<string, { icon: string; translationKey: string; bg: string; text: string }> = {
-  LOCAL_LISTING: { icon: '📍', translationKey: 'knowledge.preview.twogis_catalog_label', bg: 'bg-emerald-500/10', text: 'text-emerald-700 dark:text-emerald-400' },
-  WEBSITE_CONTENT: { icon: '🌐', translationKey: 'knowledge.preview.website_label', bg: 'bg-blue-500/10', text: 'text-blue-700 dark:text-blue-400' },
-  DOCUMENT: { icon: '📄', translationKey: 'knowledge.preview.document_label', bg: 'bg-purple-500/10', text: 'text-purple-700 dark:text-purple-400' },
-  MANUAL_NOTE: { icon: '📝', translationKey: 'knowledge.preview.note_label', bg: 'bg-amber-500/10', text: 'text-amber-700 dark:text-amber-400' },
+const TYPE_META: Record<
+  string,
+  {
+    icon: string;
+    translationKey: string;
+    badgeStyle: string;
+  }
+> = {
+  LOCAL_LISTING: {
+    icon: "📍",
+    translationKey: "knowledge.preview.twogis_catalog_label",
+    badgeStyle: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
+  },
+  WEBSITE_CONTENT: {
+    icon: "🌐",
+    translationKey: "knowledge.preview.website_label",
+    badgeStyle: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
+  },
+  DOCUMENT: {
+    icon: "📄",
+    translationKey: "knowledge.preview.document_label",
+    badgeStyle: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20",
+  },
+  MANUAL_NOTE: {
+    icon: "📝",
+    translationKey: "knowledge.preview.note_label",
+    badgeStyle: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
+  },
 };
 
 function formatBytes(size?: number | null): string {
-  if (!size) return '';
+  if (!size) return "";
   if (size < 1024) return `${size} Б`;
   if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} КБ`;
   return `${(size / (1024 * 1024)).toFixed(1)} МБ`;
@@ -38,12 +61,14 @@ function extractStructuredText(entry: KnowledgeEntry): string | null {
   ];
 
   for (const val of candidates) {
-    if (typeof val === 'string' && val.trim()) return val.trim();
+    if (typeof val === "string" && val.trim()) return val.trim();
   }
   return null;
 }
 
-function extractServicesList(entry: KnowledgeEntry): Array<{ name?: string; price?: string; duration?: string; category?: string }> | null {
+function extractServicesList(
+  entry: KnowledgeEntry
+): Array<{ name?: string; price?: string; duration?: string; category?: string }> | null {
   const d = (entry.data || {}) as Record<string, unknown>;
   if (Array.isArray(d.services) && d.services.length > 0) return d.services;
   if (Array.isArray(d.items) && d.items.length > 0) return d.items;
@@ -51,128 +76,163 @@ function extractServicesList(entry: KnowledgeEntry): Array<{ name?: string; pric
   return null;
 }
 
-function cleanEntryTitle(entry: KnowledgeEntry, default2gisLabel: string): string {
-  const data = (entry.data || {}) as Record<string, any>;
-  const rawTitle = entry.title || data.name || data.title || data.fileName || '';
+function cleanEntryTitle(
+  entry: KnowledgeEntry,
+  default2gisLabel: string,
+  defaultNoteLabel: string
+): string {
+  if (entry.type === "MANUAL_NOTE") {
+    // For manual notes, don't use the whole note text as title
+    const d = (entry.data || {}) as Record<string, any>;
+    if (entry.title && entry.title.length < 50) return entry.title;
+    if (d.title && typeof d.title === "string" && d.title.length < 50) return d.title;
+    return defaultNoteLabel;
+  }
 
-  // If title is "2GIS Catalog (70000...)" or similar raw technical ID string:
-  if (/^2GIS Catalog/i.test(rawTitle) || /^2GIS Каталог/i.test(rawTitle) || !rawTitle) {
-    // If real company name exists in data:
-    if (data.businessName && typeof data.businessName === 'string' && !/^2GIS/i.test(data.businessName)) {
+  const data = (entry.data || {}) as Record<string, any>;
+  const rawTitle =
+    entry.title || data.name || data.title || data.fileName || "";
+
+  // If title is "2GIS Catalog (70000...)" or technical ID string:
+  if (
+    /^2GIS Catalog/i.test(rawTitle) ||
+    /^2GIS Каталог/i.test(rawTitle) ||
+    !rawTitle
+  ) {
+    if (
+      data.businessName &&
+      typeof data.businessName === "string" &&
+      !/^2GIS/i.test(data.businessName)
+    ) {
       return data.businessName;
     }
-    if (data.name && typeof data.name === 'string' && !/^2GIS/i.test(data.name)) {
+    if (
+      data.name &&
+      typeof data.name === "string" &&
+      !/^2GIS/i.test(data.name)
+    ) {
       return data.name;
     }
     return default2gisLabel;
   }
 
   // Remove trailing numerical IDs in parentheses like "(70000001082563690)"
-  return rawTitle.replace(/\s*\(\d{8,}\)$/, '').trim() || default2gisLabel;
+  return rawTitle.replace(/\s*\(\d{8,}\)$/, "").trim() || default2gisLabel;
 }
 
 export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
-  const t = useTranslations('onboarding');
+  const t = useTranslations("onboarding");
   const [expanded, setExpanded] = useState(false);
 
   const typeConfig = TYPE_META[entry.type] || {
-    icon: '📦',
-    translationKey: 'knowledge.preview.note_label',
-    bg: 'bg-muted',
-    text: 'text-muted-foreground',
+    icon: "📦",
+    translationKey: "knowledge.preview.note_label",
+    badgeStyle: "bg-muted text-muted-foreground border-border",
   };
 
   const typeLabel = t(typeConfig.translationKey as any) || entry.type;
-  const default2gisTitle = t('knowledge.preview.twogis_catalog_label');
-  const title = cleanEntryTitle(entry, default2gisTitle);
+  const default2gisTitle = t("knowledge.preview.twogis_catalog_label");
+  const defaultNoteTitle = t("knowledge.preview.note_card_title");
+  const title = cleanEntryTitle(entry, default2gisTitle, defaultNoteTitle);
 
   const data = (entry.data || {}) as Record<string, any>;
   const structuredText = extractStructuredText(entry);
   const servicesList = extractServicesList(entry);
 
   const address = data.address || data.city || null;
-  const phone = data.phone || (Array.isArray(data.phones) ? data.phones.join(', ') : null);
+  const phone =
+    data.phone || (Array.isArray(data.phones) ? data.phones.join(", ") : null);
   const schedule = data.schedule || data.workingHours || data.hours || null;
-  const category = data.category || (Array.isArray(data.rubrics) ? data.rubrics.join(', ') : data.rubric || null);
+  const category =
+    data.category ||
+    (Array.isArray(data.rubrics)
+      ? data.rubrics.join(", ")
+      : data.rubric || null);
   const price = data.price ? String(data.price) : null;
 
-  const isLongText = (structuredText?.length ?? 0) > 350;
+  const isLongText = (structuredText?.length ?? 0) > 300;
 
-  const status = entry.processingStatus || 'COMPLETED';
-  const isPending = status === 'PENDING';
-  const isProcessing = status === 'PROCESSING';
-  const isFailed = status === 'FAILED';
+  const status = entry.processingStatus || "COMPLETED";
+  const isPending = status === "PENDING";
+  const isProcessing = status === "PROCESSING";
+  const isFailed = status === "FAILED";
   const isBusy = isPending || isProcessing;
 
+  const isManualNote = entry.type === "MANUAL_NOTE";
+
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all space-y-4 shadow-sm">
-      {/* Header Info */}
+    <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border/80 hover:border-primary/40 transition-all space-y-3.5 shadow-xs">
+      {/* Card Header */}
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 text-accent-brand flex items-center justify-center text-xl flex-shrink-0">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          {/* Type Icon Badge */}
+          <div className="h-9 w-9 rounded-xl bg-muted/60 border border-border flex items-center justify-center text-lg flex-shrink-0">
             {typeConfig.icon}
           </div>
-          <div className="min-w-0">
+
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="font-bold text-foreground text-sm sm:text-base tracking-tight">
+              <h4 className="font-bold text-foreground text-sm tracking-tight truncate">
                 {title}
               </h4>
-              <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${typeConfig.bg} ${typeConfig.text} border-current/20 flex-shrink-0`}>
+              <span
+                className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${typeConfig.badgeStyle} flex-shrink-0`}
+              >
                 {typeLabel}
               </span>
 
-              {/* Dynamic Status Badges for processing items */}
+              {/* Live Status Indicators */}
               {isPending && (
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1.5 flex-shrink-0">
-                  <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                  <span>{t('knowledge.preview.status_pending')}</span>
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1.5 flex-shrink-0">
+                  <div className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span>{t("knowledge.preview.status_pending")}</span>
                 </span>
               )}
 
               {isProcessing && (
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-accent-brand border border-primary/20 flex items-center gap-1.5 flex-shrink-0">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary/10 text-accent-brand border border-primary/20 flex items-center gap-1.5 flex-shrink-0">
                   <div className="h-2 w-2 border-2 border-accent-brand/40 border-t-accent-brand rounded-full animate-spin" />
-                  <span>{t('knowledge.preview.status_processing')}</span>
+                  <span>{t("knowledge.preview.status_processing")}</span>
                 </span>
               )}
 
               {isFailed && (
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full alert-destructive border flex items-center gap-1 flex-shrink-0">
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-destructive/10 text-destructive border border-destructive/20 flex items-center gap-1 flex-shrink-0">
                   <span>⚠️</span>
-                  <span>{t('knowledge.preview.status_failed')}</span>
+                  <span>{t("knowledge.preview.status_failed")}</span>
                 </span>
               )}
             </div>
 
-            {/* Quick Metadata Badges */}
-            <div className="flex items-center gap-2 flex-wrap mt-1.5 text-xs text-muted-foreground">
+            {/* Metadata Tags */}
+            <div className="flex items-center gap-2 flex-wrap mt-1 text-xs text-muted-foreground">
               {category && (
-                <span className="inline-flex items-center gap-1 bg-muted px-2.5 py-0.5 rounded-lg text-foreground font-medium">
+                <span className="inline-flex items-center gap-1 bg-muted/60 px-2 py-0.5 rounded text-foreground font-medium text-[11px]">
                   🏷️ {category}
                 </span>
               )}
               {address && (
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1 text-[11px]">
                   📍 {address}
                 </span>
               )}
               {phone && (
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1 text-[11px]">
                   📞 {phone}
                 </span>
               )}
               {schedule && (
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1 text-[11px]">
                   🕒 {schedule}
                 </span>
               )}
               {price && (
-                <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
                   💰 {price}
                 </span>
               )}
               {entry.fileSize && (
-                <span>
+                <span className="inline-flex items-center gap-1 text-[11px] bg-muted/60 px-2 py-0.5 rounded text-muted-foreground">
                   💾 {formatBytes(entry.fileSize)}
                 </span>
               )}
@@ -186,51 +246,57 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
             href={entry.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-accent-brand hover:underline flex-shrink-0 hidden sm:inline-flex items-center gap-1 font-medium"
+            className="text-xs text-accent-brand hover:underline flex-shrink-0 hidden sm:inline-flex items-center gap-1 font-medium pt-0.5"
           >
-            <span>{t('knowledge.preview.source_link')}</span>
+            <span>{t("knowledge.preview.source_link")}</span>
           </a>
         )}
       </div>
 
-      {/* Loading Skeleton / Processing Message if still processing and no text ready */}
+      {/* Loading Skeleton if still processing */}
       {isBusy && !structuredText && (!servicesList || servicesList.length === 0) && (
-        <div className="p-4 rounded-2xl bg-primary/5 border border-primary/15 flex items-center gap-3 animate-pulse">
-          <div className="h-4 w-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin flex-shrink-0" />
-          <p className="text-xs text-muted-foreground">
-            {t('knowledge.preview.processing_entry_desc')}
-          </p>
+        <div className="p-3 rounded-xl bg-primary/5 border border-primary/15 flex items-center gap-2.5 animate-pulse text-xs text-muted-foreground">
+          <div className="h-3.5 w-3.5 border-2 border-primary/30 border-t-primary rounded-full animate-spin flex-shrink-0" />
+          <span>{t("knowledge.preview.processing_entry_desc")}</span>
         </div>
       )}
 
-      {/* Scraped / Structured Text Section with Markdown View */}
-      {structuredText && (
-        <div className="space-y-2 pt-1">
+      {/* Manual Note Content */}
+      {isManualNote && structuredText && (
+        <div className="p-3.5 rounded-xl bg-muted/30 border border-border/60 text-xs text-foreground leading-relaxed whitespace-pre-line">
+          {structuredText}
+        </div>
+      )}
+
+      {/* Non-Note Structured Content with Markdown View */}
+      {!isManualNote && structuredText && (
+        <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <span>🤖</span>
-              <span>{t('knowledge.preview.title')}:</span>
+            <span className="text-[11px] uppercase tracking-wide">
+              {t("knowledge.preview.extracted_content")}:
             </span>
             {isLongText && (
               <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
-                className="text-accent-brand hover:underline cursor-pointer text-xs font-bold"
+                className="text-accent-brand hover:underline cursor-pointer text-xs font-medium"
               >
-                {expanded ? t('knowledge.preview.expand_less') : t('knowledge.preview.expand_more')}
+                {expanded
+                  ? t("knowledge.preview.expand_less")
+                  : t("knowledge.preview.expand_more")}
               </button>
             )}
           </div>
 
           <div
-            className={`p-4 rounded-2xl bg-muted/40 border border-border transition-all ${
-              !expanded && isLongText ? 'max-h-48 overflow-hidden relative' : ''
+            className={`p-3.5 rounded-xl bg-muted/30 border border-border/60 transition-all text-xs ${
+              !expanded && isLongText ? "max-h-36 overflow-hidden relative" : ""
             }`}
           >
             <StructuredMarkdownView content={structuredText} />
 
             {!expanded && isLongText && (
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card/90 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card to-transparent pointer-events-none" />
             )}
           </div>
         </div>
@@ -238,19 +304,27 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
 
       {/* Structured Services & Prices Grid */}
       {servicesList && servicesList.length > 0 && (
-        <div className="space-y-2 pt-1">
-          <p className="text-xs font-semibold text-muted-foreground">
-            {t('knowledge.preview.pricelist_title', { count: servicesList.length })}
+        <div className="space-y-1.5 pt-0.5">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+            {t("knowledge.preview.pricelist_title", {
+              count: servicesList.length,
+            })}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto themed-scroll">
             {servicesList.map((svc, i) => (
               <div
                 key={i}
-                className="p-2.5 rounded-xl bg-muted/50 border border-border text-xs flex items-center justify-between shadow-xs"
+                className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-xs flex items-center justify-between shadow-2xs"
               >
                 <div className="min-w-0 pr-2">
-                  <p className="font-semibold text-foreground truncate">{svc.name || t('knowledge.preview.default_service_name')}</p>
-                  {svc.category && <p className="text-[11px] text-muted-foreground">{svc.category}</p>}
+                  <p className="font-semibold text-foreground truncate">
+                    {svc.name || t("knowledge.preview.default_service_name")}
+                  </p>
+                  {svc.category && (
+                    <p className="text-[10px] text-muted-foreground">
+                      {svc.category}
+                    </p>
+                  )}
                 </div>
                 {svc.price && (
                   <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs flex-shrink-0">

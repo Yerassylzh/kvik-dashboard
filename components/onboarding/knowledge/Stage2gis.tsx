@@ -16,7 +16,6 @@ interface Stage2gisProps {
     count?: number,
   ) => void;
   onNext: () => void;
-  onBack?: () => void;
 }
 
 export function Stage2gis({
@@ -26,7 +25,6 @@ export function Stage2gis({
   onChangeUrl,
   onStatusChange,
   onNext,
-  onBack,
 }: Stage2gisProps) {
   const t = useTranslations("onboarding");
   const toast = useToast();
@@ -288,19 +286,7 @@ export function Stage2gis({
       )}
 
       {/* Stage Step Actions */}
-      <div className="pt-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-        {onBack ? (
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-full sm:w-auto text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer py-2 px-3 rounded-lg hover:bg-muted/60 transition-colors"
-          >
-            ← Назад к профилю
-          </button>
-        ) : (
-          <div />
-        )}
-
+      <div className="pt-4 border-t border-border flex items-center justify-end">
         <button
           type="button"
           onClick={onNext}

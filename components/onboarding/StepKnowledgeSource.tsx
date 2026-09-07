@@ -19,7 +19,6 @@ interface StepKnowledgeSourceProps {
   onDraftChange: (draft: Partial<KnowledgeSourceDraft>) => void;
   onScrapingStarted: (type: ScrapingType) => void;
   onContinue: () => void;
-  onBack?: () => void;
   loading: boolean;
 }
 
@@ -37,7 +36,6 @@ export function StepKnowledgeSource({
   onDraftChange,
   onScrapingStarted,
   onContinue,
-  onBack,
   loading: _loading,
 }: StepKnowledgeSourceProps) {
   const [activeTab, setActiveTab] = useState<number>(draft.activeStage ?? 0);
@@ -115,7 +113,6 @@ export function StepKnowledgeSource({
               if (status === "STARTED") onScrapingStarted("2gis");
             }}
             onNext={() => handleSelectTab(1)}
-            onBack={onBack}
           />
         )}
 
@@ -131,7 +128,6 @@ export function StepKnowledgeSource({
               if (status === "STARTED") onScrapingStarted("website");
             }}
             onNext={() => handleSelectTab(2)}
-            onPrev={() => handleSelectTab(0)}
           />
         )}
 
@@ -144,7 +140,6 @@ export function StepKnowledgeSource({
             }}
             onRemoveUploadedFile={handleRemoveFile}
             onNext={() => handleSelectTab(3)}
-            onPrev={() => handleSelectTab(1)}
           />
         )}
 
@@ -157,7 +152,6 @@ export function StepKnowledgeSource({
             }}
             onRemoveNote={handleRemoveNote}
             onNext={onContinue}
-            onPrev={() => handleSelectTab(2)}
             hasAnySource={hasAnySource}
           />
         )}
