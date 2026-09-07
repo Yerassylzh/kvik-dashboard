@@ -89,6 +89,16 @@ export function TelegramFlow({ onSuccess, onCancel }: TelegramFlowProps) {
               <p className="text-xs text-foreground leading-relaxed">
                 {t(`telegram_flow_${step.key}` as Parameters<typeof t>[0])}
               </p>
+              {step.key === "step1" && (
+                <a
+                  href="https://t.me/BotFather"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-1 text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+                >
+                  <span>{t("telegram_open_botfather")}</span>
+                </a>
+              )}
             </div>
             <span className="text-lg leading-none shrink-0">{step.icon}</span>
           </motion.div>

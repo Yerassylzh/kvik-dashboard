@@ -13,11 +13,15 @@ interface WhatsAppFlowProps {
 
 type FlowState = "idle" | "loading-sdk" | "ready" | "waiting" | "connecting" | "success" | "error";
 
+const getCallbackUri = () =>
+  `${window.location.origin}/onboarding/instagram-callback`;
+
 export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
   const t = useTranslations("onboarding.channel");
   const [flowState, setFlowState] = useState<FlowState>("idle");
   const [error, setError] = useState<string | null>(null);
   const metaConfigRef = useRef<MetaConfig | null>(null);
+  const popupRef = useRef<Window | null>(null);
   // Holds waba_id + phone_number_id captured from the WA_EMBEDDED_SIGNUP window message
   const embeddedDataRef = useRef<{ wabaId: string; phoneNumberId: string } | null>(null);
 
@@ -48,13 +52,24 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
 
         if (cancelled) return;
 
-        // Initialize FB SDK
-        window.FB?.init({
-          appId: config.appId,
-          autoLogAppEvents: true,
-          xfbml: true,
-          version: config.apiVersion,
-        });
+        // Initialize FB SDK only if a valid numeric Meta App ID is provided
+        const cleanAppId = String(config.appId || "").trim();
+        const isValidAppId = /^\d+$/.test(cleanAppId);
+
+        if (isValidAppId) {
+          try {
+            window.FB?.init({
+              appId: cleanAppId,
+              autoLogAppEvents: true,
+              xfbml: true,
+              version: config.apiVersion || "v21.0",
+            });
+          } catch {
+            // Non-fatal if init throws on local http
+          }
+        } else {
+          console.warn("[Meta SDK] Invalid or placeholder Meta App ID received from backend:", config.appId);
+        }
 
         setFlowState("ready");
       } catch (err) {
@@ -66,74 +81,138 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Listen for WA_EMBEDDED_SIGNUP window messages
+  // Listen for WA_EMBEDDED_SIGNUP window messages and OAuth code callbacks
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.endsWith("facebook.com")) return;
-      try {
-        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        if (data?.type === "WA_EMBEDDED_SIGNUP" && data?.event === "FINISH") {
-          embeddedDataRef.current = {
-            wabaId: data.data?.waba_id ?? "",
-            phoneNumberId: data.data?.phone_number_id ?? "",
-          };
+    const handleMessage = async (event: MessageEvent) => {
+      // Handle WA_EMBEDDED_SIGNUP postMessage from Meta
+      if (typeof event.origin === "string" && event.origin.endsWith("facebook.com")) {
+        try {
+          const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+          if (data?.type === "WA_EMBEDDED_SIGNUP" && data?.event === "FINISH") {
+            embeddedDataRef.current = {
+              wabaId: data.data?.waba_id ?? "",
+              phoneNumberId: data.data?.phone_number_id ?? "",
+            };
+          }
+        } catch {
+          // ignore non-JSON messages
         }
-      } catch {
-        // ignore non-JSON messages
+      }
+
+      // Handle OAuth redirect code from popup callback page
+      if (event.origin === window.location.origin) {
+        const code = event.data?.code;
+        if (code && (event.data?.type === "OAUTH_CODE" || event.data?.type === "INSTAGRAM_OAUTH_CODE")) {
+          try {
+            popupRef.current?.close();
+          } catch {
+            // noop
+          }
+          await processConnection(code);
+        }
       }
     };
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const processConnection = async (code: string) => {
+    const embedded = embeddedDataRef.current;
+
+    if (!embedded?.wabaId || !embedded?.phoneNumberId) {
+      // If embeddedData wasn't received yet or in direct OAuth mode
+      setError(t("whatsapp_flow_missing_data"));
+      setFlowState("error");
+      return;
+    }
+
+    try {
+      setFlowState("connecting");
+      const res = await connectWhatsApp({
+        code,
+        wabaId: embedded.wabaId,
+        phoneNumberId: embedded.phoneNumberId,
+      });
+      setFlowState("success");
+      onSuccess(res.channel.metadata as WhatsAppChannelMetadata);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("whatsapp_flow_error"));
+      setFlowState("error");
+    }
+  };
+
   const handleLaunchSignup = () => {
-    if (!window.FB || !metaConfigRef.current) return;
+    if (!metaConfigRef.current) return;
     setFlowState("waiting");
     setError(null);
 
-    window.FB.login(
-      async (response: FbLoginResponse) => {
-        if (!response.authResponse?.code) {
-          // User cancelled the popup
-          setFlowState("ready");
-          return;
-        }
+    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
 
-        const code = response.authResponse.code;
-        const embedded = embeddedDataRef.current;
+    // If on HTTPS and FB SDK is initialized, attempt FB.login
+    if (isHttps && window.FB) {
+      try {
+        window.FB.login(
+          (response: FbLoginResponse) => {
+            if (!response.authResponse?.code) {
+              // User closed or cancelled the popup
+              setFlowState("ready");
+              return;
+            }
+            void processConnection(response.authResponse.code);
+          },
+          {
+            config_id: metaConfigRef.current.whatsappConfigId,
+            response_type: "code",
+            override_default_response_type: true,
+            extras: { setup: {} },
+          }
+        );
+        return;
+      } catch {
+        // Fallback to direct window.open popup if FB.login fails
+      }
+    }
 
-        if (!embedded?.wabaId || !embedded?.phoneNumberId) {
-          setError(t("whatsapp_flow_missing_data"));
-          setFlowState("error");
-          return;
-        }
-
-        try {
-          setFlowState("connecting");
-          const res = await connectWhatsApp({
-            code,
-            wabaId: embedded.wabaId,
-            phoneNumberId: embedded.phoneNumberId,
-          });
-          setFlowState("success");
-          onSuccess(res.channel.metadata as WhatsAppChannelMetadata);
-        } catch (err) {
-          setError(err instanceof Error ? err.message : t("whatsapp_flow_error"));
-          setFlowState("error");
-        }
-      },
-      {
+    // Direct OAuth Popup fallback (works for HTTP dev / when FB.login is restricted)
+    try {
+      const redirectUri = getCallbackUri();
+      const params = new URLSearchParams({
+        client_id: metaConfigRef.current.appId,
         config_id: metaConfigRef.current.whatsappConfigId,
         response_type: "code",
-        override_default_response_type: true,
-        extras: { setup: {} },
-      }
-    );
+        override_default_response_type: "true",
+        redirect_uri: redirectUri,
+      });
+
+      const oauthUrl = `https://www.facebook.com/${
+        metaConfigRef.current.apiVersion || "v21.0"
+      }/dialog/oauth?${params.toString()}`;
+
+      const popup = window.open(
+        oauthUrl,
+        "whatsapp-oauth",
+        "width=600,height=700,top=100,left=200,scrollbars=yes"
+      );
+      popupRef.current = popup;
+
+      const pollTimer = setInterval(() => {
+        if (popup?.closed) {
+          clearInterval(pollTimer);
+          setFlowState((prev) => (prev === "waiting" ? "ready" : prev));
+        }
+      }, 1000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("whatsapp_flow_error"));
+      setFlowState("error");
+    }
   };
 
   return (

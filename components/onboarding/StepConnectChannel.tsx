@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useTranslations } from "next-intl";
-import { FadeIn } from "@/components/ui/motion/FadeIn";
-import { ChannelCard } from "@/components/onboarding/channel/ChannelCard";
-import { TelegramFlow } from "@/components/onboarding/channel/TelegramFlow";
-import { WhatsAppFlow } from "@/components/onboarding/channel/WhatsAppFlow";
-import { InstagramFlow } from "@/components/onboarding/channel/InstagramFlow";
+import { ChannelStepper } from "./channel/ChannelStepper";
+import { StageWhatsApp } from "./channel/StageWhatsApp";
+import { StageInstagram } from "./channel/StageInstagram";
+import { StageTelegram } from "./channel/StageTelegram";
+import { StageChannelSummary } from "./channel/StageChannelSummary";
 import { listChannels, disconnectChannel } from "@/lib/api/channels";
 import {
   ChannelType,
@@ -22,10 +21,8 @@ interface ConnectedChannel {
   detail?: string;
 }
 
-type ActiveFlow = ChannelType | null;
-
 interface StepConnectChannelProps {
-  /** Called when user clicks "Continue" after connecting ≥1 channel */
+  /** Called when user clicks "Continue" to advance the onboarding state */
   onContinue: () => void;
   continueLoading: boolean;
 }
@@ -34,13 +31,14 @@ export function StepConnectChannel({
   onContinue,
   continueLoading,
 }: StepConnectChannelProps) {
-  const t = useTranslations("onboarding.channel");
+  const [activeStage, setActiveStage] = useState<number>(0);
+  const [direction, setDirection] = useState<number>(1);
+  const prevStageRef = useRef<number>(0);
 
   const [channels, setChannels] = useState<
     Partial<Record<ChannelType, ConnectedChannel>>
   >({});
   const [loadingStatus, setLoadingStatus] = useState(true);
-  const [activeFlow, setActiveFlow] = useState<ActiveFlow>(null);
   const [disconnecting, setDisconnecting] = useState<ChannelType | null>(null);
 
   // ---------------------------------------------------------------------------
@@ -61,12 +59,14 @@ export function StepConnectChannel({
         }
         setChannels(map);
       } catch {
-        // Non-fatal — proceed without pre-filled statuses
+        // Non-fatal — proceed with empty statuses
       } finally {
         if (!cancelled) setLoadingStatus(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // ---------------------------------------------------------------------------
@@ -92,13 +92,18 @@ export function StepConnectChannel({
     return undefined;
   };
 
+  const handleSelectStage = useCallback((targetStage: number) => {
+    setDirection(targetStage >= prevStageRef.current ? 1 : -1);
+    prevStageRef.current = targetStage;
+    setActiveStage(targetStage);
+  }, []);
+
   const markConnected = useCallback(
     (type: ChannelType, detail?: string) => {
       setChannels((prev) => ({
         ...prev,
         [type]: { status: "CONNECTED" as ChannelStatus, detail },
       }));
-      setActiveFlow(null);
     },
     []
   );
@@ -113,197 +118,137 @@ export function StepConnectChannel({
         return next;
       });
     } catch {
-      // Toast is shown by the global error handler
+      // Handled globally
     } finally {
       setDisconnecting(null);
     }
   };
 
+  const isWhatsAppConnected = channels.WHATSAPP?.status === "CONNECTED";
+  const isInstagramConnected = channels.INSTAGRAM?.status === "CONNECTED";
+  const isTelegramConnected = channels.TELEGRAM?.status === "CONNECTED";
+
   const connectedCount = Object.values(channels).filter(
     (c) => c?.status === "CONNECTED"
   ).length;
 
-  const isConnected = (type: ChannelType): boolean =>
-    channels[type]?.status === "CONNECTED";
-
-  const getStatus = (type: ChannelType): ChannelStatus | "IDLE" =>
-    channels[type]?.status ?? "IDLE";
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 30 : -30,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -30 : 30,
+      opacity: 0,
+    }),
+  };
 
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
+  if (loadingStatus) {
+    return (
+      <div className="space-y-6">
+        <div className="h-14 rounded-2xl bg-card border border-border animate-pulse" />
+        <div className="h-72 rounded-2xl bg-card border border-border animate-pulse" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Loading skeleton */}
-      {loadingStatus && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="h-52 rounded-2xl bg-card border border-border animate-pulse"
-            />
-          ))}
-        </div>
-      )}
+      {/* Sub-step Navigation Bar */}
+      <ChannelStepper
+        activeStage={activeStage}
+        onSelectStage={handleSelectStage}
+        isWhatsAppConnected={isWhatsAppConnected}
+        isInstagramConnected={isInstagramConnected}
+        isTelegramConnected={isTelegramConnected}
+        connectedCount={connectedCount}
+      />
 
-      {/* Channel cards */}
-      {!loadingStatus && (
-        <FadeIn delay={0.05}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* WhatsApp */}
-            <div className="flex flex-col gap-3">
-              <ChannelCard
-                type="WHATSAPP"
-                status={getStatus("WHATSAPP")}
-                title={t("whatsapp_title")}
-                description={t("whatsapp_desc")}
-                icon="💬"
-                badge={t("recommended_badge")}
-                badgeClass="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
-                accentHoverClass="hover:border-emerald-500/50"
-                connectBtnClass="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30"
-                connectedDetail={channels.WHATSAPP?.detail}
-                connecting={false}
-                onConnect={() =>
-                  setActiveFlow(activeFlow === "WHATSAPP" ? null : "WHATSAPP")
-                }
-                onDisconnect={() => handleDisconnect("WHATSAPP")}
-              />
-              <AnimatePresence>
-                {activeFlow === "WHATSAPP" && !isConnected("WHATSAPP") && (
-                  <WhatsAppFlow
-                    onSuccess={(meta) =>
-                      markConnected("WHATSAPP", meta.displayPhoneNumber)
-                    }
-                    onCancel={() => setActiveFlow(null)}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Instagram */}
-            <div className="flex flex-col gap-3">
-              <ChannelCard
-                type="INSTAGRAM"
-                status={getStatus("INSTAGRAM")}
-                title={t("instagram_title")}
-                description={t("instagram_desc")}
-                icon="📸"
-                badge={t("direct_badge")}
-                badgeClass="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20"
-                accentHoverClass="hover:border-purple-500/50"
-                connectBtnClass="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
-                connectedDetail={channels.INSTAGRAM?.detail}
-                connecting={false}
-                onConnect={() =>
-                  setActiveFlow(activeFlow === "INSTAGRAM" ? null : "INSTAGRAM")
-                }
-                onDisconnect={() => handleDisconnect("INSTAGRAM")}
-              />
-              <AnimatePresence>
-                {activeFlow === "INSTAGRAM" && !isConnected("INSTAGRAM") && (
-                  <InstagramFlow
-                    onSuccess={(meta) =>
-                      markConnected(
-                        "INSTAGRAM",
-                        meta.igUsername ? `@${meta.igUsername}` : undefined
-                      )
-                    }
-                    onCancel={() => setActiveFlow(null)}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Telegram */}
-            <div className="flex flex-col gap-3">
-              <ChannelCard
-                type="TELEGRAM"
-                status={getStatus("TELEGRAM")}
-                title={t("telegram_title")}
-                description={t("telegram_desc")}
-                icon="✈️"
-                badge={t("telegram_badge")}
-                badgeClass="bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
-                accentHoverClass="hover:border-sky-500/50"
-                connectBtnClass="bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30"
-                connectedDetail={channels.TELEGRAM?.detail}
-                connecting={disconnecting === "TELEGRAM"}
-                onConnect={() =>
-                  setActiveFlow(activeFlow === "TELEGRAM" ? null : "TELEGRAM")
-                }
-                onDisconnect={() => handleDisconnect("TELEGRAM")}
-              />
-              <AnimatePresence>
-                {activeFlow === "TELEGRAM" && !isConnected("TELEGRAM") && (
-                  <TelegramFlow
-                    onSuccess={(meta) =>
-                      markConnected(
-                        "TELEGRAM",
-                        meta.botUsername ? `@${meta.botUsername}` : undefined
-                      )
-                    }
-                    onCancel={() => setActiveFlow(null)}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </FadeIn>
-      )}
-
-      {/* Connected count badge */}
-      <AnimatePresence>
-        {connectedCount > 0 && (
+      {/* Full-Screen Step Card Container */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border shadow-sm overflow-hidden min-h-[22rem]">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="flex items-center justify-center gap-2"
+            key={activeStage}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
           >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              {t("connected_count", { count: connectedCount })}
-            </span>
+            {activeStage === 0 && (
+              <StageWhatsApp
+                isConnected={isWhatsAppConnected}
+                connectedDetail={channels.WHATSAPP?.detail}
+                onSuccess={(meta) => {
+                  markConnected("WHATSAPP", meta.displayPhoneNumber);
+                }}
+                onDisconnect={() => handleDisconnect("WHATSAPP")}
+                disconnecting={disconnecting === "WHATSAPP"}
+                onNext={() => handleSelectStage(1)}
+                onSkip={() => handleSelectStage(1)}
+              />
+            )}
+
+            {activeStage === 1 && (
+              <StageInstagram
+                isConnected={isInstagramConnected}
+                connectedDetail={channels.INSTAGRAM?.detail}
+                onSuccess={(meta) => {
+                  markConnected(
+                    "INSTAGRAM",
+                    meta.igUsername ? `@${meta.igUsername}` : undefined
+                  );
+                }}
+                onDisconnect={() => handleDisconnect("INSTAGRAM")}
+                disconnecting={disconnecting === "INSTAGRAM"}
+                onNext={() => handleSelectStage(2)}
+                onBack={() => handleSelectStage(0)}
+                onSkip={() => handleSelectStage(2)}
+              />
+            )}
+
+            {activeStage === 2 && (
+              <StageTelegram
+                isConnected={isTelegramConnected}
+                connectedDetail={channels.TELEGRAM?.detail}
+                onSuccess={(meta) => {
+                  markConnected(
+                    "TELEGRAM",
+                    meta.botUsername ? `@${meta.botUsername}` : undefined
+                  );
+                }}
+                onDisconnect={() => handleDisconnect("TELEGRAM")}
+                disconnecting={disconnecting === "TELEGRAM"}
+                onNext={() => handleSelectStage(3)}
+                onBack={() => handleSelectStage(1)}
+                onSkip={() => handleSelectStage(3)}
+              />
+            )}
+
+            {activeStage === 3 && (
+              <StageChannelSummary
+                channels={channels}
+                onSelectStage={handleSelectStage}
+                onContinue={onContinue}
+                continueLoading={continueLoading}
+                onDisconnect={handleDisconnect}
+                disconnecting={disconnecting}
+              />
+            )}
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Footer hint */}
-      <FadeIn delay={0.2} className="text-center">
-        <p className="text-[11px] text-muted-foreground">
-          {t("footer_hint")}
-        </p>
-      </FadeIn>
-
-      {/* Continue CTA */}
-      <FadeIn delay={0.25}>
-        <motion.button
-          type="button"
-          onClick={onContinue}
-          disabled={connectedCount === 0 || continueLoading}
-          whileTap={connectedCount > 0 ? { scale: 0.97 } : undefined}
-          className="w-full py-3 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-lg shadow-indigo-500/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
-        >
-          {continueLoading ? (
-            <>
-              <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              <span>{t("continue_loading")}</span>
-            </>
-          ) : (
-            <>
-              <span>{t("continue_btn")}</span>
-              <span>→</span>
-            </>
-          )}
-        </motion.button>
-
-        {connectedCount === 0 && (
-          <p className="text-center text-[11px] text-muted-foreground mt-2">
-            {t("at_least_one_hint")}
-          </p>
-        )}
-      </FadeIn>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

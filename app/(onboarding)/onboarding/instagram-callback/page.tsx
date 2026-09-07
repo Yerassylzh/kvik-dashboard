@@ -23,6 +23,10 @@ export default function InstagramCallbackPage() {
           { type: "INSTAGRAM_OAUTH_CODE", code },
           window.location.origin
         );
+        window.opener.postMessage(
+          { type: "OAUTH_CODE", code },
+          window.location.origin
+        );
       } else {
         window.opener.postMessage(
           { type: "INSTAGRAM_OAUTH_ERROR", error: error ?? "unknown" },
