@@ -69,7 +69,7 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
 
     const onCodeReceived = async (code: string) => {
       if (!code || isProcessing) return;
-      isProcessing = true;
+      isProcessing = true;  
       try {
         popupRef.current?.close();
       } catch {
