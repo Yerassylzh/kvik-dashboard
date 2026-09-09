@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import { connectWhatsApp, getMetaConfig } from "@/lib/api/channels";
-import { WhatsAppChannelMetadata, FbLoginResponse, MetaConfig } from "@/types/channels";
+import { WhatsAppChannelMetadata, MetaConfig } from "@/types/channels";
 
 interface WhatsAppFlowProps {
   onSuccess: (metadata: WhatsAppChannelMetadata) => void;
@@ -13,8 +13,20 @@ interface WhatsAppFlowProps {
 
 type FlowState = "idle" | "loading-sdk" | "ready" | "waiting" | "connecting" | "success" | "error";
 
-const getCallbackUri = () =>
-  `${window.location.origin}/onboarding/instagram-callback`;
+/**
+ * Returns the callback URI for OAuth redirect.
+ * If running on HTTP / localhost without HTTPS, returns "" (empty string)
+ * so Meta Embedded Signup uses standard in-popup / JS SDK completion without
+ * being blocked by HTTP redirect validation.
+ */
+
+const PUBLIC_URL = process.env.NEXT_PUBLIC_APP_URL;
+
+const getCallbackUri = () => {
+  if (typeof window === "undefined") return `${PUBLIC_URL}/onboarding/whatsapp-callback`;
+  const isHttps = window.location.protocol === "https:";
+  return isHttps ? `${window.location.origin}/onboarding/whatsapp-callback` : `${PUBLIC_URL}/onboarding/whatsapp-callback`;
+};
 
 export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
   const t = useTranslations("onboarding.channel");
@@ -23,9 +35,9 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
   const metaConfigRef = useRef<MetaConfig | null>(null);
   const popupRef = useRef<Window | null>(null);
   // Holds waba_id + phone_number_id captured from the WA_EMBEDDED_SIGNUP window message
-  const embeddedDataRef = useRef<{ wabaId: string; phoneNumberId: string } | null>(null);
+  const embeddedDataRef = useRef<{ wabaId?: string; phoneNumberId?: string } | null>(null);
 
-  // Load Meta config and FB SDK when flow is mounted
+  // Load Meta config when flow is mounted
   useEffect(() => {
     let cancelled = false;
 
@@ -35,42 +47,6 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
         const config = await getMetaConfig();
         if (cancelled) return;
         metaConfigRef.current = config;
-
-        // Inject FB SDK if not already present
-        if (!document.getElementById("facebook-jssdk")) {
-          await new Promise<void>((resolve, reject) => {
-            const script = document.createElement("script");
-            script.id = "facebook-jssdk";
-            script.src = "https://connect.facebook.net/en_US/sdk.js";
-            script.async = true;
-            script.defer = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error("Failed to load Facebook SDK"));
-            document.head.appendChild(script);
-          });
-        }
-
-        if (cancelled) return;
-
-        // Initialize FB SDK only if a valid numeric Meta App ID is provided
-        const cleanAppId = String(config.appId || "").trim();
-        const isValidAppId = /^\d+$/.test(cleanAppId);
-
-        if (isValidAppId) {
-          try {
-            window.FB?.init({
-              appId: cleanAppId,
-              autoLogAppEvents: true,
-              xfbml: true,
-              version: config.apiVersion || "v21.0",
-            });
-          } catch {
-            // Non-fatal if init throws on local http
-          }
-        } else {
-          console.warn("[Meta SDK] Invalid or placeholder Meta App ID received from backend:", config.appId);
-        }
-
         setFlowState("ready");
       } catch (err) {
         if (!cancelled) {
@@ -87,17 +63,46 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Listen for WA_EMBEDDED_SIGNUP window messages and OAuth code callbacks
+  // Listen for WA_EMBEDDED_SIGNUP window messages and OAuth code callbacks via postMessage, BroadcastChannel, and localStorage
   useEffect(() => {
+    let isProcessing = false;
+
+    const onCodeReceived = async (code: string) => {
+      if (!code || isProcessing) return;
+      isProcessing = true;
+      try {
+        popupRef.current?.close();
+      } catch {
+        // noop
+      }
+      await processConnection(code);
+    };
+
     const handleMessage = async (event: MessageEvent) => {
       // Handle WA_EMBEDDED_SIGNUP postMessage from Meta
-      if (typeof event.origin === "string" && event.origin.endsWith("facebook.com")) {
+      if (
+        typeof event.origin === "string" &&
+        (event.origin.includes("facebook.com") || event.origin.includes("meta.com"))
+      ) {
         try {
           const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-          if (data?.type === "WA_EMBEDDED_SIGNUP" && data?.event === "FINISH") {
+          const wabaId =
+            data?.data?.waba_id ||
+            data?.waba_id ||
+            data?.data?.wabaId ||
+            data?.wabaId ||
+            undefined;
+          const phoneNumberId =
+            data?.data?.phone_number_id ||
+            data?.phone_number_id ||
+            data?.data?.phoneNumberId ||
+            data?.phoneNumberId ||
+            undefined;
+
+          if (wabaId || phoneNumberId) {
             embeddedDataRef.current = {
-              wabaId: data.data?.waba_id ?? "",
-              phoneNumberId: data.data?.phone_number_id ?? "",
+              wabaId: wabaId ? String(wabaId) : undefined,
+              phoneNumberId: phoneNumberId ? String(phoneNumberId) : undefined,
             };
           }
         } catch {
@@ -105,41 +110,94 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
         }
       }
 
+      // Handle direct WHATSAPP_CONNECTED notification from callback page
+      if (event.data?.type === "WHATSAPP_CONNECTED" && event.data?.channel) {
+        console.log("[WhatsAppFlow] Channel already connected via callback page:", event.data.channel);
+        setFlowState("success");
+        onSuccess(event.data.channel.metadata as WhatsAppChannelMetadata);
+        return;
+      }
+
       // Handle OAuth redirect code from popup callback page
-      if (event.origin === window.location.origin) {
+      if (
+        event.data?.type === "WHATSAPP_OAUTH_CODE" ||
+        event.data?.type === "OAUTH_CODE" ||
+        event.data?.type === "INSTAGRAM_OAUTH_CODE"
+      ) {
         const code = event.data?.code;
-        if (code && (event.data?.type === "OAUTH_CODE" || event.data?.type === "INSTAGRAM_OAUTH_CODE")) {
-          try {
-            popupRef.current?.close();
-          } catch {
-            // noop
+        if (code) {
+          console.log("[WhatsAppFlow] Captured OAuth code from popup:", code);
+          await onCodeReceived(code);
+        }
+      }
+    };
+
+    // BroadcastChannel listener
+    let bc: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== "undefined") {
+      bc = new BroadcastChannel("kvik_auth_channel");
+      bc.onmessage = (event) => {
+        if (event.data?.type === "WHATSAPP_CONNECTED" && event.data?.channel) {
+          setFlowState("success");
+          onSuccess(event.data.channel.metadata as WhatsAppChannelMetadata);
+          return;
+        }
+        const code = event.data?.code;
+        if (
+          code &&
+          (event.data?.type === "WHATSAPP_OAUTH_CODE" || event.data?.type === "OAUTH_CODE")
+        ) {
+          void onCodeReceived(code);
+        }
+      };
+    }
+
+    // Storage listener (for cross-tab / popups on same domain)
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "kvik_oauth_payload" && event.newValue) {
+        try {
+          const parsed = JSON.parse(event.newValue);
+          if (parsed?.type === "WHATSAPP_CONNECTED" && parsed?.channel) {
+            localStorage.removeItem("kvik_oauth_payload");
+            setFlowState("success");
+            onSuccess(parsed.channel.metadata as WhatsAppChannelMetadata);
+            return;
           }
-          await processConnection(code);
+          if (
+            parsed?.code &&
+            (parsed.type === "WHATSAPP_OAUTH_CODE" || parsed.type === "OAUTH_CODE")
+          ) {
+            localStorage.removeItem("kvik_oauth_payload");
+            void onCodeReceived(parsed.code);
+          }
+        } catch {
+          // noop
         }
       }
     };
 
     window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      window.removeEventListener("storage", handleStorage);
+      bc?.close();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const processConnection = async (code: string) => {
     const embedded = embeddedDataRef.current;
-
-    if (!embedded?.wabaId || !embedded?.phoneNumberId) {
-      // If embeddedData wasn't received yet or in direct OAuth mode
-      setError(t("whatsapp_flow_missing_data"));
-      setFlowState("error");
-      return;
-    }
+    const redirectUri = getCallbackUri();
 
     try {
       setFlowState("connecting");
       const res = await connectWhatsApp({
         code,
-        wabaId: embedded.wabaId,
-        phoneNumberId: embedded.phoneNumberId,
+        wabaId: embedded?.wabaId,
+        phoneNumberId: embedded?.phoneNumberId,
+        redirectUri: redirectUri || undefined,
       });
       setFlowState("success");
       onSuccess(res.channel.metadata as WhatsAppChannelMetadata);
@@ -154,34 +212,6 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     setFlowState("waiting");
     setError(null);
 
-    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
-
-    // If on HTTPS and FB SDK is initialized, attempt FB.login
-    if (isHttps && window.FB) {
-      try {
-        window.FB.login(
-          (response: FbLoginResponse) => {
-            if (!response.authResponse?.code) {
-              // User closed or cancelled the popup
-              setFlowState("ready");
-              return;
-            }
-            void processConnection(response.authResponse.code);
-          },
-          {
-            config_id: metaConfigRef.current.whatsappConfigId,
-            response_type: "code",
-            override_default_response_type: true,
-            extras: { setup: {} },
-          }
-        );
-        return;
-      } catch {
-        // Fallback to direct window.open popup if FB.login fails
-      }
-    }
-
-    // Direct OAuth Popup fallback (works for HTTP dev / when FB.login is restricted)
     try {
       const redirectUri = getCallbackUri();
       const params = new URLSearchParams({
@@ -189,12 +219,17 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
         config_id: metaConfigRef.current.whatsappConfigId,
         response_type: "code",
         override_default_response_type: "true",
-        redirect_uri: redirectUri,
       });
 
-      const oauthUrl = `https://www.facebook.com/${
-        metaConfigRef.current.apiVersion || "v21.0"
-      }/dialog/oauth?${params.toString()}`;
+      if (redirectUri) {
+        params.set("redirect_uri", redirectUri);
+      }
+
+      const rawVer = metaConfigRef.current.apiVersion || "v21.0";
+      const verNum = parseInt(rawVer.replace(/^v/, ""), 10);
+      const safeApiVersion = !isNaN(verNum) && verNum <= 22 ? rawVer : "v21.0";
+
+      const oauthUrl = `https://www.facebook.com/${safeApiVersion}/dialog/oauth?${params.toString()}`;
 
       const popup = window.open(
         oauthUrl,

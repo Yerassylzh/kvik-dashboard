@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
         Authorization: authHeader,
         Cookie: cookie,
       },

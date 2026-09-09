@@ -9,6 +9,7 @@ import {
   getDataPreview,
   confirmDataPreview,
   submitChannel,
+  confirmChannelStep,
   submitQualification,
   completeOnboarding,
 } from "@/lib/api/onboarding";
@@ -225,14 +226,9 @@ export default function OnboardingPage() {
     try {
       setActionLoading(true);
       setError(null);
-      // Submit a sentinel to advance the step — actual credentials are already
+      // Advance the step — actual credentials are already
       // persisted by the individual /channels/* connect calls.
-      applyState(
-        await submitChannel({
-          type: "WHATSAPP" as ChannelDto["type"],
-          credentials: { connectedVia: "onboarding" },
-        }),
-      );
+      applyState(await confirmChannelStep());
       toast.success("Канал связи успешно подключён");
     } catch (err) {
       const msg =

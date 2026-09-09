@@ -20,7 +20,18 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(newPath, request.url));
   }
 
-  // 3. Public Auth Pages: /login and /register
+  // 3. Public OAuth Callbacks (always allow through so popup can postMessage code to opener)
+  const isCallbackPage =
+    pathname === '/onboarding/whatsapp-callback' ||
+    pathname === '/onboarding/instagram-callback' ||
+    pathname.startsWith('/onboarding/whatsapp-callback/') ||
+    pathname.startsWith('/onboarding/instagram-callback/');
+
+  if (isCallbackPage) {
+    return NextResponse.next();
+  }
+
+  // 4. Public Auth Pages: /login and /register
   const isPublicAuthPage = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
   const hasRefreshCookie = request.cookies.has('refresh_token');
 

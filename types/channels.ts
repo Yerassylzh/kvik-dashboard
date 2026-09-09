@@ -104,9 +104,10 @@ export interface ChannelHealthResponse {
 
 export interface ConnectWhatsAppDto {
   code: string;
-  wabaId: string;
-  phoneNumberId: string;
+  wabaId?: string;
+  phoneNumberId?: string;
   pin?: string;
+  redirectUri?: string;
 }
 
 export interface ConnectInstagramDto {

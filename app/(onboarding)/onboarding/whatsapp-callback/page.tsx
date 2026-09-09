@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { connectInstagram } from "@/lib/api/channels";
+import { connectWhatsApp } from "@/lib/api/channels";
 
 /**
- * Instagram OAuth Callback Page
+ * WhatsApp OAuth Callback Page
  *
  * Meta redirects here with ?code=...
- * 1. Directly calls backend POST /channels/instagram/connect
+ * 1. Directly calls backend POST /channels/whatsapp/connect
  * 2. Broadcasts completion to opener / BroadcastChannel / localStorage
  * 3. Shows live progress & error messages, then closes
  */
-export default function InstagramCallbackPage() {
+export default function WhatsAppCallbackPage() {
   const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [usernameDetail, setUsernameDetail] = useState<string | null>(null);
+  const [phoneDetail, setPhoneDetail] = useState<string | null>(null);
   const executedRef = useRef(false);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function InstagramCallbackPage() {
     if (error) {
       setStatus("error");
       setErrorMessage(error);
-      notifyOpener({ type: "INSTAGRAM_OAUTH_ERROR", error });
+      notifyOpener({ type: "WHATSAPP_OAUTH_ERROR", error });
       return;
     }
 
@@ -44,27 +44,37 @@ export default function InstagramCallbackPage() {
       return;
     }
 
+    console.log("[WhatsApp Callback Page] Received authorization code:", code);
+
     // Direct Backend Connection from Callback Page
     const runConnection = async () => {
       try {
         setStatus("processing");
         const redirectUri = `${window.location.origin}${window.location.pathname}`;
 
-        // 1. Send code to backend
-        const res = await connectInstagram({
+        // 1. Send code to opener window first
+        notifyOpener({
+          type: "WHATSAPP_OAUTH_CODE",
+          code,
+        });
+
+        // 2. Immediately send code to backend
+        console.log("[WhatsApp Callback Page] Sending POST /channels/whatsapp/connect with code and redirectUri:", redirectUri);
+        const res = await connectWhatsApp({
           code,
           redirectUri,
         });
+        console.log("[WhatsApp Callback Page] Backend connection successful:", res);
 
         const meta = res.channel?.metadata as Record<string, unknown> | undefined;
-        const username = (meta?.igUsername as string) || (meta?.name as string) || undefined;
-        if (username) setUsernameDetail(`@${username.replace(/^@/, "")}`);
+        const phone = (meta?.displayPhoneNumber as string) || (meta?.verifiedName as string) || undefined;
+        if (phone) setPhoneDetail(phone);
 
         setStatus("success");
 
         // 2. Broadcast success to parent window
         notifyOpener({
-          type: "INSTAGRAM_CONNECTED",
+          type: "WHATSAPP_CONNECTED",
           code,
           channel: res.channel,
         });
@@ -79,9 +89,9 @@ export default function InstagramCallbackPage() {
         }, 1200);
       } catch (err) {
         setStatus("error");
-        const msg = err instanceof Error ? err.message : "Ошибка подключения Instagram";
+        const msg = err instanceof Error ? err.message : "Ошибка подключения WhatsApp";
         setErrorMessage(msg);
-        notifyOpener({ type: "INSTAGRAM_OAUTH_ERROR", error: msg });
+        notifyOpener({ type: "WHATSAPP_OAUTH_ERROR", error: msg });
       }
     };
 
@@ -122,27 +132,27 @@ export default function InstagramCallbackPage() {
       <div className="max-w-md w-full p-8 rounded-3xl bg-card border border-border shadow-lg flex flex-col items-center gap-4">
         {status === "processing" && (
           <>
-            <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
             <h3 className="text-base font-bold text-foreground">
-              Подключение Instagram...
+              Подключение WhatsApp...
             </h3>
             <p className="text-xs text-muted-foreground">
-              Выполняем авторизацию и привязку бизнес-аккаунта на сервере
+              Выполняем регистрацию номера и привязку вебхуков на сервере
             </p>
           </>
         )}
 
         {status === "success" && (
           <>
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-500/20 to-pink-500/20 border border-purple-500/20 flex items-center justify-center text-2xl text-purple-600 dark:text-purple-400">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl text-emerald-600 dark:text-emerald-400">
               ✓
             </div>
             <h3 className="text-base font-bold text-foreground">
-              Instagram успешно подключен!
+              WhatsApp успешно подключен!
             </h3>
-            {usernameDetail && (
+            {phoneDetail && (
               <div className="px-3 py-1 rounded-xl bg-muted border border-border text-xs font-mono font-semibold text-foreground">
-                {usernameDetail}
+                {phoneDetail}
               </div>
             )}
             <p className="text-xs text-muted-foreground">
@@ -151,7 +161,7 @@ export default function InstagramCallbackPage() {
             <button
               type="button"
               onClick={() => window.close()}
-              className="mt-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-md"
+              className="mt-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer"
             >
               Закрыть окно
             </button>
@@ -164,7 +174,7 @@ export default function InstagramCallbackPage() {
               ✕
             </div>
             <h3 className="text-base font-bold text-foreground">
-              Ошибка подключения Instagram
+              Ошибка подключения WhatsApp
             </h3>
             <p className="text-xs text-destructive leading-relaxed">
               {errorMessage || "Не удалось завершить подключение на сервере."}

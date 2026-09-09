@@ -19,6 +19,7 @@ async function handleProxy(request: NextRequest, params: { proxy: string[] }) {
   const headers = new Headers(request.headers);
   headers.delete('host');
   headers.delete('connection');
+  headers.set('ngrok-skip-browser-warning', 'true');
 
   let body: BodyInit | undefined = undefined;
   if (request.method !== 'GET' && request.method !== 'HEAD') {

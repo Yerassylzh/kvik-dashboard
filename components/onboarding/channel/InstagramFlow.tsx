@@ -13,9 +13,16 @@ interface InstagramFlowProps {
 
 type FlowState = "idle" | "ready" | "waiting" | "connecting" | "success" | "error";
 
+const PUBLIC_URL = process.env.NEXT_PUBLIC_APP_URL;
+
 /** URL of the callback page that reads ?code= and postMessages it back */
-const getCallbackUri = () =>
-  `${window.location.origin}/onboarding/instagram-callback`;
+const getCallbackUri = () => {
+  if (typeof window === "undefined") return `${PUBLIC_URL || "https://kvik-dashboard.vercel.app"}/onboarding/instagram-callback`;
+  const isHttps = window.location.protocol === "https:";
+  return isHttps
+    ? `${window.location.origin}/onboarding/instagram-callback`
+    : `${PUBLIC_URL || "https://kvik-dashboard.vercel.app"}/onboarding/instagram-callback`;
+};
 
 export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
   const t = useTranslations("onboarding.channel");
@@ -37,17 +44,18 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
       });
   }, []);
 
-  // Listen for the code postMessage from the callback popup
+  // Listen for the code postMessage from the callback popup via postMessage, BroadcastChannel, and localStorage
   useEffect(() => {
-    const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== "INSTAGRAM_OAUTH_CODE") return;
+    let isProcessing = false;
 
-      const code: string = event.data.code;
-      if (!code) return;
-
-      // Close popup
-      try { popupRef.current?.close(); } catch { /* noop */ }
+    const onCodeReceived = async (code: string) => {
+      if (!code || isProcessing) return;
+      isProcessing = true;
+      try {
+        popupRef.current?.close();
+      } catch {
+        // noop
+      }
 
       try {
         setFlowState("connecting");
@@ -63,8 +71,81 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
       }
     };
 
+    const handleMessage = async (event: MessageEvent) => {
+      // Handle direct INSTAGRAM_CONNECTED notification from callback page
+      if (event.data?.type === "INSTAGRAM_CONNECTED" && event.data?.channel) {
+        setFlowState("success");
+        onSuccess(event.data.channel.metadata as InstagramChannelMetadata);
+        return;
+      }
+
+      const isAllowedOrigin =
+        event.origin === window.location.origin ||
+        event.origin.includes("vercel.app") ||
+        event.origin.includes("localhost") ||
+        event.origin.includes("cloudflare") ||
+        event.origin.includes("kvik");
+      if (!isAllowedOrigin) return;
+      if (event.data?.type !== "INSTAGRAM_OAUTH_CODE" && event.data?.type !== "OAUTH_CODE") return;
+
+      const code: string = event.data?.code;
+      if (code) {
+        await onCodeReceived(code);
+      }
+    };
+
+    // BroadcastChannel listener
+    let bc: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== "undefined") {
+      bc = new BroadcastChannel("kvik_auth_channel");
+      bc.onmessage = (event) => {
+        if (event.data?.type === "INSTAGRAM_CONNECTED" && event.data?.channel) {
+          setFlowState("success");
+          onSuccess(event.data.channel.metadata as InstagramChannelMetadata);
+          return;
+        }
+        const code = event.data?.code;
+        if (
+          code &&
+          (event.data?.type === "INSTAGRAM_OAUTH_CODE" || event.data?.type === "OAUTH_CODE")
+        ) {
+          void onCodeReceived(code);
+        }
+      };
+    }
+
+    // Storage listener
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "kvik_oauth_payload" && event.newValue) {
+        try {
+          const parsed = JSON.parse(event.newValue);
+          if (parsed?.type === "INSTAGRAM_CONNECTED" && parsed?.channel) {
+            localStorage.removeItem("kvik_oauth_payload");
+            setFlowState("success");
+            onSuccess(parsed.channel.metadata as InstagramChannelMetadata);
+            return;
+          }
+          if (
+            parsed?.code &&
+            (parsed.type === "INSTAGRAM_OAUTH_CODE" || parsed.type === "OAUTH_CODE")
+          ) {
+            localStorage.removeItem("kvik_oauth_payload");
+            void onCodeReceived(parsed.code);
+          }
+        } catch {
+          // noop
+        }
+      }
+    };
+
     window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      window.removeEventListener("storage", handleStorage);
+      bc?.close();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

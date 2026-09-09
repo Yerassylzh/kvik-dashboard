@@ -31,6 +31,7 @@ export async function getServerUser(): Promise<ServerUser | null> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
         Cookie: `refresh_token=${refreshCookie.value}`,
       },
       cache: 'no-store',
@@ -43,6 +44,7 @@ export async function getServerUser(): Promise<ServerUser | null> {
 
     const meRes = await fetch(`${BACKEND_URL}/auth/me`, {
       headers: {
+        'ngrok-skip-browser-warning': 'true',
         Authorization: `Bearer ${access_token}`,
       },
       cache: 'no-store',

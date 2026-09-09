@@ -123,6 +123,16 @@ export async function submitChannel(dto: ChannelDto): Promise<OnboardingStateRes
   return data;
 }
 
+export async function confirmChannelStep(): Promise<OnboardingStateResponse> {
+  const { data } = await apiClient.post<OnboardingStateResponse>('/onboarding/step/channel-confirm');
+  return data;
+}
+
+export async function skipChannelStep(): Promise<OnboardingStateResponse> {
+  const { data } = await apiClient.post<OnboardingStateResponse>('/onboarding/step/channel-skip');
+  return data;
+}
+
 // --- Step 5: Qualification rules ---
 
 export async function submitQualification(dto: QualificationDto): Promise<OnboardingStateResponse> {

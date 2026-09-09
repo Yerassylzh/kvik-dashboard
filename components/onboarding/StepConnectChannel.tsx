@@ -58,6 +58,20 @@ export function StepConnectChannel({
           };
         }
         setChannels(map);
+
+        // If WhatsApp is already connected/confirmed, show next channel by default
+        if (map.WHATSAPP?.status === "CONNECTED") {
+          if (map.INSTAGRAM?.status !== "CONNECTED") {
+            setActiveStage(1);
+            prevStageRef.current = 1;
+          } else if (map.TELEGRAM?.status !== "CONNECTED") {
+            setActiveStage(2);
+            prevStageRef.current = 2;
+          } else {
+            setActiveStage(3);
+            prevStageRef.current = 3;
+          }
+        }
       } catch {
         // Non-fatal — proceed with empty statuses
       } finally {
