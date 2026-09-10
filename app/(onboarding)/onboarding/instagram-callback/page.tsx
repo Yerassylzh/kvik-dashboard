@@ -44,17 +44,27 @@ export default function InstagramCallbackPage() {
       return;
     }
 
+    console.log("[Instagram Callback Page] Received authorization code:", code);
+
     // Direct Backend Connection from Callback Page
     const runConnection = async () => {
       try {
         setStatus("processing");
         const redirectUri = `${window.location.origin}${window.location.pathname}`;
 
-        // 1. Send code to backend
+        // 1. Send code to opener window first so main window (with active session) can connect
+        notifyOpener({
+          type: "INSTAGRAM_OAUTH_CODE",
+          code,
+        });
+
+        // 2. Also attempt backend connect directly if session exists in popup context
+        console.log("[Instagram Callback Page] Sending POST /channels/instagram/connect with code and redirectUri:", redirectUri);
         const res = await connectInstagram({
           code,
           redirectUri,
         });
+        console.log("[Instagram Callback Page] Backend connection successful:", res);
 
         const meta = res.channel?.metadata as Record<string, unknown> | undefined;
         const username = (meta?.igUsername as string) || (meta?.name as string) || undefined;
@@ -62,14 +72,14 @@ export default function InstagramCallbackPage() {
 
         setStatus("success");
 
-        // 2. Broadcast success to parent window
+        // 3. Broadcast success to parent window
         notifyOpener({
           type: "INSTAGRAM_CONNECTED",
           code,
           channel: res.channel,
         });
 
-        // 3. Auto-close popup after short delay
+        // 4. Auto-close popup after short delay
         setTimeout(() => {
           try {
             window.close();
@@ -78,10 +88,23 @@ export default function InstagramCallbackPage() {
           }
         }, 1200);
       } catch (err) {
-        setStatus("error");
-        const msg = err instanceof Error ? err.message : "Ошибка подключения Instagram";
-        setErrorMessage(msg);
-        notifyOpener({ type: "INSTAGRAM_OAUTH_ERROR", error: msg });
+        console.warn("[Instagram Callback Page] Direct popup connect error (handled by main window):", err);
+        // If popup was opened from an active opener window, the main window will process the code.
+        // Auto-close popup if opener exists to avoid displaying false error screen.
+        if (window.opener) {
+          try {
+            setTimeout(() => {
+              window.close();
+            }, 600);
+          } catch {
+            // noop
+          }
+        } else {
+          setStatus("error");
+          const msg = err instanceof Error ? err.message : "Ошибка подключения Instagram";
+          setErrorMessage(msg);
+          notifyOpener({ type: "INSTAGRAM_OAUTH_ERROR", error: msg });
+        }
       }
     };
 

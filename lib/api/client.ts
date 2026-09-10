@@ -13,39 +13,92 @@ export const apiClient = axios.create({
   },
 });
 
-// Request Interceptor: Attach Access Token and Accept-Language
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = useAuthStore.getState().accessToken;
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+// ---------------------------------------------------------------------------
+// Singleton Token Refresh Promise
+// ---------------------------------------------------------------------------
+let refreshPromise: Promise<string> | null = null;
+
+export async function getOrRefreshToken(): Promise<string> {
+  const currentToken = useAuthStore.getState().accessToken;
+  if (currentToken) {
+    return currentToken;
+  }
+
+  // Reuse ongoing refresh promise if one is already in flight
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = (async () => {
+    try {
+      const { data } = await axios.post<{ access_token: string }>(
+        '/api/auth/refresh',
+        {},
+        { withCredentials: true }
+      );
+      const newToken = data.access_token;
+      useAuthStore.getState().setAccessToken(newToken);
+      return newToken;
+    } catch (err) {
+      useAuthStore.getState().clearAuth();
+      throw err;
+    } finally {
+      refreshPromise = null;
     }
+  })();
+
+  return refreshPromise;
+}
+
+// ---------------------------------------------------------------------------
+// Request Interceptor: Attach Access Token and Accept-Language
+// ---------------------------------------------------------------------------
+apiClient.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
     if (config.headers) {
       config.headers['Accept-Language'] = getCurrentLocale();
     }
+
+    const isAuthRoute =
+      config.url?.includes('/auth/login') ||
+      config.url?.includes('/auth/register') ||
+      config.url?.includes('/auth/refresh');
+
+    if (isAuthRoute) {
+      return config;
+    }
+
+    let token = useAuthStore.getState().accessToken;
+
+    // If no token in memory on startup (e.g. after page refresh), wait for singleton refresh
+    if (!token && typeof window !== 'undefined') {
+      const pathname = window.location.pathname;
+      const isPublicPath =
+        pathname.startsWith('/login') ||
+        pathname.startsWith('/register') ||
+        pathname.includes('callback');
+
+      if (!isPublicPath) {
+        try {
+          token = await getOrRefreshToken();
+        } catch {
+          // Refresh failed — proceed without token and let response interceptor handle status
+        }
+      }
+    }
+
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle 401 & Silent Refresh + i18n Translation
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (err: unknown) => void;
-}> = [];
-
-const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach((promise) => {
-    if (error) {
-      promise.reject(error);
-    } else if (token) {
-      promise.resolve(token);
-    }
-  });
-  failedQueue = [];
-};
-
+// ---------------------------------------------------------------------------
+// Response Interceptor: Handle 401, Silent Refresh & i18n Translation
+// ---------------------------------------------------------------------------
 apiClient.interceptors.response.use(
   (response) => {
     if (response.data) {
@@ -62,59 +115,42 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
+    const isAuthRoute =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/refresh');
+
     if (
       error.response?.status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/login') &&
-      !originalRequest.url?.includes('/auth/register')
+      !isAuthRoute
     ) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({
-            resolve: (token: string) => {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-              resolve(apiClient(originalRequest));
-            },
-            reject: (err) => reject(err),
-          });
-        });
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
 
       try {
-        const { data } = await axios.post<{ access_token: string }>(
-          '/api/auth/refresh',
-          {},
-          { withCredentials: true }
-        );
-
-        const newAccessToken = data.access_token;
-        useAuthStore.getState().setAccessToken(newAccessToken);
-
-        processQueue(null, newAccessToken);
-
+        const newAccessToken = await getOrRefreshToken();
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
         useAuthStore.getState().clearAuth();
 
         if (typeof window !== 'undefined') {
           const pathname = window.location.pathname;
-          if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
+          const isPublicPath =
+            pathname.startsWith('/login') ||
+            pathname.startsWith('/register') ||
+            pathname.includes('callback');
+
+          if (!isPublicPath) {
             const from = encodeURIComponent(pathname + window.location.search);
             window.location.href = `/login?from=${from}`;
           }
         }
 
         return Promise.reject(
-          new ApiError(401, 'Session expired. Please log in again.')
+          new ApiError(401, 'Session expired. Please log in again.', error.response?.data)
         );
-      } finally {
-        isRefreshing = false;
       }
     }
 
@@ -123,15 +159,6 @@ apiClient.interceptors.response.use(
       error.message ||
       'An unexpected error occurred';
     const status = error.response?.status || 500;
-
-    if (status === 401 && typeof window !== 'undefined') {
-      const pathname = window.location.pathname;
-      if (!pathname.startsWith('/login') && !pathname.startsWith('/register')) {
-        useAuthStore.getState().clearAuth();
-        const from = encodeURIComponent(pathname + window.location.search);
-        window.location.href = `/login?from=${from}`;
-      }
-    }
 
     return Promise.reject(new ApiError(status, message, error.response?.data));
   }

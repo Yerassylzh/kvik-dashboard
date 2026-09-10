@@ -20,9 +20,18 @@ export async function POST(request: NextRequest) {
     const data = await backendRes.json().catch(() => ({ message: 'Logged out' }));
     const response = NextResponse.json(data, { status: backendRes.status });
 
-    const setCookie = backendRes.headers.get('set-cookie');
-    if (setCookie) {
-      response.headers.set('set-cookie', setCookie);
+    const setCookies = backendRes.headers.getSetCookie?.() || [];
+    if (setCookies.length > 0) {
+      setCookies.forEach((cookieStr) => {
+        response.headers.append('set-cookie', cookieStr);
+      });
+    } else {
+      const singleCookie = backendRes.headers.get('set-cookie');
+      if (singleCookie) {
+        response.headers.set('set-cookie', singleCookie);
+      } else {
+        response.cookies.delete('refresh_token');
+      }
     }
 
     return response;

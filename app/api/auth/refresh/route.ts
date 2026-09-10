@@ -15,24 +15,31 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const data = await backendRes.json();
+    const data = await backendRes.json().catch(() => ({}));
     const response = NextResponse.json(data, { status: backendRes.status });
 
-    const setCookie = backendRes.headers.get('set-cookie');
-    if (setCookie) {
-      response.headers.set('set-cookie', setCookie);
-    } else if (!backendRes.ok) {
+    const setCookies = backendRes.headers.getSetCookie?.() || [];
+    if (setCookies.length > 0) {
+      setCookies.forEach((cookieStr) => {
+        response.headers.append('set-cookie', cookieStr);
+      });
+    } else {
+      const singleCookie = backendRes.headers.get('set-cookie');
+      if (singleCookie) {
+        response.headers.set('set-cookie', singleCookie);
+      }
+    }
+
+    if (!backendRes.ok && backendRes.status === 401) {
       response.cookies.delete('refresh_token');
     }
 
     return response;
   } catch (error) {
     console.error('Refresh proxy error:', error);
-    const response = NextResponse.json(
+    return NextResponse.json(
       { message: 'Session refresh failed' },
       { status: 401 }
     );
-    response.cookies.delete('refresh_token');
-    return response;
   }
 }

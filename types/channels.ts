@@ -36,6 +36,7 @@ export interface InstagramChannelMetadata {
   instagramId: string;
   igUsername?: string;
   name?: string;
+  profilePictureUrl?: string;
 }
 
 export interface TelegramChannelMetadata {
@@ -112,7 +113,7 @@ export interface ConnectWhatsAppDto {
 
 export interface ConnectInstagramDto {
   code: string;
-  redirectUri: string;
+  redirectUri?: string;
   pageId?: string;
 }
 

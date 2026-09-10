@@ -29,15 +29,23 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
   const [flowState, setFlowState] = useState<FlowState>("ready");
   const [error, setError] = useState<string | null>(null);
   const popupRef = useRef<Window | null>(null);
-  const metaScopesRef = useRef<string>("instagram_basic,instagram_manage_messages,pages_show_list,pages_manage_metadata");
+  const metaScopesRef = useRef<string>("instagram_basic,instagram_manage_messages,pages_show_list,pages_read_engagement");
   const appIdRef = useRef<string>("");
+  const apiVersionRef = useRef<string>("v21.0");
 
-  // Load Meta config for appId & scopes
+  // Load Meta config for appId, scopes & apiVersion
   useEffect(() => {
     getMetaConfig()
       .then((cfg) => {
         appIdRef.current = cfg.appId;
-        metaScopesRef.current = cfg.instagramScopes.join(",");
+        if (cfg.apiVersion) apiVersionRef.current = cfg.apiVersion;
+        if (cfg.instagramScopes?.length) {
+          // Replace deprecated pages_manage_metadata with pages_read_engagement
+          const cleanedScopes = cfg.instagramScopes
+            .filter((s) => s !== "pages_manage_metadata")
+            .concat(["pages_read_engagement"]);
+          metaScopesRef.current = Array.from(new Set(cleanedScopes)).join(",");
+        }
       })
       .catch(() => {
         // Non-fatal — scopes fall back to defaults above
@@ -154,30 +162,39 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
     setFlowState("waiting");
     setError(null);
 
-    const redirectUri = getCallbackUri();
-    const params = new URLSearchParams({
-      client_id: appIdRef.current,
-      redirect_uri: redirectUri,
-      response_type: "code",
-      scope: metaScopesRef.current,
-    });
+    try {
+      const redirectUri = getCallbackUri();
+      const params = new URLSearchParams({
+        client_id: appIdRef.current,
+        redirect_uri: redirectUri,
+        response_type: "code",
+        scope: metaScopesRef.current,
+      });
 
-    const oauthUrl = `https://www.facebook.com/dialog/oauth?${params.toString()}`;
-    const popup = window.open(
-      oauthUrl,
-      "instagram-oauth",
-      "width=600,height=700,top=100,left=200,scrollbars=yes"
-    );
-    popupRef.current = popup;
+      const rawVer = apiVersionRef.current || "v21.0";
+      const verNum = parseInt(rawVer.replace(/^v/, ""), 10);
+      const safeApiVersion = !isNaN(verNum) && verNum <= 22 ? rawVer : "v21.0";
 
-    // Poll every 1 second to detect if user manually closed the popup
-    const pollTimer = setInterval(() => {
-      if (popup?.closed) {
-        clearInterval(pollTimer);
-        // Only reset if we're still "waiting" (i.e. no code received)
-        setFlowState((prev) => (prev === "waiting" ? "ready" : prev));
-      }
-    }, 1000);
+      const oauthUrl = `https://www.facebook.com/${safeApiVersion}/dialog/oauth?${params.toString()}`;
+      const popup = window.open(
+        oauthUrl,
+        "instagram-oauth",
+        "width=600,height=700,top=100,left=200,scrollbars=yes"
+      );
+      popupRef.current = popup;
+
+      // Poll every 1 second to detect if user manually closed the popup
+      const pollTimer = setInterval(() => {
+        if (popup?.closed) {
+          clearInterval(pollTimer);
+          // Only reset if we're still "waiting" (i.e. no code received)
+          setFlowState((prev) => (prev === "waiting" ? "ready" : prev));
+        }
+      }, 1000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("instagram_flow_error"));
+      setFlowState("error");
+    }
   };
 
   return (

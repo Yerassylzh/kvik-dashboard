@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function OnboardingLayout({
@@ -9,7 +10,17 @@ export default function OnboardingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const { logout } = useAuth();
+
+  // Standalone popup callback pages render clean without onboarding header
+  if (
+    pathname.includes("callback") ||
+    pathname.startsWith("/onboarding/whatsapp-callback") ||
+    pathname.startsWith("/onboarding/instagram-callback")
+  ) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">

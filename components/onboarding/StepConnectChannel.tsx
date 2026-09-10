@@ -97,7 +97,8 @@ export function StepConnectChannel({
     }
     if (type === "INSTAGRAM") {
       const ig = m as unknown as InstagramChannelMetadata;
-      return ig.igUsername ? `@${ig.igUsername}` : undefined;
+      if (ig.igUsername) return `@${ig.igUsername.replace(/^@/, '')}`;
+      return ig.name || ig.pageName || undefined;
     }
     if (type === "TELEGRAM") {
       const tg = m as unknown as TelegramChannelMetadata;

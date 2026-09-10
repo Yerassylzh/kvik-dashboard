@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 /**
@@ -9,10 +9,13 @@ import { useAuth } from '@/hooks/useAuth';
  * access token живёт только в памяти (Zustand), поэтому после перезагрузки
  * страницы его нужно восстановить из HttpOnly refresh-cookie до того, как
  * клиентские страницы (например, /onboarding) начнут дёргать защищённые API.
- *
- * useAuth() при монтировании вызывает checkAuth() → refresh → me.
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  useAuth();
+  const { checkAuth } = useAuth();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   return <>{children}</>;
 }
