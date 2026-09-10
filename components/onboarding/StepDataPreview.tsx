@@ -5,8 +5,11 @@ import { useTranslations } from "next-intl";
 import { BusinessContext, KnowledgeEntry, ParsingStatus } from "@/types/niche";
 import { getBusinessContext, getKnowledgeEntries } from "@/lib/api/onboarding";
 import { KnowledgeEntryCard } from "./knowledge/KnowledgeEntryCard";
+import { BusinessContextSummary } from "./knowledge/BusinessContextSummary";
 import { AiProcessingTimeline } from "@/components/ui/motion/AiProcessingTimeline";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
+import { SegmentedTabs, TabItem } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 export interface KnowledgePreviewState {
   parsingStatus: ParsingStatus;
@@ -32,46 +35,6 @@ type FilterType =
   | "DOCUMENT"
   | "MANUAL_NOTE";
 
-const FILTER_TABS: Array<{ id: FilterType; labelKey: string; icon: string }> = [
-  { id: "ALL", labelKey: "knowledge.preview.filter_all", icon: "📦" },
-  {
-    id: "LOCAL_LISTING",
-    labelKey: "knowledge.preview.filter_twogis",
-    icon: "📍",
-  },
-  {
-    id: "WEBSITE_CONTENT",
-    labelKey: "knowledge.preview.filter_website",
-    icon: "🌐",
-  },
-  {
-    id: "DOCUMENT",
-    labelKey: "knowledge.preview.filter_documents",
-    icon: "📄",
-  },
-  { id: "MANUAL_NOTE", labelKey: "knowledge.preview.filter_notes", icon: "📝" },
-];
-
-function ContextRow({
-  label,
-  value,
-}: {
-  label: string;
-  value?: string | string[] | null;
-}) {
-  if (!value) return null;
-  const text = Array.isArray(value) ? value.join("; ") : value;
-  if (!text.trim()) return null;
-  return (
-    <div className="flex gap-2 text-xs">
-      <span className="font-semibold text-foreground flex-shrink-0">
-        {label}:
-      </span>
-      <span className="text-muted-foreground">{text}</span>
-    </div>
-  );
-}
-
 export function StepDataPreview({
   dataPreview,
   onConfirm,
@@ -86,7 +49,6 @@ export function StepDataPreview({
   const [page, setPage] = useState(1);
   const [context, setContext] = useState<BusinessContext | null>(null);
 
-  // Fetch Business Context and Knowledge Entries on mount
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -136,7 +98,6 @@ export function StepDataPreview({
         e.processingStatus === "PENDING" || e.processingStatus === "PROCESSING"
     );
 
-  // Filter entries
   const filteredEntries = entries.filter((entry) => {
     if (selectedFilter === "ALL") return true;
     return entry.type === selectedFilter;
@@ -150,6 +111,43 @@ export function StepDataPreview({
   const visible = filteredEntries.slice(
     (safePage - 1) * ITEMS_PER_PAGE,
     safePage * ITEMS_PER_PAGE
+  );
+
+  const allFilterTabs: TabItem<FilterType>[] = [
+    {
+      id: "ALL",
+      label: t("knowledge.preview.filter_all"),
+      icon: "📦",
+      count: entries.length,
+    },
+    {
+      id: "LOCAL_LISTING",
+      label: t("knowledge.preview.filter_twogis"),
+      icon: "📍",
+      count: entries.filter((e) => e.type === "LOCAL_LISTING").length,
+    },
+    {
+      id: "WEBSITE_CONTENT",
+      label: t("knowledge.preview.filter_website"),
+      icon: "🌐",
+      count: entries.filter((e) => e.type === "WEBSITE_CONTENT").length,
+    },
+    {
+      id: "DOCUMENT",
+      label: t("knowledge.preview.filter_documents"),
+      icon: "📄",
+      count: entries.filter((e) => e.type === "DOCUMENT").length,
+    },
+    {
+      id: "MANUAL_NOTE",
+      label: t("knowledge.preview.filter_notes"),
+      icon: "📝",
+      count: entries.filter((e) => e.type === "MANUAL_NOTE").length,
+    },
+  ];
+
+  const filterTabs = allFilterTabs.filter(
+    (tab) => tab.id === "ALL" || (tab.count ?? 0) > 0
   );
 
   if (isFailed) {
@@ -203,91 +201,20 @@ export function StepDataPreview({
       )}
 
       {/* AI Business Context Summary Card */}
-      {context && (
-        <FadeIn
-          delay={0.05}
-          className="p-4 sm:p-5 rounded-2xl bg-primary/5 border border-primary/20 space-y-2.5 shadow-xs"
-        >
-          <p className="font-bold text-foreground text-xs sm:text-sm flex items-center gap-2">
-            <span>🤖</span>
-            <span>{t("knowledge.preview.ai_summary_title")}</span>
-          </p>
-          <div className="space-y-1.5 pt-1">
-            <ContextRow
-              label={t("knowledge.preview.context_type")}
-              value={context.businessType}
-            />
-            <ContextRow
-              label={t("knowledge.preview.context_specialization")}
-              value={context.specialization}
-            />
-            <ContextRow
-              label={t("knowledge.preview.context_services")}
-              value={context.servicesOffered}
-            />
-            <ContextRow
-              label={t("knowledge.preview.context_pricing")}
-              value={context.pricingPolicy}
-            />
-            <ContextRow
-              label={t("knowledge.preview.context_booking")}
-              value={context.bookingPolicy}
-            />
-            <ContextRow
-              label={t("knowledge.preview.context_team")}
-              value={context.teamSummary}
-            />
-            <ContextRow
-              label={t("knowledge.preview.context_schedule")}
-              value={context.workingHours}
-            />
-          </div>
-        </FadeIn>
-      )}
+      {context && <BusinessContextSummary context={context} />}
 
       {/* Source Filter Tabs & Entries List */}
       <FadeIn delay={0.1} className="space-y-3">
-        {/* Clean Segmented Filter Tabs without scrollbars */}
         {entries.length > 0 && (
-          <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden p-1 rounded-xl bg-muted/40 border border-border/70 w-full sm:w-fit">
-              {FILTER_TABS.map((tab) => {
-                const count =
-                  tab.id === "ALL"
-                    ? entries.length
-                    : entries.filter((e) => e.type === tab.id).length;
-                if (count === 0 && tab.id !== "ALL") return null;
-
-                const isActive = selectedFilter === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedFilter(tab.id);
-                      setPage(1);
-                    }}
-                    className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer flex items-center gap-1.5 flex-shrink-0 select-none ${
-                      isActive
-                        ? "bg-card text-foreground font-semibold shadow-xs border border-border"
-                        : "text-muted-foreground hover:text-foreground hover:bg-card/40"
-                    }`}
-                  >
-                    <span>{tab.icon}</span>
-                    <span>{t(tab.labelKey as any)}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
-                        isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <SegmentedTabs
+            tabs={filterTabs}
+            activeTab={selectedFilter}
+            onChange={(id) => {
+              setSelectedFilter(id);
+              setPage(1);
+            }}
+          />
+        )}
 
         {/* Entries List */}
         <div className="themed-scroll space-y-3 max-h-[30rem] overflow-y-auto pr-1">
@@ -322,23 +249,19 @@ export function StepDataPreview({
         )}
       </FadeIn>
 
-      {/* Prominent Action Button (No Back Button) */}
+      {/* Prominent Action Button */}
       <FadeIn delay={0.15} className="pt-2">
-        <button
+        <Button
           type="button"
           onClick={onConfirm}
-          disabled={loading}
-          className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm rounded-xl shadow-lg transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          loading={loading}
+          size="lg"
+          className="w-full shadow-lg"
         >
-          {loading ? (
-            <>
-              <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              <span>{t("knowledge.preview.saving_btn")}</span>
-            </>
-          ) : (
-            <span>{t("knowledge.preview.btn_confirm")}</span>
-          )}
-        </button>
+          {loading
+            ? t("knowledge.preview.saving_btn")
+            : t("knowledge.preview.btn_confirm")}
+        </Button>
       </FadeIn>
     </div>
   );

@@ -3,10 +3,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { getOnboardingState } from '@/lib/api/onboarding';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 function LoginForm() {
+  const t = useTranslations('auth');
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '';
@@ -31,7 +35,6 @@ function LoginForm() {
     try {
       await login({ email, password });
       
-      // Check onboarding state after successful login
       try {
         const stateRes = await getOnboardingState();
         if (stateRes.step === 'DONE') {
@@ -43,7 +46,7 @@ function LoginForm() {
         router.replace(from || '/onboarding');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка входа. Проверьте почту и пароль.');
+      setError(err instanceof Error ? err.message : t('login.error_fallback'));
     } finally {
       setLoading(false);
     }
@@ -52,71 +55,54 @@ function LoginForm() {
   return (
     <div>
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Вход в систему</h1>
-        <p className="text-sm text-muted-foreground mt-1">Введите данные вашего аккаунта Kvik</p>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          {t('login.title')}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {t('login.subtitle')}
+        </p>
       </div>
 
       {error && (
-        <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-300 text-xs flex items-start gap-2">
+        <div className="mb-5 p-3 rounded-xl alert-destructive border text-xs flex items-start gap-2 shadow-xs">
           <span className="font-bold">⚠️</span>
           <span>{error}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-            Email
-          </label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="name@company.com"
-            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
+        <Input
+          label={t('login.email_label')}
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t('login.email_placeholder')}
+        />
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Пароль
-            </label>
-          </div>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
+        <Input
+          label={t('login.password_label')}
+          type="password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t('login.password_placeholder')}
+        />
 
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full mt-2 py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm rounded-xl shadow-md focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          loading={loading}
+          size="lg"
+          className="w-full mt-2 shadow-md"
         >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              <span>Входим...</span>
-            </>
-          ) : (
-            <span>Войти в аккаунт</span>
-          )}
-        </button>
+          {t('login.submit_button')}
+        </Button>
       </form>
 
       <div className="mt-6 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        Ещё нет аккаунта?{' '}
+        {t('login.no_account')}{' '}
         <Link href="/register" className="font-semibold text-accent-brand hover:underline transition-colors">
-          Зарегистрироваться
+          {t('login.register_link')}
         </Link>
       </div>
     </div>

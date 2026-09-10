@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { QualificationDto } from "@/types/niche";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface StepQualificationProps {
   onSubmit: (data: QualificationDto) => void;
@@ -46,9 +49,6 @@ export function StepQualification({
     onSubmit(dto);
   };
 
-  const inputClass =
-    "w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm transition-all";
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <FadeIn
@@ -67,19 +67,19 @@ export function StepQualification({
             <span className="h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 text-accent-brand font-bold text-xs flex items-center justify-center flex-shrink-0">
               {index + 1}
             </span>
-            <input
-              type="text"
-              value={question}
-              onChange={(e) => updateQuestion(index, e.target.value)}
-              placeholder={t("qualification.question_placeholder")}
-              className={inputClass}
-            />
+            <div className="flex-1">
+              <Input
+                value={question}
+                onChange={(e) => updateQuestion(index, e.target.value)}
+                placeholder={t("qualification.question_placeholder")}
+              />
+            </div>
             {questions.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeQuestion(index)}
                 title={t("qualification.btn_add_question")}
-                className="h-8 w-8 rounded-xl bg-destructive-subtle hover:bg-destructive/10 text-destructive font-bold text-sm flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer"
+                className="h-8 w-8 rounded-xl bg-destructive/10 hover:bg-destructive/20 text-destructive font-bold text-sm flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer"
               >
                 ×
               </button>
@@ -98,33 +98,26 @@ export function StepQualification({
       </FadeIn>
 
       <FadeIn delay={0.15}>
-        <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-          {t("qualification.custom_instructions_label")}
-        </label>
-        <textarea
+        <Textarea
+          label={t("qualification.custom_instructions_label")}
           rows={3}
           value={customInstructions}
           onChange={(e) => setCustomInstructions(e.target.value)}
           placeholder={t("qualification.custom_instructions_placeholder")}
-          className={inputClass}
         />
       </FadeIn>
 
       <FadeIn delay={0.2} className="pt-2">
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          loading={loading}
+          size="lg"
+          className="w-full shadow-md"
         >
-          {loading ? (
-            <>
-              <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              <span>{t("qualification.btn_submitting")}</span>
-            </>
-          ) : (
-            <span>{t("qualification.btn_submit")}</span>
-          )}
-        </button>
+          {loading
+            ? t("qualification.btn_submitting")
+            : t("qualification.btn_submit")}
+        </Button>
       </FadeIn>
     </form>
   );

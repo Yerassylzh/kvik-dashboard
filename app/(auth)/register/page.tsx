@@ -3,9 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function RegisterPage() {
+  const t = useTranslations('auth');
   const router = useRouter();
   const { register, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
@@ -25,12 +29,12 @@ export default function RegisterPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError('Пароли не совпадают');
+      setError(t('register.password_mismatch'));
       return;
     }
 
     if (password.length < 6) {
-      setError('Пароль должен содержать не менее 6 символов');
+      setError(t('register.password_min_length'));
       return;
     }
 
@@ -38,10 +42,9 @@ export default function RegisterPage() {
 
     try {
       await register({ email, password });
-      // New user always goes to onboarding (Step 0: Select Niche)
       router.replace('/onboarding');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка при регистрации. Возможно, этот email уже зарегистрирован.');
+      setError(err instanceof Error ? err.message : t('register.error_fallback'));
     } finally {
       setLoading(false);
     }
@@ -50,83 +53,63 @@ export default function RegisterPage() {
   return (
     <div>
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Создать аккаунт</h1>
-        <p className="text-sm text-muted-foreground mt-1">Подключите ИИ-агента для вашего бизнеса за 5 минут</p>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          {t('register.title')}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {t('register.subtitle')}
+        </p>
       </div>
 
       {error && (
-        <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-300 text-xs flex items-start gap-2">
+        <div className="mb-5 p-3 rounded-xl alert-destructive border text-xs flex items-start gap-2 shadow-xs">
           <span className="font-bold">⚠️</span>
           <span>{error}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-            Email
-          </label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="name@company.com"
-            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
+        <Input
+          label={t('register.email_label')}
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t('register.email_placeholder')}
+        />
 
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-            Пароль
-          </label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Минимум 6 символов"
-            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
+        <Input
+          label={t('register.password_label')}
+          type="password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t('register.password_placeholder')}
+        />
 
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-            Подтвердите пароль
-          </label>
-          <input
-            type="password"
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Повторите пароль"
-            className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
+        <Input
+          label={t('register.confirm_password_label')}
+          type="password"
+          required
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder={t('register.confirm_password_placeholder')}
+        />
 
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full mt-2 py-3 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm rounded-xl shadow-md focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          loading={loading}
+          size="lg"
+          className="w-full mt-2 shadow-md"
         >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              <span>Создаем аккаунт...</span>
-            </>
-          ) : (
-            <span>Зарегистрироваться</span>
-          )}
-        </button>
+          {t('register.submit_button')}
+        </Button>
       </form>
 
       <div className="mt-6 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        Уже зарегистрированы?{' '}
+        {t('register.has_account')}{' '}
         <Link href="/login" className="font-semibold text-accent-brand hover:underline transition-colors">
-          Войти в аккаунт
+          {t('register.login_link')}
         </Link>
       </div>
     </div>

@@ -2,10 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { getOnboardingState } from '@/lib/api/onboarding';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('dashboard');
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, logout } = useAuth();
@@ -60,19 +64,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const niche = user?.workspace?.nicheProfile || 'OTHER_CALENDAR';
 
   const nicheBadges: Record<string, string> = {
-    BEAUTY: '💅 Бьюти',
-    CLINIC: '🏥 Клиника',
-    FITNESS: '🏋️ Фитнес',
-    CONSULTING: '💼 Консалтинг',
-    OTHER_CALENDAR: '📅 Запись на услуги',
+    BEAUTY: t('niche.beauty'),
+    CLINIC: t('niche.clinic'),
+    FITNESS: t('niche.fitness'),
+    CONSULTING: t('niche.consulting'),
+    OTHER_CALENDAR: t('niche.other_calendar'),
   };
 
   const navItems = [
-    { id: 'overview', href: '/?demo=1&tab=overview', label: 'Дашборд', icon: '📊' },
-    { id: 'inbox', href: '/?demo=1&tab=inbox', label: 'Диалоги', icon: '💬' },
-    { id: 'leads', href: '/?demo=1&tab=leads', label: 'Лиды (CRM)', icon: '👥' },
-    { id: 'analytics', href: '/?demo=1&tab=analytics', label: 'Аналитика', icon: '📈' },
-    { id: 'settings', href: '/?demo=1&tab=settings', label: 'Настройки', icon: '⚙️' },
+    { id: 'overview', href: '/?demo=1&tab=overview', label: t('nav.overview'), icon: '📊' },
+    { id: 'inbox', href: '/?demo=1&tab=inbox', label: t('nav.inbox'), icon: '💬' },
+    { id: 'leads', href: '/?demo=1&tab=leads', label: t('nav.leads'), icon: '👥' },
+    { id: 'analytics', href: '/?demo=1&tab=analytics', label: t('nav.analytics'), icon: '📈' },
+    { id: 'settings', href: '/?demo=1&tab=settings', label: t('nav.settings'), icon: '⚙️' },
   ];
 
   return (
@@ -82,16 +86,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2 shadow-md z-40">
           <div className="flex items-center gap-2 font-medium">
             <span className="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider">
-              ✨ Presentation Demo Mode
+              {t('demo.banner_tag')}
             </span>
-            <span>Показ интерактивного дашборда для презентации</span>
+            <span>{t('demo.banner_desc')}</span>
           </div>
 
           <button
             onClick={toggleDemoMode}
-            className="text-[11px] underline opacity-80 hover:opacity-100"
+            className="text-[11px] underline opacity-80 hover:opacity-100 cursor-pointer"
           >
-            Выйти из Demo
+            {t('demo.banner_exit')}
           </button>
         </div>
       )}
@@ -100,19 +104,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Sidebar */}
         <aside className="w-64 border-r border-border bg-card p-4 flex-col justify-between hidden md:flex flex-shrink-0">
           <div>
-            {/* Logo: logo2.png icon image + Kvik.ai text next to it */}
+            {/* Logo */}
             <div className="mb-8 px-2 py-1 flex items-center gap-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo.png" alt="Kvik Logo" className="h-15 w-auto object-contain" />
               <span className="text-xl font-extrabold tracking-tight text-foreground">
-                Kvik<span className="text-indigo-600 dark:text-indigo-400">.ai</span>
+                Kvik<span className="text-primary">.ai</span>
               </span>
             </div>
 
             {/* Niche Badge */}
-            <div className="mb-5 mx-2 px-3.5 py-2.5 rounded-xl bg-indigo-50/60 border border-indigo-200/60 text-xs shadow-sm">
-              <p className="text-indigo-600 font-semibold text-[11px]">Тип бизнеса</p>
-              <p className="text-slate-900 font-bold mt-0.5">{nicheBadges[niche] || nicheBadges.OTHER_CALENDAR}</p>
+            <div className="mb-5 mx-2 px-3.5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-xs shadow-xs">
+              <p className="text-primary font-semibold text-[11px]">{t('sidebar.niche_label')}</p>
+              <p className="text-foreground font-bold mt-0.5">{nicheBadges[niche] || nicheBadges.OTHER_CALENDAR}</p>
             </div>
 
             {/* Navigation */}
@@ -125,8 +129,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={item.href}
                     className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all ${
                       isActive
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20 font-bold'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 font-bold'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     }`}
                   >
                     <span className="text-base">{item.icon}</span>
@@ -139,31 +143,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* User & Plan Footer */}
           <div className="space-y-2 mt-4">
-            <div className="p-3 rounded-xl bg-card border border-border/80 text-xs shadow-sm">
+            <div className="p-3 rounded-xl bg-card border border-border/80 text-xs shadow-xs">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-muted-foreground font-medium">Тариф</span>
-                <span className="text-indigo-600 font-bold">PRO AGENT</span>
+                <span className="text-muted-foreground font-medium">{t('sidebar.plan_label')}</span>
+                <span className="text-primary font-bold">{t('sidebar.plan_name')}</span>
               </div>
-              <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1">
+              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden mb-1">
                 <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 rounded-full" style={{ width: '68%' }} />
               </div>
-              <p className="text-[11px] text-muted-foreground">6,840 / 10,000 токенов ИИ</p>
+              <p className="text-[11px] text-muted-foreground">{t('sidebar.tokens_usage')}</p>
             </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 text-xs flex items-center justify-between gap-2 shadow-sm">
+            <div className="p-3 rounded-xl bg-card border border-border/80 text-xs flex items-center justify-between gap-2 shadow-xs">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                   {user?.email?.[0]?.toUpperCase() || 'A'}
                 </div>
                 <div className="min-w-0">
                   <p className="text-foreground font-semibold truncate">{user?.email || 'demo@kvik.ai'}</p>
-                  <p className="text-muted-foreground text-[10px]">Администратор</p>
+                  <p className="text-muted-foreground text-[10px]">{t('sidebar.role_admin')}</p>
                 </div>
               </div>
               <button
                 onClick={logout}
-                title="Выйти"
-                className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 transition-colors text-sm flex-shrink-0 cursor-pointer"
+                title={t('sidebar.logout_title')}
+                className="p-1.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 text-destructive transition-colors text-sm flex-shrink-0 cursor-pointer"
               >
                 🚪
               </button>
@@ -176,27 +180,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Topbar */}
           <header className="h-16 border-b border-border px-6 flex items-center justify-between bg-card/80 backdrop-blur-md flex-shrink-0 sticky top-0 z-30">
             <div className="flex items-center gap-3">
-              <h2 className="font-bold text-sm text-foreground">Панель управления ИИ-агентом Kvik</h2>
-              {false && isDemo && (
-                <span className="text-[11px] bg-indigo-100 text-indigo-700 font-bold px-2.5 py-0.5 rounded-full border border-indigo-200">
-                  {/* Демо-режим для презентации */}
-                </span>
-              )}
+              <h2 className="font-bold text-sm text-foreground">{t('header.title')}</h2>
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                ИИ-Агент активен 24/7
-              </span>
+              <Badge variant="success" pulse>
+                {t('header.status_active')}
+              </Badge>
 
               {!isDemo && (
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={toggleDemoMode}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 transition-all cursor-pointer"
+                  className="bg-primary/5 text-primary border-primary/30 hover:bg-primary/10"
                 >
-                  ✨ Открыть Демо для Презентации
-                </button>
+                  {t('header.open_demo')}
+                </Button>
               )}
             </div>
           </header>
@@ -210,5 +210,3 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
-
-

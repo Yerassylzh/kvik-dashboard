@@ -5,6 +5,9 @@ import { useTranslations } from "next-intl";
 import { uploadKnowledgeDocument } from "@/lib/api/onboarding";
 import { useToast } from "@/components/ui/toast/ToastContext";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
+import { formatBytes, getFileIcon } from "@/lib/utils/knowledge-parser";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface UploadedFileItem {
   name: string;
@@ -18,21 +21,6 @@ interface StageDocumentsProps {
   onNext: () => void;
 }
 
-function formatBytes(size: number): string {
-  if (!size) return "";
-  if (size < 1024) return `${size} Б`;
-  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} КБ`;
-  return `${(size / (1024 * 1024)).toFixed(1)} МБ`;
-}
-
-function getFileIcon(fileName: string): string {
-  const lower = fileName.toLowerCase();
-  if (lower.endsWith(".pdf")) return "📕";
-  if (lower.endsWith(".xlsx") || lower.endsWith(".xls")) return "📊";
-  if (lower.endsWith(".docx") || lower.endsWith(".doc")) return "📘";
-  return "📄";
-}
-
 export function StageDocuments({
   uploadedFiles,
   onAddUploadedFile,
@@ -42,30 +30,18 @@ export function StageDocuments({
   const t = useTranslations("onboarding");
   const toast = useToast();
 
-  // Local state for staged files (waiting to be uploaded upon user confirmation)
   const [stagedFiles, setStagedFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{
-    current: number;
-    total: number;
-  } | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addFilesToStage = (newFiles: FileList | File[]) => {
     const validFiles: File[] = [];
-
     Array.from(newFiles).forEach((file) => {
-      const isAlreadyStaged = stagedFiles.some(
-        (f) => f.name === file.name && f.size === file.size,
-      );
-      const isAlreadyUploaded = uploadedFiles.some(
-        (f) => f.name === file.name && f.size === file.size,
-      );
-
-      if (!isAlreadyStaged && !isAlreadyUploaded) {
-        validFiles.push(file);
-      }
+      const isStaged = stagedFiles.some((f) => f.name === file.name && f.size === file.size);
+      const isUploaded = uploadedFiles.some((f) => f.name === file.name && f.size === file.size);
+      if (!isStaged && !isUploaded) validFiles.push(file);
     });
 
     if (validFiles.length > 0) {
@@ -75,22 +51,14 @@ export function StageDocuments({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      addFilesToStage(e.target.files);
-    }
+    if (e.target.files && e.target.files.length > 0) addFilesToStage(e.target.files);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragOver(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      addFilesToStage(e.dataTransfer.files);
-    }
-  };
-
-  const handleRemoveStagedFile = (index: number) => {
-    setStagedFiles((prev) => prev.filter((_, i) => i !== index));
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) addFilesToStage(e.dataTransfer.files);
   };
 
   const handleProcessStagedFiles = async () => {
@@ -109,15 +77,11 @@ export function StageDocuments({
       toast.success(
         total === 1
           ? `Файл «${stagedFiles[0].name}» успешно загружен и обработан!`
-          : `Успешно загружено и обработано файлов: ${total}!`,
+          : `Успешно загружено и обработано файлов: ${total}!`
       );
       setStagedFiles([]);
     } catch (err) {
-      toast.error(
-        err instanceof Error
-          ? err.message
-          : t("knowledge.documents.error_upload"),
-      );
+      toast.error(err instanceof Error ? err.message : t("knowledge.documents.error_upload"));
     } finally {
       setBusy(false);
       setUploadProgress(null);
@@ -129,18 +93,15 @@ export function StageDocuments({
 
   return (
     <div className="space-y-5">
-      {/* Short Header */}
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
           <span>📄</span>
           <span>{t("knowledge.documents.title")}</span>
         </h3>
-        <p className="text-xs text-muted-foreground">
-          {t("knowledge.documents.desc")}
-        </p>
+        <p className="text-xs text-muted-foreground">{t("knowledge.documents.desc")}</p>
       </div>
 
-      {/* Drag and Drop Zone */}
+      {/* Drag & Drop Zone */}
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -166,33 +127,23 @@ export function StageDocuments({
         />
 
         <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl">
-          {busy ? (
-            <div className="h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-          ) : (
-            "📁"
-          )}
+          {busy ? <div className="h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" /> : "📁"}
         </div>
 
         <div>
           <p className="text-xs font-bold text-foreground">
-            {busy
-              ? t("knowledge.documents.dropzone_busy")
-              : t("knowledge.documents.dropzone_idle")}
+            {busy ? t("knowledge.documents.dropzone_busy") : t("knowledge.documents.dropzone_idle")}
           </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
-            {t("knowledge.documents.dropzone_formats")}
-          </p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{t("knowledge.documents.dropzone_formats")}</p>
         </div>
       </div>
 
-      {/* Staged Files List (Waiting for batch processing) */}
+      {/* Staged Files */}
       {hasStagedFiles && (
         <FadeIn className="space-y-2 p-3.5 rounded-2xl bg-primary/5 border border-primary/20">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-foreground">
-              {t("knowledge.documents.staged_title", {
-                count: stagedFiles.length,
-              })}
+              {t("knowledge.documents.staged_title", { count: stagedFiles.length })}
             </span>
             <button
               type="button"
@@ -213,20 +164,16 @@ export function StageDocuments({
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-base">{getFileIcon(file.name)}</span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-foreground truncate text-xs">
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {formatBytes(file.size)}
-                    </p>
+                    <p className="font-semibold text-foreground truncate text-xs">{file.name}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatBytes(file.size)}</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   disabled={busy}
-                  onClick={() => handleRemoveStagedFile(idx)}
+                  onClick={() => setStagedFiles((prev) => prev.filter((_, i) => i !== idx))}
                   title={t("knowledge.documents.remove_file")}
-                  className="h-6 w-6 rounded-md hover:bg-destructive-subtle text-destructive-subtle-text font-bold text-xs flex items-center justify-center cursor-pointer"
+                  className="h-6 w-6 rounded-md hover:bg-destructive/10 text-destructive font-bold text-xs flex items-center justify-center cursor-pointer"
                 >
                   ×
                 </button>
@@ -234,43 +181,30 @@ export function StageDocuments({
             ))}
           </div>
 
-          <button
+          <Button
             type="button"
             onClick={handleProcessStagedFiles}
-            disabled={busy}
-            className="w-full py-2.5 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
+            loading={busy}
+            className="w-full mt-1 shadow-xs"
           >
-            {busy ? (
-              <>
-                <div className="h-3.5 w-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                <span>
-                  {uploadProgress
-                    ? t("knowledge.documents.btn_processing_progress", {
-                        current: uploadProgress.current,
-                        total: uploadProgress.total,
-                      })
-                    : t("knowledge.documents.dropzone_busy")}
-                </span>
-              </>
-            ) : (
-              t("knowledge.documents.btn_process_all", {
-                count: stagedFiles.length,
-              })
-            )}
-          </button>
+            {busy
+              ? uploadProgress
+                ? t("knowledge.documents.btn_processing_progress", {
+                    current: uploadProgress.current,
+                    total: uploadProgress.total,
+                  })
+                : t("knowledge.documents.dropzone_busy")
+              : t("knowledge.documents.btn_process_all", { count: stagedFiles.length })}
+          </Button>
         </FadeIn>
       )}
 
-      {/* Uploaded & Processed Files List */}
+      {/* Uploaded Files */}
       {hasUploadedFiles && (
         <FadeIn delay={0.05} className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <label className="block text-[11px] font-semibold text-muted-foreground">
-              {t("knowledge.documents.uploaded_title", {
-                count: uploadedFiles.length,
-              })}
-            </label>
-          </div>
+          <label className="block text-[11px] font-semibold text-muted-foreground">
+            {t("knowledge.documents.uploaded_title", { count: uploadedFiles.length })}
+          </label>
           <div className="space-y-1.5 max-h-36 overflow-y-auto themed-scroll">
             {uploadedFiles.map((file, idx) => (
               <div
@@ -280,18 +214,14 @@ export function StageDocuments({
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-base">{getFileIcon(file.name)}</span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-foreground truncate text-xs">
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {formatBytes(file.size)}
-                    </p>
+                    <p className="font-semibold text-foreground truncate text-xs">{file.name}</p>
+                    <p className="text-[10px] text-muted-foreground">{formatBytes(file.size)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                  <Badge variant="success" className="text-[10px]">
                     ✓ Обработано
-                  </span>
+                  </Badge>
                   {onRemoveUploadedFile && (
                     <button
                       type="button"
@@ -308,15 +238,10 @@ export function StageDocuments({
         </FadeIn>
       )}
 
-      {/* Stage Step Actions */}
       <div className="pt-4 border-t border-border flex items-center justify-end">
-        <button
-          type="button"
-          onClick={onNext}
-          className="w-full sm:w-auto py-2.5 px-5 rounded-xl font-bold text-xs bg-muted hover:bg-muted/80 text-foreground border border-border transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-        >
-          <span>{hasUploadedFiles ? "Далее (к заметкам) →" : "Пропустить (к заметкам) →"}</span>
-        </button>
+        <Button type="button" variant="secondary" onClick={onNext} className="w-full sm:w-auto">
+          {hasUploadedFiles ? "Далее (к заметкам) →" : "Пропустить (к заметкам) →"}
+        </Button>
       </div>
     </div>
   );

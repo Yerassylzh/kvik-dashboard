@@ -4,6 +4,12 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { KnowledgeEntry } from "@/types/niche";
 import { StructuredMarkdownView } from "./StructuredMarkdownView";
+import {
+  formatBytes,
+  extractStructuredText,
+  extractServicesList,
+  cleanEntryTitle,
+} from "@/lib/utils/knowledge-parser";
 
 interface KnowledgeEntryCardProps {
   entry: KnowledgeEntry;
@@ -38,101 +44,6 @@ const TYPE_META: Record<
     badgeStyle: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
   },
 };
-
-function formatBytes(size?: number | null): string {
-  if (!size) return "";
-  if (size < 1024) return `${size} Б`;
-  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} КБ`;
-  return `${(size / (1024 * 1024)).toFixed(1)} МБ`;
-}
-
-function extractStructuredText(entry: KnowledgeEntry): string | null {
-  const d = (entry.data || {}) as Record<string, unknown>;
-  const candidates = [
-    d.structuredText,
-    (entry as unknown as Record<string, unknown>).structuredText,
-    d.content,
-    d.text,
-    d.rawText,
-    d.description,
-    d.note,
-    d.markdown,
-    d.summary,
-  ];
-
-  for (const val of candidates) {
-    if (typeof val === "string" && val.trim()) return val.trim();
-  }
-  return null;
-}
-
-function extractServicesList(
-  entry: KnowledgeEntry
-): Array<{ name?: string; price?: string; duration?: string; category?: string }> | null {
-  const d = (entry.data || {}) as Record<string, unknown>;
-  if (Array.isArray(d.services) && d.services.length > 0) return d.services;
-  if (Array.isArray(d.items) && d.items.length > 0) return d.items;
-  if (Array.isArray(d.priceList) && d.priceList.length > 0) return d.priceList;
-  return null;
-}
-
-function cleanEntryTitle(
-  entry: KnowledgeEntry,
-  default2gisLabel: string,
-  defaultNoteLabel: string,
-  defaultWebsiteLabel: string
-): string {
-  if (entry.type === "MANUAL_NOTE") {
-    // For manual notes, don't use the whole note text as title
-    const d = (entry.data || {}) as Record<string, any>;
-    if (entry.title && entry.title.length < 50 && !entry.title.includes("\n")) return entry.title;
-    if (d.title && typeof d.title === "string" && d.title.length < 50 && !d.title.includes("\n")) return d.title;
-    return defaultNoteLabel;
-  }
-
-  if (entry.type === "WEBSITE_CONTENT") {
-    // For website content, do not use the full description, just state it is from website
-    if (entry.sourceUrl) {
-      try {
-        const hostname = new URL(entry.sourceUrl).hostname.replace(/^www\./, "");
-        if (hostname) return `${defaultWebsiteLabel} (${hostname})`;
-      } catch {
-        // Fallback to default
-      }
-    }
-    return defaultWebsiteLabel;
-  }
-
-  const data = (entry.data || {}) as Record<string, any>;
-  const rawTitle =
-    entry.title || data.name || data.title || data.fileName || "";
-
-  // If title is "2GIS Catalog (70000...)" or technical ID string:
-  if (
-    /^2GIS Catalog/i.test(rawTitle) ||
-    /^2GIS Каталог/i.test(rawTitle) ||
-    !rawTitle
-  ) {
-    if (
-      data.businessName &&
-      typeof data.businessName === "string" &&
-      !/^2GIS/i.test(data.businessName)
-    ) {
-      return data.businessName;
-    }
-    if (
-      data.name &&
-      typeof data.name === "string" &&
-      !/^2GIS/i.test(data.name)
-    ) {
-      return data.name;
-    }
-    return default2gisLabel;
-  }
-
-  // Remove trailing numerical IDs in parentheses like "(70000001082563690)"
-  return rawTitle.replace(/\s*\(\d{8,}\)$/, "").trim() || default2gisLabel;
-}
 
 export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
   const t = useTranslations("onboarding");

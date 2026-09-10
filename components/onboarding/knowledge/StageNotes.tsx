@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import {
   addKnowledgeNote,
@@ -9,6 +9,9 @@ import {
 } from "@/lib/api/onboarding";
 import { useToast } from "@/components/ui/toast/ToastContext";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { usePolling } from "@/hooks/usePolling";
 
 interface StageNotesProps {
   savedNotes: string[];
@@ -25,9 +28,6 @@ const NOTE_SUGGESTIONS = [
   "Перед сложным окрашиванием требуется очная консультация мастера.",
 ];
 
-const POLL_INTERVAL_MS = 3000;
-const MAX_POLL_ATTEMPTS = 20;
-
 export function StageNotes({
   savedNotes,
   onAddNote,
@@ -40,70 +40,38 @@ export function StageNotes({
   const [currentNote, setCurrentNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Track live processing statuses of recently submitted notes
+  // Track live processing statuses of submitted notes
   const [noteStatuses, setNoteStatuses] = useState<
     Record<string, KnowledgeNoteStatus>
   >({});
-  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollAttemptsRef = useRef(0);
-  const pollActiveRef = useRef(false);
 
   const hasPending = Object.values(noteStatuses).some(
     (n) => n.processingStatus === "PENDING" || n.processingStatus === "PROCESSING"
   );
 
-  const startPolling = useCallback(() => {
-    if (pollActiveRef.current) return;
-    pollActiveRef.current = true;
-    pollAttemptsRef.current = 0;
-
-    const poll = async () => {
-      if (!pollActiveRef.current) return;
-      if (pollAttemptsRef.current >= MAX_POLL_ATTEMPTS) {
-        pollActiveRef.current = false;
-        return;
-      }
-      pollAttemptsRef.current += 1;
-
-      try {
-        const notes = await getKnowledgeNotes();
-        setNoteStatuses((prev) => {
-          const next = { ...prev };
-          for (const n of notes) {
-            if (next[n.id]) {
-              next[n.id] = n;
-            }
+  // Polling for notes status
+  const { start: startPolling } = usePolling({
+    enabled: hasPending,
+    fetcher: () => getKnowledgeNotes(),
+    intervalMs: 3000,
+    maxAttempts: 20,
+    onSuccess: (notes) => {
+      setNoteStatuses((prev) => {
+        const next = { ...prev };
+        for (const n of notes) {
+          if (next[n.id]) {
+            next[n.id] = n;
           }
-          return next;
-        });
-
-        // Check if all pending are done
-        const stillPending = notes.some(
-          (n) =>
-            n.processingStatus === "PENDING" ||
-            n.processingStatus === "PROCESSING"
-        );
-        if (!stillPending) {
-          pollActiveRef.current = false;
-          return;
         }
-      } catch {
-        // Silently continue polling
-      }
-
-      pollTimerRef.current = setTimeout(poll, POLL_INTERVAL_MS);
-    };
-
-    pollTimerRef.current = setTimeout(poll, POLL_INTERVAL_MS);
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      pollActiveRef.current = false;
-      if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
-    };
-  }, []);
+        return next;
+      });
+    },
+    shouldStop: (notes) =>
+      !notes.some(
+        (n) =>
+          n.processingStatus === "PENDING" || n.processingStatus === "PROCESSING"
+      ),
+  });
 
   const saveSingleNote = async (text: string): Promise<boolean> => {
     const trimmed = text.trim();
@@ -182,7 +150,7 @@ export function StageNotes({
 
   return (
     <div className="space-y-5">
-      {/* Short Header */}
+      {/* Header */}
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
           <span>📝</span>
@@ -214,29 +182,22 @@ export function StageNotes({
 
       {/* Note Input */}
       <div className="space-y-2">
-        <textarea
+        <Textarea
           rows={3}
           value={currentNote}
           onChange={(e) => setCurrentNote(e.target.value)}
           placeholder={t("knowledge.notes.input_placeholder")}
-          className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm transition-all"
         />
 
-        <button
+        <Button
           type="button"
           onClick={handleSaveNote}
-          disabled={submitting || !currentNote.trim()}
-          className="py-2.5 px-5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          loading={submitting}
+          disabled={!currentNote.trim()}
+          size="sm"
         >
-          {submitting ? (
-            <>
-              <div className="h-3.5 w-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              <span>{t("knowledge.notes.btn_saving")}</span>
-            </>
-          ) : (
-            <span>{t("knowledge.notes.btn_add_note")}</span>
-          )}
-        </button>
+          {t("knowledge.notes.btn_add_note")}
+        </Button>
       </div>
 
       {/* Background processing indicator */}
@@ -260,7 +221,6 @@ export function StageNotes({
           </span>
           <div className="space-y-1.5 max-h-36 overflow-y-auto themed-scroll">
             {savedNotes.map((noteText, idx) => {
-              // Find matching status entry by note text
               const statusEntry = Object.values(noteStatuses).find(
                 (n) => n.note === noteText
               );
@@ -308,31 +268,19 @@ export function StageNotes({
 
       {/* Stage Step Actions */}
       <div className="pt-4 border-t border-border flex items-center justify-end">
-        <button
+        <Button
           type="button"
           onClick={handleProceed}
-          disabled={submitting}
-          className={`w-full sm:w-auto py-3.5 px-6 font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 ${
-            hasAnySource || hasNotes || hasTypedNote
-              ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-              : "bg-muted hover:bg-muted/80 text-foreground border border-border"
-          }`}
+          loading={submitting}
+          variant={hasAnySource || hasNotes || hasTypedNote ? "primary" : "secondary"}
+          size="md"
         >
-          {submitting ? (
-            <>
-              <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-              <span>{t("knowledge.notes.btn_saving")}</span>
-            </>
-          ) : (
-            <span>
-              {hasTypedNote
-                ? t("knowledge.notes.btn_save_and_proceed")
-                : hasAnySource || hasNotes
-                ? t("knowledge.notes.btn_check_kb")
-                : t("knowledge.notes.btn_skip_to_check")}
-            </span>
-          )}
-        </button>
+          {hasTypedNote
+            ? t("knowledge.notes.btn_save_and_proceed")
+            : hasAnySource || hasNotes
+            ? t("knowledge.notes.btn_check_kb")
+            : t("knowledge.notes.btn_skip_to_check")}
+        </Button>
       </div>
     </div>
   );

@@ -2,8 +2,8 @@ import ruApi from '@/locales/ru/api.json';
 import { SupportedLocale } from '@/types/i18n';
 
 // Registry of backend API error & response dictionaries
-export const API_DICTIONARIES: Record<SupportedLocale, Record<string, any>> = {
-  ru: ruApi,
+export const API_DICTIONARIES: Record<SupportedLocale, Record<string, unknown>> = {
+  ru: ruApi as unknown as Record<string, unknown>,
   kk: {}, // Placeholder for Kazakh API dictionary
 };
 
@@ -48,10 +48,10 @@ export function translateKey(
   const dict = API_DICTIONARIES[locale] || API_DICTIONARIES[DEFAULT_LOCALE];
   const keys = code.split('.');
   
-  let current: any = dict;
+  let current: unknown = dict;
   for (const k of keys) {
-    if (current && typeof current === 'object' && k in current) {
-      current = current[k];
+    if (current && typeof current === 'object' && k in (current as Record<string, unknown>)) {
+      current = (current as Record<string, unknown>)[k];
     } else {
       current = undefined;
       break;

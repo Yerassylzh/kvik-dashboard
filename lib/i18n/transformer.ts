@@ -1,16 +1,18 @@
 import { SupportedLocale } from '@/types/i18n';
 import { translateKey } from './config';
 
+interface I18nNode {
+  code: string;
+  message: string;
+  params?: Record<string, string | number>;
+  isRaw?: boolean;
+}
+
 /**
  * Checks if an object adheres to the I18nPayload structure.
  */
-function isI18nNode(obj: any): boolean {
-  return (
-    obj !== null &&
-    typeof obj === 'object' &&
-    typeof obj.code === 'string' &&
-    typeof obj.message === 'string'
-  );
+function isI18nNode(obj: Record<string, unknown>): obj is Record<string, unknown> & I18nNode {
+  return typeof obj.code === 'string' && typeof obj.message === 'string';
 }
 
 /**
@@ -26,7 +28,7 @@ export function transformI18nMessages<T>(data: T, locale?: SupportedLocale): T {
     return data.map((item) => transformI18nMessages(item, locale)) as unknown as T;
   }
 
-  const obj = data as Record<string, any>;
+  const obj = data as Record<string, unknown>;
 
   if (isI18nNode(obj)) {
     const isRaw = obj.isRaw === true || obj.code === 'raw';
@@ -38,9 +40,9 @@ export function transformI18nMessages<T>(data: T, locale?: SupportedLocale): T {
     }
   }
 
-  for (const key of Object.keys(obj)) {
-    if (typeof obj[key] === 'object' && obj[key] !== null) {
-      obj[key] = transformI18nMessages(obj[key], locale);
+  for (const [key, val] of Object.entries(obj)) {
+    if (typeof val === 'object' && val !== null) {
+      obj[key] = transformI18nMessages(val, locale);
     }
   }
 

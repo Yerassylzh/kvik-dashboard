@@ -1,21 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import { connectInstagram, getMetaConfig } from "@/lib/api/channels";
 import { InstagramChannelMetadata } from "@/types/channels";
+import { useOAuthChannel } from "@/hooks/useOAuthChannel";
 
 interface InstagramFlowProps {
   onSuccess: (metadata: InstagramChannelMetadata) => void;
   onCancel: () => void;
 }
 
-type FlowState = "idle" | "ready" | "waiting" | "connecting" | "success" | "error";
-
 const PUBLIC_URL = process.env.NEXT_PUBLIC_APP_URL;
 
-/** URL of the callback page that reads ?code= and postMessages it back */
 const getCallbackUri = () => {
   if (typeof window === "undefined") return `${PUBLIC_URL || "https://kvik-dashboard.vercel.app"}/onboarding/instagram-callback`;
   const isHttps = window.location.protocol === "https:";
@@ -26,21 +24,31 @@ const getCallbackUri = () => {
 
 export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
   const t = useTranslations("onboarding.channel");
-  const [flowState, setFlowState] = useState<FlowState>("ready");
-  const [error, setError] = useState<string | null>(null);
-  const popupRef = useRef<Window | null>(null);
-  const metaScopesRef = useRef<string>("instagram_basic,instagram_manage_messages,pages_show_list,pages_read_engagement");
+  const metaScopesRef = useRef<string>(
+    "instagram_basic,instagram_manage_messages,pages_show_list,pages_read_engagement"
+  );
   const appIdRef = useRef<string>("");
   const apiVersionRef = useRef<string>("v21.0");
 
-  // Load Meta config for appId, scopes & apiVersion
+  const { flowState, error, setError, openOAuthPopup } =
+    useOAuthChannel<InstagramChannelMetadata>({
+      channelType: "INSTAGRAM",
+      onSuccess,
+      connectApi: async ({ code, redirectUri }) => {
+        return connectInstagram({
+          code,
+          redirectUri: redirectUri || getCallbackUri(),
+        });
+      },
+    });
+
+  // Load Meta config on mount
   useEffect(() => {
     getMetaConfig()
       .then((cfg) => {
         appIdRef.current = cfg.appId;
         if (cfg.apiVersion) apiVersionRef.current = cfg.apiVersion;
         if (cfg.instagramScopes?.length) {
-          // Replace deprecated pages_manage_metadata with pages_read_engagement
           const cleanedScopes = cfg.instagramScopes
             .filter((s) => s !== "pages_manage_metadata")
             .concat(["pages_read_engagement"]);
@@ -48,119 +56,12 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
         }
       })
       .catch(() => {
-        // Non-fatal — scopes fall back to defaults above
+        // Fallback to defaults
       });
-  }, []);
-
-  // Listen for the code postMessage from the callback popup via postMessage, BroadcastChannel, and localStorage
-  useEffect(() => {
-    let isProcessing = false;
-
-    const onCodeReceived = async (code: string) => {
-      if (!code || isProcessing) return;
-      isProcessing = true;
-      try {
-        popupRef.current?.close();
-      } catch {
-        // noop
-      }
-
-      try {
-        setFlowState("connecting");
-        const res = await connectInstagram({
-          code,
-          redirectUri: getCallbackUri(),
-        });
-        setFlowState("success");
-        onSuccess(res.channel.metadata as InstagramChannelMetadata);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : t("instagram_flow_error"));
-        setFlowState("error");
-      }
-    };
-
-    const handleMessage = async (event: MessageEvent) => {
-      // Handle direct INSTAGRAM_CONNECTED notification from callback page
-      if (event.data?.type === "INSTAGRAM_CONNECTED" && event.data?.channel) {
-        setFlowState("success");
-        onSuccess(event.data.channel.metadata as InstagramChannelMetadata);
-        return;
-      }
-
-      const isAllowedOrigin =
-        event.origin === window.location.origin ||
-        event.origin.includes("vercel.app") ||
-        event.origin.includes("localhost") ||
-        event.origin.includes("cloudflare") ||
-        event.origin.includes("kvik");
-      if (!isAllowedOrigin) return;
-      if (event.data?.type !== "INSTAGRAM_OAUTH_CODE" && event.data?.type !== "OAUTH_CODE") return;
-
-      const code: string = event.data?.code;
-      if (code) {
-        await onCodeReceived(code);
-      }
-    };
-
-    // BroadcastChannel listener
-    let bc: BroadcastChannel | null = null;
-    if (typeof BroadcastChannel !== "undefined") {
-      bc = new BroadcastChannel("kvik_auth_channel");
-      bc.onmessage = (event) => {
-        if (event.data?.type === "INSTAGRAM_CONNECTED" && event.data?.channel) {
-          setFlowState("success");
-          onSuccess(event.data.channel.metadata as InstagramChannelMetadata);
-          return;
-        }
-        const code = event.data?.code;
-        if (
-          code &&
-          (event.data?.type === "INSTAGRAM_OAUTH_CODE" || event.data?.type === "OAUTH_CODE")
-        ) {
-          void onCodeReceived(code);
-        }
-      };
-    }
-
-    // Storage listener
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === "kvik_oauth_payload" && event.newValue) {
-        try {
-          const parsed = JSON.parse(event.newValue);
-          if (parsed?.type === "INSTAGRAM_CONNECTED" && parsed?.channel) {
-            localStorage.removeItem("kvik_oauth_payload");
-            setFlowState("success");
-            onSuccess(parsed.channel.metadata as InstagramChannelMetadata);
-            return;
-          }
-          if (
-            parsed?.code &&
-            (parsed.type === "INSTAGRAM_OAUTH_CODE" || parsed.type === "OAUTH_CODE")
-          ) {
-            localStorage.removeItem("kvik_oauth_payload");
-            void onCodeReceived(parsed.code);
-          }
-        } catch {
-          // noop
-        }
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    window.addEventListener("storage", handleStorage);
-
-    return () => {
-      window.removeEventListener("message", handleMessage);
-      window.removeEventListener("storage", handleStorage);
-      bc?.close();
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLaunchOAuth = () => {
     if (!appIdRef.current) return;
-    setFlowState("waiting");
-    setError(null);
 
     try {
       const redirectUri = getCallbackUri();
@@ -176,26 +77,13 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
       const safeApiVersion = !isNaN(verNum) && verNum <= 22 ? rawVer : "v21.0";
 
       const oauthUrl = `https://www.facebook.com/${safeApiVersion}/dialog/oauth?${params.toString()}`;
-      const popup = window.open(
-        oauthUrl,
-        "instagram-oauth",
-        "width=600,height=700,top=100,left=200,scrollbars=yes"
-      );
-      popupRef.current = popup;
-
-      // Poll every 1 second to detect if user manually closed the popup
-      const pollTimer = setInterval(() => {
-        if (popup?.closed) {
-          clearInterval(pollTimer);
-          // Only reset if we're still "waiting" (i.e. no code received)
-          setFlowState((prev) => (prev === "waiting" ? "ready" : prev));
-        }
-      }, 1000);
+      openOAuthPopup(oauthUrl, "instagram-oauth");
     } catch (err) {
       setError(err instanceof Error ? err.message : t("instagram_flow_error"));
-      setFlowState("error");
     }
   };
+
+  const isBusy = flowState === "waiting" || flowState === "connecting";
 
   return (
     <motion.div
@@ -255,11 +143,11 @@ export function InstagramFlow({ onSuccess, onCancel }: InstagramFlowProps) {
       <motion.button
         type="button"
         onClick={handleLaunchOAuth}
-        disabled={flowState === "waiting" || flowState === "connecting"}
+        disabled={isBusy}
         whileTap={{ scale: 0.97 }}
         className="w-full py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 shadow-md"
       >
-        {(flowState === "waiting" || flowState === "connecting") ? (
+        {isBusy ? (
           <>
             <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
             <span>

@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { start2gisScraping, getScrapingStatus } from "@/lib/api/onboarding";
 import { useToast } from "@/components/ui/toast/ToastContext";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { usePolling } from "@/hooks/usePolling";
 
 interface Stage2gisProps {
   inputUrl: string;
@@ -31,59 +35,45 @@ export function Stage2gis({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const polledRef = useRef(false);
+  const notifiedDoneRef = useRef(false);
 
-  // Auto-polling for 2GIS scraping status when STARTED
-  useEffect(() => {
-    if (status !== "STARTED") return;
+  // Declarative Polling for 2GIS status
+  usePolling({
+    enabled: status === "STARTED",
+    fetcher: () => getScrapingStatus("2gis"),
+    intervalMs: 2500,
+    onSuccess: (res) => {
+      const isDone =
+        res.status === "COMPLETED" ||
+        res.status === "DONE" ||
+        res.parsingStatus === "DONE" ||
+        (res.parsedCount ?? 0) > 0;
 
-    let cancelled = false;
-    let interval: ReturnType<typeof setInterval> | null = null;
+      const isFailed = res.status === "FAILED" || res.parsingStatus === "FAILED";
 
-    const poll = async () => {
-      try {
-        const res = await getScrapingStatus("2gis");
-        if (cancelled) return;
-
-        const isDone =
-          res.status === "COMPLETED" ||
-          res.status === "DONE" ||
-          res.parsingStatus === "DONE" ||
-          (res.parsedCount ?? 0) > 0;
-
-        const isFailed =
-          res.status === "FAILED" || res.parsingStatus === "FAILED";
-
-        if (isDone) {
-          const count = res.parsedCount ?? parsedCount ?? 0;
-          onStatusChange("COMPLETED", count);
-          if (!polledRef.current) {
-            polledRef.current = true;
-            toast.success(
-              count > 0
-                ? `2GIS каталог успешно импортирован! Загружено ${count} услуг.`
-                : "2GIS каталог успешно импортирован!",
-            );
-          }
-          if (interval) clearInterval(interval);
-        } else if (isFailed) {
-          onStatusChange("FAILED");
-          toast.error(res.error || "Ошибка обработки 2GIS каталога");
-          if (interval) clearInterval(interval);
+      if (isDone) {
+        const count = res.parsedCount ?? parsedCount ?? 0;
+        onStatusChange("COMPLETED", count);
+        if (!notifiedDoneRef.current) {
+          notifiedDoneRef.current = true;
+          toast.success(
+            count > 0
+              ? `2GIS каталог успешно импортирован! Загружено ${count} услуг.`
+              : "2GIS каталог успешно импортирован!"
+          );
         }
-      } catch {
-        // Background poll error ignored
+      } else if (isFailed) {
+        onStatusChange("FAILED");
+        toast.error(res.error || "Ошибка обработки 2GIS каталога");
       }
-    };
-
-    poll();
-    interval = setInterval(poll, 2500);
-
-    return () => {
-      cancelled = true;
-      if (interval) clearInterval(interval);
-    };
-  }, [status, parsedCount, onStatusChange, toast]);
+    },
+    shouldStop: (res) =>
+      res.status === "COMPLETED" ||
+      res.status === "DONE" ||
+      res.parsingStatus === "DONE" ||
+      res.status === "FAILED" ||
+      res.parsingStatus === "FAILED",
+  });
 
   const handleStartImport = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -97,12 +87,11 @@ export function Stage2gis({
     try {
       setLoading(true);
       setError(null);
-      polledRef.current = false;
+      notifiedDoneRef.current = false;
       await start2gisScraping({ input: trimmed });
       onStatusChange("STARTED");
       setIsEditing(false);
       toast.info("Импорт 2GIS запущен. Переходим к веб-сайту...");
-      // Seamlessly advance to next stage
       setTimeout(() => {
         onNext();
       }, 600);
@@ -129,7 +118,7 @@ export function Stage2gis({
 
   return (
     <div className="space-y-5">
-      {/* Short Header */}
+      {/* Header */}
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
           <span>📍</span>
@@ -168,9 +157,7 @@ export function Stage2gis({
               </div>
             </div>
 
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
-              Подключено
-            </span>
+            <Badge variant="success">Подключено</Badge>
           </div>
 
           <div className="p-2.5 rounded-xl bg-muted/40 border border-border flex items-center justify-between gap-3 text-xs">
@@ -209,9 +196,9 @@ export function Stage2gis({
                 <span className="font-bold text-sm text-foreground">
                   2GIS подключён
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                <Badge variant="success" pulse>
                   Идёт обработка
-                </span>
+                </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {t("knowledge.twogis.status_loading_desc")}
@@ -234,51 +221,36 @@ export function Stage2gis({
         </FadeIn>
       )}
 
-      {/* Input Form (When IDLE, FAILED, or isEditing) */}
+      {/* Input Form */}
       {(!isConnected || isEditing) && (
         <FadeIn delay={0.05}>
           <form onSubmit={handleStartImport} className="space-y-3">
-            <div>
-              <input
-                type="text"
-                value={inputUrl}
-                onChange={(e) => onChangeUrl(e.target.value)}
-                placeholder={t("knowledge.twogis.input_placeholder")}
-                className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm transition-all"
-              />
-              <p className="text-[11px] text-muted-foreground mt-1">
-                {t("knowledge.twogis.input_help")}
-              </p>
-            </div>
+            <Input
+              value={inputUrl}
+              onChange={(e) => onChangeUrl(e.target.value)}
+              placeholder={t("knowledge.twogis.input_placeholder")}
+              helperText={t("knowledge.twogis.input_help")}
+            />
 
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="submit"
-                disabled={loading || !inputUrl.trim()}
-                className="py-3 px-5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm rounded-xl shadow-sm transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                loading={loading}
+                disabled={!inputUrl.trim()}
               >
-                {loading ? (
-                  <>
-                    <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    <span>{t("knowledge.twogis.status_loading")}</span>
-                  </>
-                ) : (
-                  <span>
-                    {isEditing
-                      ? "Обновить и перезапустить →"
-                      : t("knowledge.twogis.btn_connect")}
-                  </span>
-                )}
-              </button>
+                {isEditing
+                  ? "Обновить и перезапустить →"
+                  : t("knowledge.twogis.btn_connect")}
+              </Button>
 
               {isEditing && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => setIsEditing(false)}
-                  className="py-3 px-4 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                   Отмена
-                </button>
+                </Button>
               )}
             </div>
           </form>
@@ -287,13 +259,14 @@ export function Stage2gis({
 
       {/* Stage Step Actions */}
       <div className="pt-4 border-t border-border flex items-center justify-end">
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={onNext}
-          className="w-full sm:w-auto py-2.5 px-5 rounded-xl font-bold text-xs bg-muted hover:bg-muted/80 text-foreground border border-border transition-colors cursor-pointer flex items-center justify-center gap-1.5"
         >
-          <span>{isConnected ? "Далее (к сайту) →" : "Пропустить (к сайту) →"}</span>
-        </button>
+          {isConnected ? "Далее (к сайту) →" : "Пропустить (к сайту) →"}
+        </Button>
       </div>
     </div>
   );

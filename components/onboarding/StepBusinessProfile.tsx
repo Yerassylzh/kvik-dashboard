@@ -4,6 +4,10 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { BusinessProfileDto } from "@/types/niche";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface StepBusinessProfileProps {
   initialValues: Partial<BusinessProfileDto>;
@@ -19,26 +23,26 @@ export function StepBusinessProfile({
   const t = useTranslations("onboarding");
   const [country, setCountry] = useState(initialValues.country || "KZ");
   const [businessName, setBusinessName] = useState(
-    initialValues.businessName || "",
+    initialValues.businessName || ""
   );
   const [city, setCity] = useState(
-    initialValues.city || t("profile.city_almaty"),
+    initialValues.city || t("profile.city_almaty")
   );
   const [businessAddress, setBusinessAddress] = useState(
-    initialValues.businessAddress || "",
+    initialValues.businessAddress || ""
   );
   const [businessPhone, setBusinessPhone] = useState(
-    initialValues.businessPhone || "",
+    initialValues.businessPhone || ""
   );
   const [workingHours, setWorkingHours] = useState(
-    initialValues.workingHours || "",
+    initialValues.workingHours || ""
   );
   const [businessDescription, setBusinessDescription] = useState(
-    initialValues.businessDescription || "",
+    initialValues.businessDescription || ""
   );
   const [websiteUrl, setWebsiteUrl] = useState(initialValues.websiteUrl || "");
   const [instagramUrl, setInstagramUrl] = useState(
-    initialValues.instagramUrl || "",
+    initialValues.instagramUrl || ""
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,178 +60,115 @@ export function StepBusinessProfile({
     });
   };
 
-  const inputClass =
-    "w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm transition-all";
+  const countryOptions = [
+    { value: "KZ", label: t("profile.country_kz") },
+    { value: "UZ", label: t("profile.country_uz") },
+    { value: "KG", label: t("profile.country_kg") },
+    { value: "RU", label: t("profile.country_ru") },
+  ];
+
+  const cityOptions = [
+    { value: t("profile.city_almaty"), label: t("profile.city_almaty") },
+    { value: t("profile.city_astana"), label: t("profile.city_astana") },
+    { value: t("profile.city_shymkent"), label: t("profile.city_shymkent") },
+    { value: t("profile.city_karaganda"), label: t("profile.city_karaganda") },
+    { value: t("profile.city_other"), label: t("profile.city_other") },
+  ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <FadeIn delay={0.05} className="space-y-4">
         {/* Section 1: Core Details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.country_label")}{" "}
-              <span className="text-destructive">*</span>
-            </label>
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className={inputClass}
-            >
-              <option value="KZ">{t("profile.country_kz")}</option>
-              <option value="UZ">{t("profile.country_uz")}</option>
-              <option value="KG">{t("profile.country_kg")}</option>
-              <option value="RU">{t("profile.country_ru")}</option>
-            </select>
-          </div>
+          <Select
+            label={t("profile.country_label")}
+            requiredIndicator
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            options={countryOptions}
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.business_name_label")}{" "}
-              <span className="text-destructive">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              placeholder={t("profile.business_name_placeholder")}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label={t("profile.business_name_label")}
+            required
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+            placeholder={t("profile.business_name_placeholder")}
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.city_label")}{" "}
-              <span className="text-destructive">*</span>
-            </label>
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className={inputClass}
-            >
-              <option value={t("profile.city_almaty")}>
-                {t("profile.city_almaty")}
-              </option>
-              <option value={t("profile.city_astana")}>
-                {t("profile.city_astana")}
-              </option>
-              <option value={t("profile.city_shymkent")}>
-                {t("profile.city_shymkent")}
-              </option>
-              <option value={t("profile.city_karaganda")}>
-                {t("profile.city_karaganda")}
-              </option>
-              <option value={t("profile.city_other")}>
-                {t("profile.city_other")}
-              </option>
-            </select>
-          </div>
+          <Select
+            label={t("profile.city_label")}
+            requiredIndicator
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            options={cityOptions}
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.address_label")}
-            </label>
-            <input
-              type="text"
-              value={businessAddress}
-              onChange={(e) => setBusinessAddress(e.target.value)}
-              placeholder={t("profile.address_placeholder")}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label={t("profile.address_label")}
+            value={businessAddress}
+            onChange={(e) => setBusinessAddress(e.target.value)}
+            placeholder={t("profile.address_placeholder")}
+          />
         </div>
       </FadeIn>
 
       {/* Section 2: Contact & Operations */}
       <FadeIn delay={0.1} className="space-y-4 pt-2 border-t border-border/60">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.phone_label")}
-            </label>
-            <input
-              type="text"
-              value={businessPhone}
-              onChange={(e) => setBusinessPhone(e.target.value)}
-              placeholder={t("profile.phone_placeholder")}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label={t("profile.phone_label")}
+            type="tel"
+            value={businessPhone}
+            onChange={(e) => setBusinessPhone(e.target.value)}
+            placeholder={t("profile.phone_placeholder")}
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.working_hours_label")}
-            </label>
-            <input
-              type="text"
-              value={workingHours}
-              onChange={(e) => setWorkingHours(e.target.value)}
-              placeholder={t("profile.working_hours_placeholder")}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label={t("profile.working_hours_label")}
+            value={workingHours}
+            onChange={(e) => setWorkingHours(e.target.value)}
+            placeholder={t("profile.working_hours_placeholder")}
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.website_label")}
-            </label>
-            <input
-              type="url"
-              value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
-              placeholder={t("profile.website_placeholder")}
-              className={inputClass}
-            />
-          </div>
+          <Input
+            label={t("profile.website_label")}
+            type="url"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            placeholder={t("profile.website_placeholder")}
+          />
 
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-              {t("profile.instagram_label")}
-            </label>
-            <input
-              type="text"
-              value={instagramUrl}
-              onChange={(e) => setInstagramUrl(e.target.value)}
-              placeholder={t("profile.instagram_placeholder")}
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-            {t("profile.description_label")}
-          </label>
-          <textarea
-            rows={3}
-            value={businessDescription}
-            onChange={(e) => setBusinessDescription(e.target.value)}
-            placeholder={t("profile.description_placeholder")}
-            className={inputClass}
+          <Input
+            label={t("profile.instagram_label")}
+            value={instagramUrl}
+            onChange={(e) => setInstagramUrl(e.target.value)}
+            placeholder={t("profile.instagram_placeholder")}
           />
         </div>
+
+        <Textarea
+          label={t("profile.description_label")}
+          rows={3}
+          value={businessDescription}
+          onChange={(e) => setBusinessDescription(e.target.value)}
+          placeholder={t("profile.description_placeholder")}
+        />
       </FadeIn>
 
       <FadeIn delay={0.15} className="pt-2">
-        <button
+        <Button
           type="submit"
-          disabled={loading}
-          className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm rounded-xl shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          loading={loading}
+          size="lg"
+          className="w-full shadow-md"
         >
-          {loading ? (
-            <>
-              <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {t("profile.btn_submitting")}
-            </>
-          ) : (
-            t("profile.btn_submit")
-          )}
-        </button>
+          {loading ? t("profile.btn_submitting") : t("profile.btn_submit")}
+        </Button>
       </FadeIn>
     </form>
   );

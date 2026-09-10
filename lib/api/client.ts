@@ -132,7 +132,7 @@ apiClient.interceptors.response.use(
         const newAccessToken = await getOrRefreshToken();
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch {
         useAuthStore.getState().clearAuth();
 
         if (typeof window !== 'undefined') {
