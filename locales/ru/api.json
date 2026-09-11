@@ -98,5 +98,12 @@
     "invalid_date_format": "Неверный формат даты",
     "invalid_date_range": "Дата окончания должна быть больше или равна дате начала",
     "date_range_too_large": "Диапазон дат не может превышать 365 дней"
+  },
+  "dev_messaging": {
+    "channels_provisioned": "Тестовые каналы успешно активированы.",
+    "inbound_simulated": "Сообщение отправлено. Ответ ИИ придёт через Socket.IO.",
+    "conversation_reset": "Диалог сброшен в режим бота.",
+    "disabled": "Тестовый режим сообщений отключён в этом окружении.",
+    "channel_not_provisioned": "Тестовый канал не создан. Сначала вызовите POST /dev-messaging/provision."
   }
 }

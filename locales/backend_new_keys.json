@@ -43,5 +43,10 @@
   "ai_engine.test_failed": "Не удалось выполнить тестовый диалог",
   "analytics.invalid_date_format": "Неверный формат даты",
   "analytics.invalid_date_range": "Дата окончания должна быть больше или равна дате начала",
-  "analytics.date_range_too_large": "Диапазон дат не может превышать 365 дней"
+  "analytics.date_range_too_large": "Диапазон дат не может превышать 365 дней",
+  "dev_messaging.channels_provisioned": "Тестовые каналы успешно активированы.",
+  "dev_messaging.inbound_simulated": "Сообщение отправлено. Ответ ИИ придёт через Socket.IO.",
+  "dev_messaging.conversation_reset": "Диалог сброшен в режим бота.",
+  "dev_messaging.disabled": "Тестовый режим сообщений отключён в этом окружении.",
+  "dev_messaging.channel_not_provisioned": "Тестовый канал не создан. Сначала вызовите POST /dev-messaging/provision."
 }

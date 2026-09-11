@@ -42,6 +42,11 @@ api.conversations.marked_read
 api.conversations.not_found
 api.conversations.send_failed
 api.conversations.status_updated
+api.dev_messaging.channel_not_provisioned
+api.dev_messaging.channels_provisioned
+api.dev_messaging.conversation_reset
+api.dev_messaging.disabled
+api.dev_messaging.inbound_simulated
 api.leads.archived
 api.leads.not_found
 api.leads.status_updated

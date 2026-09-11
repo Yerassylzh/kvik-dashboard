@@ -3394,6 +3394,172 @@
           "Analytics"
         ]
       }
+    },
+    "/dev-messaging/provision": {
+      "post": {
+        "description": "Creates or re-activates mock WHATSAPP, INSTAGRAM, TELEGRAM channels for the JWT workspace. Mock channels never call real external APIs. Idempotent.",
+        "operationId": "DevMessagingController_provision",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Channels provisioned"
+          },
+          "403": {
+            "description": "Dev messaging disabled (production env)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[DEV] Provision mock channels",
+        "tags": [
+          "Dev Messaging (simulator)"
+        ]
+      }
+    },
+    "/dev-messaging/simulate-inbound": {
+      "post": {
+        "description": "Injects a message through the real AI orchestration pipeline (Lead → Conversation → RAG → Gemini → mock outbound). Returns conversationId immediately. Watch for Socket.IO events: message.new and conversation.updated.",
+        "operationId": "DevMessagingController_simulateInbound",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateInboundDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message dispatched to orchestrator"
+          },
+          "403": {
+            "description": "Dev messaging disabled"
+          },
+          "404": {
+            "description": "Mock channel not provisioned"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[DEV] Simulate inbound client message",
+        "tags": [
+          "Dev Messaging (simulator)"
+        ]
+      }
+    },
+    "/dev-messaging/conversations/{id}/messages": {
+      "get": {
+        "description": "Fetches the list of messages (USER, BOT, MANAGER) for a conversation. Useful for polling or verifying AI responses in the dev UI.",
+        "operationId": "DevMessagingController_getConversationMessages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation messages retrieved"
+          },
+          "403": {
+            "description": "Dev messaging disabled"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[DEV] Get conversation message history",
+        "tags": [
+          "Dev Messaging (simulator)"
+        ]
+      }
+    },
+    "/dev-messaging/conversation-by-sender": {
+      "get": {
+        "description": "Finds existing conversation for a senderId on a specific channel, returning its full message history and conversation metadata.",
+        "operationId": "DevMessagingController_getConversationBySender",
+        "parameters": [
+          {
+            "name": "channelType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ChannelType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation and messages returned"
+          },
+          "403": {
+            "description": "Dev messaging disabled"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[DEV] Get conversation by sender and channel",
+        "tags": [
+          "Dev Messaging (simulator)"
+        ]
+      }
+    },
+    "/dev-messaging/reset-conversation/{id}": {
+      "post": {
+        "description": "Sets the conversation status back to BOT_ACTIVE so the AI bot resumes control. Useful for re-running test scenarios.",
+        "operationId": "DevMessagingController_resetConversation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation reset"
+          },
+          "403": {
+            "description": "Dev messaging disabled"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[DEV] Reset conversation to BOT_ACTIVE",
+        "tags": [
+          "Dev Messaging (simulator)"
+        ]
+      }
     }
   },
   "info": {
@@ -4569,6 +4735,29 @@
           "completedBookings",
           "cancelledBookings",
           "estimatedRevenue"
+        ]
+      },
+      "ChannelType": {
+        "type": "string",
+        "enum": [
+          "WHATSAPP",
+          "INSTAGRAM",
+          "TELEGRAM"
+        ]
+      },
+      "SimulateInboundDto": {
+        "type": "object",
+        "properties": {
+          "channelType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChannelType"
+              }
+            ]
+          }
+        },
+        "required": [
+          "channelType"
         ]
       }
     }
