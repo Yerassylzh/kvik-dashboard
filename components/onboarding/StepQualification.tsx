@@ -40,11 +40,18 @@ export function StepQualification({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const validQuestions = questions.map((q) => q.trim()).filter(Boolean);
+
     const dto: QualificationDto = {
-      questions: questions.map((q) => q.trim()).filter(Boolean),
+      questions: validQuestions.map((q, idx) => ({
+        id: `q${idx + 1}`,
+        field: `question_${idx + 1}`,
+        question: q,
+        required: true,
+      })),
     };
     if (customInstructions.trim()) {
-      dto.customInstructions = customInstructions.trim();
+      dto.disqualifiers = [customInstructions.trim()];
     }
     onSubmit(dto);
   };

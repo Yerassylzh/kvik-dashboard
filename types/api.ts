@@ -1,18 +1,18 @@
-﻿export interface ApiResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
+export * from './openapi';
 
 export class ApiError extends Error {
-  status: number;
-  data?: unknown;
-
-  constructor(status: number, message: string, data?: unknown) {
+  constructor(
+    public status: number,
+    message: string,
+    public data?: unknown
+  ) {
     super(message);
     this.name = 'ApiError';
-    this.status = status;
-    this.data = data;
   }
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  code?: string;
 }

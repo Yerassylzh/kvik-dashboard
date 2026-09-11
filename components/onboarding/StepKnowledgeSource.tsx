@@ -36,7 +36,7 @@ export function StepKnowledgeSource({
   onDraftChange,
   onScrapingStarted,
   onContinue,
-  loading: _loading,
+  loading,
 }: StepKnowledgeSourceProps) {
   const [activeTab, setActiveTab] = useState<number>(draft.activeStage ?? 0);
 
@@ -152,6 +152,7 @@ export function StepKnowledgeSource({
             }}
             onRemoveNote={handleRemoveNote}
             onNext={onContinue}
+            loading={loading}
             hasAnySource={hasAnySource}
           />
         )}

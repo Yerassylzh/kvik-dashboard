@@ -4,12 +4,14 @@ import {
   getOnboardingState,
   selectNicheStep,
   submitBusinessProfile,
+  confirmDataSourceStep,
   getDataPreview,
   confirmDataPreview,
   confirmChannelStep,
   submitQualification,
   completeOnboarding,
 } from '@/lib/api/onboarding';
+// Note: completeOnboarding is called automatically after qualification — the test step is removed.
 import { useOnboardingStore } from '@/store/onboarding.store';
 import {
   NicheProfile,
@@ -38,6 +40,13 @@ export function useOnboardingFlow() {
     (res: OnboardingStateResponse): boolean => {
       if (res.step === 'DONE') {
         router.replace('/');
+        return true;
+      }
+      // COMPLETE_TEST step is removed from UI — auto-complete immediately
+      if (res.step === 'COMPLETE_TEST') {
+        completeOnboarding()
+          .then(() => router.replace('/'))
+          .catch(() => router.replace('/'));
         return true;
       }
       const newIndex = STEP_META[res.step]?.index ?? 0;
@@ -184,6 +193,25 @@ export function useOnboardingFlow() {
     });
   };
 
+  const handleConfirmDataSource = async () => {
+    try {
+      setActionLoading(true);
+      setError(null);
+      const stateRes = await confirmDataSourceStep();
+      applyState(stateRes);
+      toast.success('Источники данных сохранены');
+    } catch (err) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Ошибка сохранения источников данных';
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleConfirmDataPreview = async () => {
     try {
       setActionLoading(true);
@@ -234,23 +262,8 @@ export function useOnboardingFlow() {
     }
   };
 
-  const handleComplete = async () => {
-    try {
-      setActionLoading(true);
-      setError(null);
-      const res = await completeOnboarding();
-      toast.success('🎉 Онбординг завершен! Ассистент активирован.');
-      if (!applyState(res)) {
-        applyState(await getOnboardingState());
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Ошибка активации бота';
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  // handleComplete removed — completeOnboarding() is called automatically in applyState
+  // when backend transitions to COMPLETE_TEST, skipping the test UI step.
 
   return {
     currentStep,
@@ -265,9 +278,9 @@ export function useOnboardingFlow() {
     handleSelectNiche,
     handleSubmitBusinessProfile,
     handleScrapingStarted,
+    handleConfirmDataSource,
     handleConfirmDataPreview,
     handleChannelStepContinue,
     handleSubmitQualification,
-    handleComplete,
   };
 }

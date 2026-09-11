@@ -94,6 +94,11 @@ export async function uploadKnowledgeDocument(file: File): Promise<void> {
   });
 }
 
+export async function confirmDataSourceStep(): Promise<OnboardingStateResponse> {
+  const { data } = await apiClient.post<OnboardingStateResponse>('/onboarding/step/data-source-confirm');
+  return data;
+}
+
 // --- Step 3: Preview & confirmation ---
 
 export async function getDataPreview(): Promise<DataPreviewResponse> {

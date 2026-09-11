@@ -5,6 +5,7 @@ import clsx from "clsx";
 
 export type ButtonVariant =
   | "primary"
+  | "default"
   | "secondary"
   | "outline"
   | "ghost"
@@ -24,6 +25,8 @@ export interface ButtonProps
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
+    "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm focus:ring-primary/20",
+  default:
     "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm focus:ring-primary/20",
   secondary:
     "bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border focus:ring-secondary/20",

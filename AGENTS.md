@@ -38,3 +38,6 @@ The product is Russian-only. `locales/ru/` is the source of truth; all values ar
   - **Never** use `text-destructive-foreground` on light/tinted backgrounds (e.g., `bg-destructive/10`, `bg-destructive/20`), because `--destructive-foreground` is near-white (`210 40% 98%`), making text invisible.
   - For soft/tinted alerts and banners, use the semantic helper classes (`.alert-destructive`, `.alert-warning`, `.alert-success`, `.alert-info`) or use saturated dark text tokens (e.g. `text-destructive`, `text-amber-700`, `text-emerald-700`).
 - **Tailwind Integration:** Always prefer semantic Tailwind utility classes mapped to CSS variables over raw CSS property overrides.
+
+## During Development
+You should use english for comments, when replying inside of the dev chat. However the content presented to the client/user should be in ru.

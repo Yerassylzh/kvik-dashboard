@@ -9,7 +9,6 @@ import { StepKnowledgeSource } from "@/components/onboarding/StepKnowledgeSource
 import { StepDataPreview } from "@/components/onboarding/StepDataPreview";
 import { StepConnectChannel } from "@/components/onboarding/StepConnectChannel";
 import { StepQualification } from "@/components/onboarding/StepQualification";
-import { StepCompleteTest } from "@/components/onboarding/StepCompleteTest";
 import { StepTransition } from "@/components/ui/motion/StepTransition";
 import { OnboardingHeader } from "@/components/onboarding/OnboardingHeader";
 
@@ -23,14 +22,13 @@ export default function OnboardingPage() {
     actionLoading,
     error,
     direction,
-    goToStep,
     handleSelectNiche,
     handleSubmitBusinessProfile,
     handleScrapingStarted,
+    handleConfirmDataSource,
     handleConfirmDataPreview,
     handleChannelStepContinue,
     handleSubmitQualification,
-    handleComplete,
   } = useOnboardingFlow();
 
   if (loading) {
@@ -73,7 +71,7 @@ export default function OnboardingPage() {
                 dataPreview={dataPreview}
                 onDraftChange={useOnboardingStore.getState().setKnowledgeSource}
                 onScrapingStarted={handleScrapingStarted}
-                onContinue={() => goToStep("DATA_PREVIEW", 3, 1)}
+                onContinue={handleConfirmDataSource}
                 loading={actionLoading}
               />
             )}
@@ -98,14 +96,6 @@ export default function OnboardingPage() {
               <div className="max-w-2xl mx-auto">
                 <StepQualification
                   onSubmit={handleSubmitQualification}
-                  loading={actionLoading}
-                />
-              </div>
-            )}
-            {currentStep === "COMPLETE_TEST" && (
-              <div className="max-w-2xl mx-auto">
-                <StepCompleteTest
-                  onComplete={handleComplete}
                   loading={actionLoading}
                 />
               </div>

@@ -175,3 +175,28 @@ select:-webkit-autofill:focus {
     transform: translateX(100%);
   }
 }
+
+/* ==========================================================================
+   ENTITY STATUS UTILITY CLASSES
+   Use via StatusBadge.tsx — never hardcode colors directly in components.
+   ========================================================================== */
+
+/* Lead Pipeline Status */
+.status-new         { color: hsl(210 100% 65%); background-color: hsl(210 100% 65% / 0.1); }
+.status-qualified   { color: hsl(38 95% 60%);   background-color: hsl(38 95% 60% / 0.1);   }
+.status-appointment { color: hsl(270 80% 70%);  background-color: hsl(270 80% 70% / 0.1);  }
+.status-won         { color: hsl(142 70% 45%);  background-color: hsl(142 70% 45% / 0.1);  }
+.status-lost        { color: hsl(0 75% 58%);    background-color: hsl(0 75% 58% / 0.1);    }
+
+/* Booking Status */
+.status-pending     { color: hsl(38 95% 60%);   background-color: hsl(38 95% 60% / 0.1);   }
+.status-confirmed   { color: hsl(210 100% 65%); background-color: hsl(210 100% 65% / 0.1); }
+.status-completed   { color: hsl(142 70% 45%);  background-color: hsl(142 70% 45% / 0.1);  }
+.status-cancelled   { color: hsl(0 75% 58%);    background-color: hsl(0 75% 58% / 0.1);    }
+.status-declined    { color: hsl(0 75% 58%);    background-color: hsl(0 75% 58% / 0.1);    }
+
+/* Conversation Status */
+.status-bot-active    { color: hsl(var(--primary)); background-color: hsl(var(--primary) / 0.1); }
+.status-intercepted   { color: hsl(38 95% 60%);     background-color: hsl(38 95% 60% / 0.1);     }
+.status-closed        { color: hsl(var(--muted-foreground)); background-color: hsl(var(--muted));  }
+

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   addKnowledgeNote,
@@ -19,6 +19,7 @@ interface StageNotesProps {
   onRemoveNote?: (index: number) => void;
   onNext: () => void;
   hasAnySource: boolean;
+  loading?: boolean;
 }
 
 const NOTE_SUGGESTIONS = [
@@ -34,6 +35,7 @@ export function StageNotes({
   onRemoveNote,
   onNext,
   hasAnySource,
+  loading = false,
 }: StageNotesProps) {
   const t = useTranslations("onboarding");
   const toast = useToast();
@@ -271,7 +273,8 @@ export function StageNotes({
         <Button
           type="button"
           onClick={handleProceed}
-          loading={submitting}
+          loading={submitting || loading}
+          disabled={loading}
           variant={hasAnySource || hasNotes || hasTypedNote ? "primary" : "secondary"}
           size="md"
         >

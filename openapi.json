@@ -151,6 +151,362 @@
         ]
       }
     },
+    "/knowledge-base/documents": {
+      "post": {
+        "operationId": "KnowledgeBaseController_uploadDocument",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PDF, DOCX, XLSX, or TXT file (max 10MB)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document uploaded and queued"
+          },
+          "400": {
+            "description": "Invalid file type or size"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a document (PDF, DOCX, XLSX, TXT) for knowledge ingestion",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "get": {
+        "operationId": "KnowledgeBaseController_listDocuments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of documents"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all uploaded documents for workspace",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/notes": {
+      "post": {
+        "operationId": "KnowledgeBaseController_addNotes",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeNotesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notes saved and queued for AI structuring"
+          },
+          "400": {
+            "description": "Empty notes provided"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add manual operational notes",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "get": {
+        "operationId": "KnowledgeBaseController_listNotes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of notes"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all manual notes for workspace",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/entries": {
+      "get": {
+        "operationId": "KnowledgeBaseController_listEntries",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "REALTY_LISTING",
+                "CAR_LISTING",
+                "LOCAL_LISTING",
+                "WEBSITE_CONTENT",
+                "DOCUMENT",
+                "MANUAL_NOTE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeEntryListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List knowledge entries (paginated, filter by type)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/entries/{id}": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getEntryById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeEntryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Knowledge entry not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get single knowledge entry by ID",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "delete": {
+        "operationId": "KnowledgeBaseController_deleteEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Knowledge entry not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete knowledge entry and its vector chunks",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/business-context": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getBusinessContext",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessContextResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current AI-generated business context summary",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/search": {
+      "get": {
+        "operationId": "KnowledgeBaseController_searchKnowledge",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "Search query string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "k",
+            "required": false,
+            "in": "query",
+            "description": "Top-k results limit",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vector search results"
+          },
+          "400": {
+            "description": "Empty query"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Semantic vector search across workspace knowledge",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/status/{type}": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getScrapingStatus",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scraping progress status"
+          },
+          "400": {
+            "description": "Unsupported scraping type"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get scraping job status (website or 2gis)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
     "/onboarding/state": {
       "get": {
         "operationId": "OnboardingController_getState",
@@ -307,7 +663,6 @@
     },
     "/onboarding/step/data-source": {
       "post": {
-        "deprecated": true,
         "operationId": "OnboardingController_submitDataSource",
         "parameters": [],
         "requestBody": {
@@ -331,8 +686,35 @@
               }
             }
           },
-          "400": {
-            "description": "Endpoint is deprecated"
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 2: Confirm data sources input and proceed to preview",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/data-source-confirm": {
+      "post": {
+        "operationId": "OnboardingController_confirmDataSource",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -343,7 +725,37 @@
             "bearer": []
           }
         ],
-        "summary": "Step 2: [DEPRECATED] Submit direct listing crawl ID (deprecated in favor of 2GIS/Website/Docs)",
+        "summary": "Step 2: Confirm data sources input step (transition to DATA_PREVIEW)",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/data-source/confirm": {
+      "post": {
+        "operationId": "OnboardingController_confirmDataSourceAlias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 2: Confirm data sources input step (alias, transition to DATA_PREVIEW)",
         "tags": [
           "Onboarding"
         ]
@@ -447,6 +859,126 @@
           }
         ],
         "summary": "Step 4: Connect a messaging channel",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/channel-confirm": {
+      "post": {
+        "operationId": "OnboardingController_confirmChannel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 4: Confirm channel connection step",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/channel/confirm": {
+      "post": {
+        "operationId": "OnboardingController_confirmChannelAlias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 4: Confirm channel connection step (alias)",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/channel-skip": {
+      "post": {
+        "operationId": "OnboardingController_skipChannel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 4: Skip channel connection step",
+        "tags": [
+          "Onboarding"
+        ]
+      }
+    },
+    "/onboarding/step/channel/skip": {
+      "post": {
+        "operationId": "OnboardingController_skipChannelAlias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 4: Skip channel connection step (alias)",
         "tags": [
           "Onboarding"
         ]
@@ -1499,6 +2031,1369 @@
           "Channels"
         ]
       }
+    },
+    "/webhooks/meta": {
+      "get": {
+        "operationId": "WebhooksController_verifyMetaWebhook",
+        "parameters": [
+          {
+            "name": "hub.mode",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hub.verify_token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hub.challenge",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Meta webhook verification challenge (WhatsApp & Instagram)",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/ai-engine/config": {
+      "get": {
+        "operationId": "AiEngineController_getConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "AI configuration details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiConfigResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workspace AI configuration and system prompt preview",
+        "tags": [
+          "AI Engine"
+        ]
+      },
+      "patch": {
+        "operationId": "AiEngineController_updateConfig",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAiConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI configuration updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update workspace AI configuration",
+        "tags": [
+          "AI Engine"
+        ]
+      }
+    },
+    "/ai-engine/test": {
+      "post": {
+        "operationId": "AiEngineController_testDialogue",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated AI response with latency and context metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestMessageResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Test dialogue generation through the RAG and Gemini pipeline",
+        "tags": [
+          "AI Engine"
+        ]
+      }
+    },
+    "/conversations": {
+      "get": {
+        "operationId": "ConversationsController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "BOT_ACTIVE",
+                "MANAGER_INTERCEPTED",
+                "CLOSED"
+              ]
+            }
+          },
+          {
+            "name": "channelType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "WHATSAPP",
+                "INSTAGRAM",
+                "TELEGRAM"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated conversations list"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List conversations with filters and pagination",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}": {
+      "get": {
+        "operationId": "ConversationsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation detail object"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get conversation detail",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/messages": {
+      "get": {
+        "operationId": "ConversationsController_getMessages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated messages list"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get message history (auto-resets unread count to 0)",
+        "tags": [
+          "Conversations"
+        ]
+      },
+      "post": {
+        "operationId": "ConversationsController_sendMessage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendManagerMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent and persisted"
+          },
+          "400": {
+            "description": "Channel disconnected"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          },
+          "502": {
+            "description": "Failed to send outbound message"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send outbound message to client via channel adapter",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/status": {
+      "patch": {
+        "operationId": "ConversationsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConversationStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          },
+          "400": {
+            "description": "Invalid status transition"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update conversation status",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/read": {
+      "patch": {
+        "operationId": "ConversationsController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Marked as read"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark conversation as read",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/staff": {
+      "get": {
+        "operationId": "StaffController_list",
+        "parameters": [
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Staff list"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all staff members for the workspace",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "post": {
+        "operationId": "StaffController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Staff member created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new staff member",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}": {
+      "patch": {
+        "operationId": "StaffController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Staff updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update staff member profile fields",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_deactivate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Staff deactivated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate staff member (soft delete)",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/schedule": {
+      "get": {
+        "operationId": "StaffController_getSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "2026-09-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "2026-09-30",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Templates and overrides"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get staff schedule templates and date overrides",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "put": {
+        "operationId": "StaffController_setSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Schedule updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Replace full weekly schedule template for staff member",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/overrides": {
+      "post": {
+        "operationId": "StaffController_addOverride",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOverrideDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Override added"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add availability override (day off or custom hours)",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/overrides/{overrideId}": {
+      "delete": {
+        "operationId": "StaffController_removeOverride",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "overrideId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Override removed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff or override not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a specific availability override",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/bookings": {
+      "get": {
+        "operationId": "BookingsController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "CONFIRMED",
+                "CANCELLED",
+                "DECLINED",
+                "COMPLETED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bookings list"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List bookings for calendar view (filter by date range)",
+        "tags": [
+          "Bookings"
+        ]
+      },
+      "post": {
+        "operationId": "BookingsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          },
+          "409": {
+            "description": "Slot conflict"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new appointment booking",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/slots": {
+      "get": {
+        "operationId": "BookingsController_getSlots",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Available slots array"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get available time slots for a staff member on a given date",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}": {
+      "get": {
+        "operationId": "BookingsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking object"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get booking detail by ID",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}/status": {
+      "patch": {
+        "operationId": "BookingsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookingStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update booking status",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}/reschedule": {
+      "patch": {
+        "operationId": "BookingsController_reschedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rescheduled"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Booking not found"
+          },
+          "409": {
+            "description": "Slot conflict"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reschedule booking to a new time slot",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/leads": {
+      "get": {
+        "operationId": "LeadsController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "QUALIFIED",
+                "APPOINTMENT_SET",
+                "DEAL_WON",
+                "DEAL_LOST"
+              ]
+            }
+          },
+          {
+            "name": "sourceChannel",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "WHATSAPP",
+                "INSTAGRAM",
+                "TELEGRAM"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated leads list"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List leads with filters and pagination",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/counts": {
+      "get": {
+        "operationId": "LeadsController_counts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lead counts per status"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get lead counts grouped by status",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/{id}": {
+      "get": {
+        "operationId": "LeadsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead detail object"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get lead detail with conversations and bookings",
+        "tags": [
+          "Leads"
+        ]
+      },
+      "patch": {
+        "operationId": "LeadsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lead updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update lead profile fields",
+        "tags": [
+          "Leads"
+        ]
+      },
+      "delete": {
+        "operationId": "LeadsController_archive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead archived"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Archive lead (soft delete → DEAL_LOST)",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/{id}/status": {
+      "patch": {
+        "operationId": "LeadsController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeadStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update lead status (funnel stage)",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/analytics/overview": {
+      "get": {
+        "operationId": "AnalyticsController_getOverview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dashboard overview KPI metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get main dashboard overview KPIs",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/funnel": {
+      "get": {
+        "operationId": "AnalyticsController_getFunnel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Pipeline conversion funnel stages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FunnelResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get lead pipeline conversion funnel",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/bookings-by-day": {
+      "get": {
+        "operationId": "AnalyticsController_getBookingsByDay",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Daily bookings timeline data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingsByDayResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get daily bookings count breakdown",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/channels": {
+      "get": {
+        "operationId": "AnalyticsController_getChannels",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Channel distribution metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelsAnalyticsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get channel traffic breakdown",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/staff": {
+      "get": {
+        "operationId": "AnalyticsController_getStaff",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Staff performance metrics array",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffPerformanceDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get staff workload and performance metrics",
+        "tags": [
+          "Analytics"
+        ]
+      }
     }
   },
   "info": {
@@ -1528,246 +3423,6 @@
         "properties": {}
       },
       "LoginDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "OnboardingStateResponseDto": {
-        "type": "object",
-        "properties": {
-          "step": {
-            "type": "string",
-            "enum": [
-              "SELECT_NICHE",
-              "BUSINESS_PROFILE",
-              "DATA_SOURCE",
-              "DATA_PREVIEW",
-              "CONNECT_CHANNEL",
-              "QUALIFICATION",
-              "COMPLETE_TEST",
-              "DONE"
-            ],
-            "example": "DATA_PREVIEW"
-          },
-          "stepIndex": {
-            "type": "number",
-            "example": 3,
-            "description": "0..7"
-          },
-          "completed": {
-            "type": "boolean",
-            "example": false
-          },
-          "parsingStatus": {
-            "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
-            "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
-          },
-          "parsedCount": {
-            "type": "number",
-            "example": 12
-          },
-          "totalCount": {
-            "type": "number",
-            "example": 47
-          },
-          "failedCount": {
-            "type": "number",
-            "example": 1
-          },
-          "error": {
-            "type": "string",
-            "description": "Заполнено при parsingStatus === FAILED",
-            "example": "All listings failed to parse"
-          }
-        },
-        "required": [
-          "step",
-          "stepIndex",
-          "completed"
-        ]
-      },
-      "SelectNicheDto": {
-        "type": "object",
-        "properties": {
-          "nicheProfile": {
-            "type": "string",
-            "enum": [
-              "BEAUTY",
-              "CLINIC",
-              "FITNESS",
-              "CONSULTING",
-              "OTHER_CALENDAR"
-            ],
-            "description": "Calendar-based business vertical profile",
-            "example": "BEAUTY"
-          }
-        },
-        "required": [
-          "nicheProfile"
-        ]
-      },
-      "BusinessProfileDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "DataSourceDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "DataSourceResponseDto": {
-        "type": "object",
-        "properties": {
-          "step": {
-            "type": "string",
-            "enum": [
-              "SELECT_NICHE",
-              "BUSINESS_PROFILE",
-              "DATA_SOURCE",
-              "DATA_PREVIEW",
-              "CONNECT_CHANNEL",
-              "QUALIFICATION",
-              "COMPLETE_TEST",
-              "DONE"
-            ],
-            "example": "DATA_PREVIEW"
-          },
-          "stepIndex": {
-            "type": "number",
-            "example": 3,
-            "description": "0..7"
-          },
-          "completed": {
-            "type": "boolean",
-            "example": false
-          },
-          "parsingStatus": {
-            "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
-            "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
-          },
-          "parsedCount": {
-            "type": "number",
-            "example": 12
-          },
-          "totalCount": {
-            "type": "number",
-            "example": 47
-          },
-          "failedCount": {
-            "type": "number",
-            "example": 1
-          },
-          "error": {
-            "type": "string",
-            "description": "Заполнено при parsingStatus === FAILED",
-            "example": "All listings failed to parse"
-          },
-          "code": {
-            "type": "string",
-            "example": "onboarding.parsing_started"
-          },
-          "message": {
-            "type": "string",
-            "example": "Parsing started. Your listings will be ready in a few minutes. You can proceed to the next step."
-          },
-          "isRaw": {
-            "type": "boolean",
-            "example": false
-          }
-        },
-        "required": [
-          "step",
-          "stepIndex",
-          "completed",
-          "code",
-          "message"
-        ]
-      },
-      "DataPreviewResponseDto": {
-        "type": "object",
-        "properties": {
-          "entries": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Первые 20 распарсенных объектов (KnowledgeEntry) для превью"
-          },
-          "parsingStatus": {
-            "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
-            "example": "PROCESSING"
-          },
-          "parsedCount": {
-            "type": "number",
-            "example": 12,
-            "description": "Успешно распарсено (авторитетно)"
-          },
-          "totalCount": {
-            "type": "number",
-            "example": 47,
-            "description": "Ожидается всего по матрице обхода"
-          },
-          "failedCount": {
-            "type": "number",
-            "example": 1
-          },
-          "error": {
-            "type": "string",
-            "description": "Заполнено при parsingStatus === FAILED"
-          }
-        },
-        "required": [
-          "entries",
-          "parsingStatus",
-          "parsedCount",
-          "totalCount",
-          "failedCount"
-        ]
-      },
-      "ConnectChannelDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ]
-          }
-        },
-        "required": [
-          "type"
-        ]
-      },
-      "QualificationDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "WebsiteScrapingDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "TwoGisScrapingDto": {
         "type": "object",
         "properties": {}
       },
@@ -1983,6 +3638,244 @@
           "workingHours"
         ]
       },
+      "OnboardingStateResponseDto": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "SELECT_NICHE",
+              "BUSINESS_PROFILE",
+              "DATA_SOURCE",
+              "DATA_PREVIEW",
+              "CONNECT_CHANNEL",
+              "QUALIFICATION",
+              "DONE"
+            ],
+            "example": "DATA_PREVIEW"
+          },
+          "stepIndex": {
+            "type": "number",
+            "example": 3,
+            "description": "0..6"
+          },
+          "completed": {
+            "type": "boolean",
+            "example": false
+          },
+          "parsingStatus": {
+            "type": "string",
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
+            "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
+          },
+          "parsedCount": {
+            "type": "number",
+            "example": 12
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 47
+          },
+          "failedCount": {
+            "type": "number",
+            "example": 1
+          },
+          "error": {
+            "type": "string",
+            "description": "Заполнено при parsingStatus === FAILED",
+            "example": "All listings failed to parse"
+          }
+        },
+        "required": [
+          "step",
+          "stepIndex",
+          "completed"
+        ]
+      },
+      "SelectNicheDto": {
+        "type": "object",
+        "properties": {
+          "nicheProfile": {
+            "type": "string",
+            "enum": [
+              "BEAUTY",
+              "CLINIC",
+              "FITNESS",
+              "CONSULTING",
+              "OTHER_CALENDAR"
+            ],
+            "description": "Calendar-based business vertical profile",
+            "example": "BEAUTY"
+          }
+        },
+        "required": [
+          "nicheProfile"
+        ]
+      },
+      "BusinessProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DataSourceDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DataSourceResponseDto": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string",
+            "enum": [
+              "SELECT_NICHE",
+              "BUSINESS_PROFILE",
+              "DATA_SOURCE",
+              "DATA_PREVIEW",
+              "CONNECT_CHANNEL",
+              "QUALIFICATION",
+              "DONE"
+            ],
+            "example": "DATA_PREVIEW"
+          },
+          "stepIndex": {
+            "type": "number",
+            "example": 3,
+            "description": "0..6"
+          },
+          "completed": {
+            "type": "boolean",
+            "example": false
+          },
+          "parsingStatus": {
+            "type": "string",
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
+            "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
+          },
+          "parsedCount": {
+            "type": "number",
+            "example": 12
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 47
+          },
+          "failedCount": {
+            "type": "number",
+            "example": 1
+          },
+          "error": {
+            "type": "string",
+            "description": "Заполнено при parsingStatus === FAILED",
+            "example": "All listings failed to parse"
+          },
+          "code": {
+            "type": "string",
+            "example": "onboarding.parsing_started"
+          },
+          "message": {
+            "type": "string",
+            "example": "Parsing started. Your listings will be ready in a few minutes. You can proceed to the next step."
+          },
+          "isRaw": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "step",
+          "stepIndex",
+          "completed",
+          "code",
+          "message"
+        ]
+      },
+      "DataPreviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Первые 20 распарсенных объектов (KnowledgeEntry) для превью"
+          },
+          "parsingStatus": {
+            "type": "string",
+            "enum": [
+              "IDLE",
+              "QUEUED",
+              "PROCESSING",
+              "DONE",
+              "FAILED"
+            ],
+            "example": "PROCESSING"
+          },
+          "parsedCount": {
+            "type": "number",
+            "example": 12,
+            "description": "Успешно распарсено (авторитетно)"
+          },
+          "totalCount": {
+            "type": "number",
+            "example": 47,
+            "description": "Ожидается всего по матрице обхода"
+          },
+          "failedCount": {
+            "type": "number",
+            "example": 1
+          },
+          "error": {
+            "type": "string",
+            "description": "Заполнено при parsingStatus === FAILED"
+          }
+        },
+        "required": [
+          "entries",
+          "parsingStatus",
+          "parsedCount",
+          "totalCount",
+          "failedCount"
+        ]
+      },
+      "ConnectChannelDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "QualificationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "WebsiteScrapingDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TwoGisScrapingDto": {
+        "type": "object",
+        "properties": {}
+      },
       "MetaConfigResponseDto": {
         "type": "object",
         "properties": {
@@ -2005,6 +3898,7 @@
               "instagram_basic",
               "instagram_manage_messages",
               "pages_show_list",
+              "pages_read_engagement",
               "pages_manage_metadata"
             ],
             "type": "array",
@@ -2206,6 +4100,475 @@
           "type",
           "status",
           "isHealthy"
+        ]
+      },
+      "AiConfigResponseDto": {
+        "type": "object",
+        "properties": {
+          "nicheProfile": {
+            "type": "string",
+            "example": "BEAUTY"
+          },
+          "systemPromptPreview": {
+            "type": "string",
+            "example": "Ты — вежливый AI-ассистент салона красоты..."
+          },
+          "followUpEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "followUp24hEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "followUp72hEnabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "liveOverflowTimeoutSeconds": {
+            "type": "number",
+            "example": 30
+          },
+          "customInstructions": {
+            "type": "string",
+            "example": "Всегда предлагай скидку 10% новым клиентам."
+          }
+        },
+        "required": [
+          "nicheProfile",
+          "systemPromptPreview",
+          "followUpEnabled",
+          "followUp24hEnabled",
+          "followUp72hEnabled",
+          "liveOverflowTimeoutSeconds"
+        ]
+      },
+      "UpdateAiConfigDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TestMessageDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TestMessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "example": "Добрый день! Рады вас принять. В пятницу у нас свободны слоты: 10:00, 13:00, 16:00. Какой вам удобен?"
+          },
+          "ragChunksUsed": {
+            "type": "number",
+            "example": 3
+          },
+          "latencyMs": {
+            "type": "number",
+            "example": 1240
+          }
+        },
+        "required": [
+          "response",
+          "ragChunksUsed",
+          "latencyMs"
+        ]
+      },
+      "SendManagerMessageDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateConversationStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "BOT_ACTIVE",
+              "MANAGER_INTERCEPTED",
+              "CLOSED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CreateStaffDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateStaffDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SetScheduleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AddOverrideDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateBookingDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateBookingStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CONFIRMED",
+              "CANCELLED",
+              "DECLINED",
+              "COMPLETED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "RescheduleBookingDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateLeadStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "QUALIFIED",
+              "APPOINTMENT_SET",
+              "DEAL_WON",
+              "DEAL_LOST"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "UpdateLeadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PeriodDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "2026-09-01"
+          },
+          "to": {
+            "type": "string",
+            "example": "2026-09-11"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "LeadsKpiDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 142
+          },
+          "new": {
+            "type": "number",
+            "example": 18
+          },
+          "qualified": {
+            "type": "number",
+            "example": 32
+          },
+          "appointmentSet": {
+            "type": "number",
+            "example": 25
+          },
+          "dealWon": {
+            "type": "number",
+            "example": 20
+          },
+          "dealLost": {
+            "type": "number",
+            "example": 5
+          }
+        },
+        "required": [
+          "total",
+          "new",
+          "qualified",
+          "appointmentSet",
+          "dealWon",
+          "dealLost"
+        ]
+      },
+      "BookingsKpiDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 38
+          },
+          "confirmed": {
+            "type": "number",
+            "example": 28
+          },
+          "completed": {
+            "type": "number",
+            "example": 20
+          },
+          "cancelled": {
+            "type": "number",
+            "example": 6
+          },
+          "declined": {
+            "type": "number",
+            "example": 4
+          }
+        },
+        "required": [
+          "total",
+          "confirmed",
+          "completed",
+          "cancelled",
+          "declined"
+        ]
+      },
+      "ConversationsKpiDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 89
+          },
+          "botHandled": {
+            "type": "number",
+            "example": 71
+          },
+          "managerIntercepted": {
+            "type": "number",
+            "example": 18
+          },
+          "avgResponseTimeSeconds": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "total",
+          "botHandled",
+          "managerIntercepted",
+          "avgResponseTimeSeconds"
+        ]
+      },
+      "RevenueKpiDto": {
+        "type": "object",
+        "properties": {
+          "estimatedTotal": {
+            "type": "string",
+            "example": "105000.00"
+          },
+          "currency": {
+            "type": "string",
+            "example": "KZT"
+          }
+        },
+        "required": [
+          "estimatedTotal",
+          "currency"
+        ]
+      },
+      "OverviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "$ref": "#/components/schemas/PeriodDto"
+          },
+          "leads": {
+            "$ref": "#/components/schemas/LeadsKpiDto"
+          },
+          "bookings": {
+            "$ref": "#/components/schemas/BookingsKpiDto"
+          },
+          "conversations": {
+            "$ref": "#/components/schemas/ConversationsKpiDto"
+          },
+          "revenue": {
+            "$ref": "#/components/schemas/RevenueKpiDto"
+          }
+        },
+        "required": [
+          "period",
+          "leads",
+          "bookings",
+          "conversations",
+          "revenue"
+        ]
+      },
+      "FunnelStageDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "NEW"
+          },
+          "count": {
+            "type": "number",
+            "example": 142
+          },
+          "conversionRate": {
+            "type": "object",
+            "example": 38.7,
+            "nullable": true
+          }
+        },
+        "required": [
+          "status",
+          "count",
+          "conversionRate"
+        ]
+      },
+      "FunnelResponseDto": {
+        "type": "object",
+        "properties": {
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FunnelStageDto"
+            }
+          }
+        },
+        "required": [
+          "stages"
+        ]
+      },
+      "DayBookingDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-09-01"
+          },
+          "total": {
+            "type": "number",
+            "example": 4
+          },
+          "confirmed": {
+            "type": "number",
+            "example": 3
+          },
+          "completed": {
+            "type": "number",
+            "example": 2
+          },
+          "cancelled": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "date",
+          "total",
+          "confirmed",
+          "completed",
+          "cancelled"
+        ]
+      },
+      "BookingsByDayResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DayBookingDto"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ChannelMetricDto": {
+        "type": "object",
+        "properties": {
+          "conversations": {
+            "type": "number",
+            "example": 45
+          },
+          "messages": {
+            "type": "number",
+            "example": 312
+          }
+        },
+        "required": [
+          "conversations",
+          "messages"
+        ]
+      },
+      "ChannelsAnalyticsResponseDto": {
+        "type": "object",
+        "properties": {
+          "WHATSAPP": {
+            "$ref": "#/components/schemas/ChannelMetricDto"
+          },
+          "INSTAGRAM": {
+            "$ref": "#/components/schemas/ChannelMetricDto"
+          },
+          "TELEGRAM": {
+            "$ref": "#/components/schemas/ChannelMetricDto"
+          }
+        },
+        "required": [
+          "WHATSAPP",
+          "INSTAGRAM",
+          "TELEGRAM"
+        ]
+      },
+      "StaffPerformanceDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "example": "uuid"
+          },
+          "staffName": {
+            "type": "string",
+            "example": "Мастер Анна"
+          },
+          "totalBookings": {
+            "type": "number",
+            "example": 18
+          },
+          "completedBookings": {
+            "type": "number",
+            "example": 14
+          },
+          "cancelledBookings": {
+            "type": "number",
+            "example": 2
+          },
+          "estimatedRevenue": {
+            "type": "string",
+            "example": "63000.00"
+          }
+        },
+        "required": [
+          "staffId",
+          "staffName",
+          "totalBookings",
+          "completedBookings",
+          "cancelledBookings",
+          "estimatedRevenue"
         ]
       }
     }

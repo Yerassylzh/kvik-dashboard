@@ -39,19 +39,20 @@ export const STEP_META: Record<
     titleKey: "stepper.qualification_title",
     subtitleKey: "stepper.qualification_subtitle",
   },
-  COMPLETE_TEST: {
-    index: 6,
-    titleKey: "stepper.complete_test_title",
-    subtitleKey: "stepper.complete_test_subtitle",
-  },
   DONE: {
-    index: 7,
+    index: 6,
     titleKey: "stepper.done_title",
     subtitleKey: "stepper.done_subtitle",
   },
+  // COMPLETE_TEST is handled transparently (auto-completes) — not shown as a step
+  COMPLETE_TEST: {
+    index: 5,
+    titleKey: "stepper.qualification_title",
+    subtitleKey: "stepper.qualification_subtitle",
+  },
 };
 
-export const TOTAL_STEPS = 7;
+export const TOTAL_STEPS = 6;
 
 interface OnboardingHeaderProps {
   currentStep: OnboardingStepState;

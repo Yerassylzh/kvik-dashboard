@@ -181,12 +181,22 @@ export interface ChannelDto {
 }
 
 // ---------------------------------------------------------------------------
-// Step 5: Qualification rules
-// ---------------------------------------------------------------------------
+export interface QualificationQuestionDto {
+  id: string;
+  field: string;
+  question: string;
+  required: boolean;
+}
 
 export interface QualificationDto {
-  questions: string[];
-  customInstructions?: string;
+  questions?: QualificationQuestionDto[];
+  disqualifiers?: string[];
+  autoPassConditions?: string[];
+  budgetMin?: number;
+  budgetMax?: number;
+  mortgage?: boolean;
+  district?: string;
+  urgency?: "low" | "medium" | "high";
 }
 
 // ---------------------------------------------------------------------------
