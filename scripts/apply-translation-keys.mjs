@@ -34,6 +34,7 @@ const BACKEND_NEW_KEYS_FILE = path.join(LOCALES_DIR, "backend_new_keys.json");
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+const overwrite = args.includes("--overwrite");
 const lang = args.find((a) => !a.startsWith("--")) || "ru";
 
 const langDir = path.join(LOCALES_DIR, lang);
@@ -85,7 +86,7 @@ function mergeKeys(sourceFile, { fixedNamespace = null } = {}) {
       node = node[segment];
     }
     const leaf = rest[rest.length - 1];
-    if (node[leaf] !== undefined) {
+    if (node[leaf] !== undefined && !overwrite) {
       console.warn(`Skipping "${rawKey}": already exists in locales/${lang}/${namespace}.json`);
       continue;
     }

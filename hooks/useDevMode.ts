@@ -55,8 +55,10 @@ export function useDevMode() {
       } else {
         localStorage.removeItem(DEV_MODE_KEY);
       }
-      // Broadcast to all other useDevMode instances in the same tab
-      window.dispatchEvent(new CustomEvent(DEV_MODE_EVENT, { detail: next }));
+      // Broadcast asynchronously to all other useDevMode instances in the same tab
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent(DEV_MODE_EVENT, { detail: next }));
+      }, 0);
       return next;
     });
   }, []);

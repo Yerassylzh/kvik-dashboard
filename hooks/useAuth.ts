@@ -6,11 +6,13 @@ import { useOnboardingStore } from "@/store/onboarding.store";
 import {
   loginApi,
   registerApi,
+  registerStaffApi,
+  switchWorkspaceApi,
   logoutApi,
   getMeApi,
 } from "@/lib/api/auth";
 import { getOrRefreshToken } from "@/lib/api/client";
-import { LoginDto, RegisterDto } from "@/types/auth";
+import { LoginDto, RegisterDto, RegisterStaffDto, SwitchWorkspaceDto } from "@/types/auth";
 
 /**
  * App-level singleton refresh promise.
@@ -25,11 +27,13 @@ export function useAuth() {
     accessToken,
     isAuthenticated,
     isLoading,
+    pendingVerificationEmail,
     setAuth,
     setAccessToken,
     setUser,
     clearAuth,
     setLoading,
+    setPendingVerificationEmail,
   } = useAuthStore();
 
   const login = useCallback(
@@ -57,6 +61,28 @@ export function useAuth() {
         const res = await registerApi(dto);
         useOnboardingStore.getState().resetOnboarding();
         setAuth(res.user, res.access_token);
+        // Save email so verify-email page can resume after refresh
+        if (!res.user.isEmailVerified) {
+          setPendingVerificationEmail(res.user.email);
+        }
+        return res;
+      } catch (error) {
+        clearAuth();
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setAuth, clearAuth, setLoading, setPendingVerificationEmail],
+  );
+
+  const registerStaff = useCallback(
+    async (dto: RegisterStaffDto) => {
+      setLoading(true);
+      try {
+        const res = await registerStaffApi(dto);
+        useOnboardingStore.getState().resetOnboarding();
+        setAuth(res.user, res.access_token);
         return res;
       } catch (error) {
         clearAuth();
@@ -68,6 +94,26 @@ export function useAuth() {
     [setAuth, clearAuth, setLoading],
   );
 
+  const switchWorkspace = useCallback(
+    async (dto: SwitchWorkspaceDto) => {
+      setLoading(true);
+      try {
+        const res = await switchWorkspaceApi(dto);
+        setAuth(res.user, res.access_token);
+        if (typeof window !== 'undefined') {
+          // Trigger a hard reload or navigation to ensure all SWR caches and state re-sync with new workspace
+          window.location.reload();
+        }
+        return res;
+      } catch (error) {
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setAuth, setLoading],
+  );
+
   const logout = useCallback(async () => {
     setLoading(true);
     try {
@@ -76,9 +122,10 @@ export function useAuth() {
       // Ignore logout errors
     } finally {
       useOnboardingStore.getState().resetOnboarding();
+      setPendingVerificationEmail(null);
       clearAuth();
     }
-  }, [clearAuth, setLoading]);
+  }, [clearAuth, setLoading, setPendingVerificationEmail]);
 
   const checkAuth = useCallback(async () => {
     // Exempt OAuth popup callbacks — they don't need an auth check
@@ -93,7 +140,15 @@ export function useAuth() {
     // Read current auth state DIRECTLY from store (not closure) to avoid stale values
     const state = useAuthStore.getState();
     if (state.accessToken && state.user) {
-      // Already authenticated in store — just ensure loading is cleared
+      // If user is explicitly unverified and attempting onboarding or pending verification
+      if (state.user.isEmailVerified === false) {
+        const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+        if (state.pendingVerificationEmail || pathname.startsWith("/onboarding")) {
+          if (!pathname.startsWith("/verify-email")) {
+            window.location.href = "/verify-email";
+          }
+        }
+      }
       setLoading(false);
       return;
     }
@@ -110,6 +165,20 @@ export function useAuth() {
         useAuthStore.getState().setAccessToken(token);
         const userData = await getMeApi();
         useAuthStore.getState().setUser(userData);
+
+        // Enforce email verification gate for onboarding and pending verification
+        if (userData.isEmailVerified === false) {
+          if (typeof window !== "undefined") {
+            const pathname = window.location.pathname;
+            const pending = useAuthStore.getState().pendingVerificationEmail;
+            if (pending || pathname.startsWith("/onboarding")) {
+              useAuthStore.getState().setPendingVerificationEmail(userData.email);
+              if (!pathname.startsWith("/verify-email")) {
+                window.location.href = "/verify-email";
+              }
+            }
+          }
+        }
       } catch {
         useOnboardingStore.getState().resetOnboarding();
         useAuthStore.getState().clearAuth();
@@ -119,6 +188,9 @@ export function useAuth() {
           const isPublicPath =
             pathname.startsWith("/login") ||
             pathname.startsWith("/register") ||
+            pathname.startsWith("/register-staff") ||
+            pathname.startsWith("/forgot-password") ||
+            pathname.startsWith("/verify-email") ||
             pathname.includes("callback");
 
           if (!isPublicPath) {
@@ -142,9 +214,13 @@ export function useAuth() {
     accessToken,
     isAuthenticated,
     isLoading,
+    pendingVerificationEmail,
     login,
     register,
+    registerStaff,
+    switchWorkspace,
     logout,
     checkAuth,
+    setPendingVerificationEmail,
   };
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, Plus, Trash2, Calendar, Check } from "lucide-react";
+import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { Button } from "@/components/ui/button";
 import { useStaffSchedule } from "@/hooks/useStaff";
@@ -11,11 +12,19 @@ interface AvailabilityEditorProps {
   staff: StaffDto;
 }
 
-const dayNames = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
-
 export function AvailabilityEditor({ staff }: AvailabilityEditorProps) {
-  const { templates, overrides, setSchedule, addOverride, removeOverride, isLoading } =
-    useStaffSchedule(staff.id);
+  const t = useTranslations("dashboard");
+  const { setSchedule, isLoading } = useStaffSchedule(staff.id);
+
+  const dayNames = [
+    t("staff.days.0"),
+    t("staff.days.1"),
+    t("staff.days.2"),
+    t("staff.days.3"),
+    t("staff.days.4"),
+    t("staff.days.5"),
+    t("staff.days.6"),
+  ];
 
   const [activeDays, setActiveDays] = useState<Record<number, { start: string; end: string; duration: number }>>({
     1: { start: "09:00", end: "18:00", duration: 60 },
@@ -53,8 +62,8 @@ export function AvailabilityEditor({ staff }: AvailabilityEditorProps) {
 
   return (
     <SectionCard
-      title={`График работы: ${staff.name}`}
-      description="Настройка еженедельного расписания и дней отдыха"
+      title={t("staff.schedule_title_prefix", { name: staff.name })}
+      description={t("staff.schedule_desc")}
       className="max-w-2xl"
     >
       <div className="space-y-4 pt-2">
@@ -107,7 +116,7 @@ export function AvailabilityEditor({ staff }: AvailabilityEditorProps) {
                     />
                   </div>
                 ) : (
-                  <span className="text-muted-foreground italic">Выходной</span>
+                  <span className="text-muted-foreground italic">{t("staff.day_off")}</span>
                 )}
               </div>
             );
@@ -118,14 +127,14 @@ export function AvailabilityEditor({ staff }: AvailabilityEditorProps) {
           {isSaved ? (
             <span className="text-xs font-semibold text-emerald-500 flex items-center gap-1">
               <Check className="w-4 h-4" />
-              <span>Расписание сохранено</span>
+              <span>{t("staff.schedule_saved")}</span>
             </span>
           ) : (
             <div />
           )}
 
           <Button size="sm" onClick={handleSaveWeekly}>
-            Сохранить график
+            {t("staff.save_schedule_btn")}
           </Button>
         </div>
       </div>

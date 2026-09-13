@@ -190,9 +190,10 @@ export function DevSimulatorForm({
             type="submit"
             size="sm"
             disabled={isSending || !messageText.trim()}
-            className="gap-1.5 shrink-0"
+            loading={isSending}
+            leftIcon={<Send className="w-3.5 h-3.5" />}
+            className="shrink-0 text-xs"
           >
-            <Send className="w-3.5 h-3.5" />
             {isSending ? t("dev_messaging.sending") : t("dev_messaging.send_btn")}
           </Button>
         </div>

@@ -68,25 +68,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={isDisabled}
         className={clsx(
-          "inline-flex items-center justify-center font-bold transition-all cursor-pointer select-none",
+          "inline-flex items-center justify-center font-semibold transition-all cursor-pointer select-none whitespace-nowrap shrink-0",
           "focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed",
+          "[&>svg]:shrink-0",
           variantStyles[variant],
           sizeStyles[size],
           className
         )}
         {...props}
       >
-        {loading ? (
-          <>
-            <span className="h-3.5 w-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin flex-shrink-0" />
-            <span>{children}</span>
-          </>
-        ) : (
-          <>
-            {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
-            <span>{children}</span>
-            {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
-          </>
+        {loading && (
+          <span className="h-3.5 w-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin shrink-0" />
+        )}
+        {!loading && leftIcon && (
+          <span className="shrink-0 inline-flex items-center">{leftIcon}</span>
+        )}
+        {children}
+        {!loading && rightIcon && (
+          <span className="shrink-0 inline-flex items-center">{rightIcon}</span>
         )}
       </button>
     );

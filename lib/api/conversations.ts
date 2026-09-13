@@ -8,6 +8,8 @@ export interface MessageDto {
   id: string;
   conversationId?: string;
   role: MessageRole;
+  senderStaffId?: string | null;
+  senderName?: string | null;
   content: string;
   externalMessageId?: string | null;
   metadata?: Record<string, unknown> | null;

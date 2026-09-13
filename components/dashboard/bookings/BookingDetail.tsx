@@ -120,10 +120,10 @@ export function BookingDetail({
               variant="default"
               size="sm"
               onClick={() => onStatusChange(booking.id, "CONFIRMED")}
-              className="text-xs gap-1.5"
+              leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+              className="text-xs"
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{t("bookings.confirm_btn")}</span>
+              {t("bookings.confirm_btn")}
             </Button>
           )}
 
@@ -132,10 +132,10 @@ export function BookingDetail({
               variant="default"
               size="sm"
               onClick={() => onStatusChange(booking.id, "COMPLETED")}
-              className="text-xs gap-1.5 bg-emerald-600 hover:bg-emerald-500"
+              leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+              className="text-xs bg-emerald-600 hover:bg-emerald-500"
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{t("bookings.complete_btn")}</span>
+              {t("bookings.complete_btn")}
             </Button>
           )}
 
@@ -146,10 +146,10 @@ export function BookingDetail({
               onClose();
               onOpenReschedule(booking);
             }}
-            className="text-xs gap-1.5 border-border/60"
+            leftIcon={<RefreshCw className="w-3.5 h-3.5 text-primary" />}
+            className="text-xs border-border/60"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-primary" />
-            <span>{t("bookings.reschedule_btn")}</span>
+            {t("bookings.reschedule_btn")}
           </Button>
 
           {booking.status !== "CANCELLED" && (
@@ -157,10 +157,10 @@ export function BookingDetail({
               variant="destructive"
               size="sm"
               onClick={() => onStatusChange(booking.id, "CANCELLED")}
-              className="text-xs gap-1.5"
+              leftIcon={<XCircle className="w-3.5 h-3.5" />}
+              className="text-xs"
             >
-              <XCircle className="w-3.5 h-3.5" />
-              <span>{t("bookings.cancel_btn")}</span>
+              {t("bookings.cancel_btn")}
             </Button>
           )}
         </div>

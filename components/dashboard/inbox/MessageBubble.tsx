@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Bot, User, ShieldCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import type { MessageDto, MessageRole } from "@/lib/api/conversations";
 
@@ -10,6 +11,7 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message }: MessageBubbleProps) {
+  const t = useTranslations("dashboard");
   const isUser = message.role === "USER";
   const isBot = message.role === "BOT";
   const isManager = message.role === "MANAGER";
@@ -55,9 +57,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Role Tag */}
         <div className="flex items-center justify-between gap-3 text-[11px] mb-1 opacity-75 font-semibold">
           <span>
-            {isUser && "Клиент"}
-            {isBot && "ИИ-Ассистент"}
-            {isManager && "Менеджер"}
+            {isUser && t("inbox.sender_client")}
+            {isBot && t("inbox.sender_bot")}
+            {isManager && (message.senderName || t("inbox.sender_manager"))}
           </span>
           <span className="text-[10px] font-mono opacity-80">{time}</span>
         </div>

@@ -14,5 +14,15 @@
     "inactive": "Неактивен",
     "connected": "Подключено",
     "disconnected": "Не подключено"
-  }
+  },
+  "cancel": "Отмена",
+  "save": "Сохранить",
+  "delete": "Удалить",
+  "confirm": "Подтвердить",
+  "active": "Активен",
+  "inactive": "Отключен",
+  "status_completed": "Готово",
+  "status_processing": "Обработка...",
+  "status_pending": "В очереди",
+  "status_failed": "Ошибка"
 }

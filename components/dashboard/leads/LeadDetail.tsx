@@ -207,10 +207,10 @@ export function LeadDetail({
                 onClose();
               }
             }}
-            className="w-full gap-2 text-xs"
+            leftIcon={<Archive className="w-4 h-4" />}
+            className="w-full text-xs font-semibold"
           >
-            <Archive className="w-4 h-4" />
-            <span>{t("leads.archive_btn")}</span>
+            {t("leads.archive_btn")}
           </Button>
         </div>
       </div>

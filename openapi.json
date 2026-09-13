@@ -51,7 +51,7 @@
             "description": "Email already exists"
           }
         },
-        "summary": "Register a new business owner",
+        "summary": "Register a new business owner and send email verification OTP",
         "tags": [
           "Auth"
         ]
@@ -80,6 +80,248 @@
           }
         },
         "summary": "Log in with email and password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/staff-invite": {
+      "get": {
+        "operationId": "AuthController_validateStaffInvite",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Invite token is valid"
+          },
+          "400": {
+            "description": "Invalid or expired invite token"
+          },
+          "409": {
+            "description": "Invite already accepted"
+          }
+        },
+        "summary": "Validate staff invitation token and get metadata",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/register-staff": {
+      "post": {
+        "operationId": "AuthController_registerStaff",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Staff member registered and logged in successfully"
+          },
+          "400": {
+            "description": "Invalid or expired invite token"
+          },
+          "409": {
+            "description": "Invite already accepted"
+          }
+        },
+        "summary": "Accept staff invitation, create user, set password, and log in",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/switch-workspace": {
+      "post": {
+        "operationId": "AuthController_switchWorkspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchWorkspaceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workspace switched successfully"
+          },
+          "403": {
+            "description": "Access denied to target workspace"
+          },
+          "404": {
+            "description": "Workspace not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Switch active workspace context",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully"
+          },
+          "400": {
+            "description": "Invalid or expired verification code"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "summary": "Verify email address using 6-digit OTP code",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/resend-verification": {
+      "post": {
+        "operationId": "AuthController_resendVerification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code sent successfully"
+          },
+          "400": {
+            "description": "Email is already verified"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "429": {
+            "description": "Cooldown active (please wait 60 seconds)"
+          }
+        },
+        "summary": "Resend email verification 6-digit OTP code",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset code sent if account exists"
+          }
+        },
+        "summary": "Request password reset code (sends 6-digit OTP if account exists)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired reset code / invalid password"
+          }
+        },
+        "summary": "Reset account password using 6-digit OTP code",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully"
+          },
+          "400": {
+            "description": "Current password is incorrect"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change password from dashboard settings (authenticated)",
         "tags": [
           "Auth"
         ]
@@ -148,6 +390,590 @@
         "summary": "Get current user profile and workspace state",
         "tags": [
           "Auth"
+        ]
+      }
+    },
+    "/staff": {
+      "get": {
+        "operationId": "StaffController_list",
+        "parameters": [
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Staff list with status and access details"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all staff members for the workspace",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "post": {
+        "operationId": "StaffController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Staff member created"
+          },
+          "400": {
+            "description": "Invalid input or missing email for invite"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new staff member (optionally send immediate email invite)",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}": {
+      "get": {
+        "operationId": "StaffController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Staff profile detail"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get staff member profile by ID",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "patch": {
+        "operationId": "StaffController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Staff updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update staff member profile fields",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_deactivate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Staff deactivated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate staff member (soft delete & session invalidation)",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/invite": {
+      "post": {
+        "operationId": "StaffController_inviteStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invitation email sent successfully"
+          },
+          "400": {
+            "description": "Missing email address"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff member not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send or resend email invitation to join dashboard",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_revokeInvite",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation revoked successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Pending invite not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoke pending invitation for staff member",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/schedule": {
+      "get": {
+        "operationId": "StaffController_getSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "2026-09-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "2026-09-30",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Templates and overrides"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get staff schedule templates and date overrides",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "put": {
+        "operationId": "StaffController_setSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Schedule updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Replace full weekly schedule template for staff member",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/overrides": {
+      "post": {
+        "operationId": "StaffController_addOverride",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOverrideDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Override added"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add availability override (day off or custom hours)",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/overrides/{overrideId}": {
+      "delete": {
+        "operationId": "StaffController_removeOverride",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "overrideId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Override removed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff or override not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a specific availability override",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/knowledge-base/profile": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getBusinessProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessProfileResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workspace business profile and contact information",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "put": {
+        "operationId": "KnowledgeBaseController_updateBusinessProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusinessProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateBusinessProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update workspace business profile",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "patch": {
+        "operationId": "KnowledgeBaseController_patchBusinessProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusinessProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateBusinessProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update workspace business profile (PATCH)",
+        "tags": [
+          "Knowledge Base"
         ]
       }
     },
@@ -275,6 +1101,324 @@
         ]
       }
     },
+    "/knowledge-base/notes/{id}": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getNoteById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualNoteResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get single manual note by ID",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "put": {
+        "operationId": "KnowledgeBaseController_updateNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateManualNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateManualNoteResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an existing manual note and re-index vector chunks",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "patch": {
+        "operationId": "KnowledgeBaseController_patchNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateManualNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateManualNoteResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an existing manual note (PATCH)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "delete": {
+        "operationId": "KnowledgeBaseController_deleteNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a manual note and its vector chunks",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/website": {
+      "post": {
+        "operationId": "KnowledgeBaseController_startWebsiteScraping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerWebsiteScrapeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Website crawling initiated"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trigger website crawling (async)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/2gis": {
+      "post": {
+        "operationId": "KnowledgeBaseController_start2GisScraping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerTwoGisScrapeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "2GIS catalog scraping initiated"
+          },
+          "400": {
+            "description": "Validation failed or unsupported niche"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trigger 2GIS catalog scraping (async)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/status": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getUnifiedScrapersStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScrapersStatusResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get unified status of all knowledge scrapers (website & 2GIS)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/{type}": {
+      "delete": {
+        "operationId": "KnowledgeBaseController_clearScrapedData",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scraped data cleared"
+          },
+          "400": {
+            "description": "Unsupported scraping type"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk clear all scraped entries for website or 2gis",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
     "/knowledge-base/entries": {
       "get": {
         "operationId": "KnowledgeBaseController_listEntries",
@@ -363,6 +1507,49 @@
           "Knowledge Base"
         ]
       },
+      "patch": {
+        "operationId": "KnowledgeBaseController_updateEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateKnowledgeEntryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Knowledge entry updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Knowledge entry not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update knowledge entry title or active status",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
       "delete": {
         "operationId": "KnowledgeBaseController_deleteEntry",
         "parameters": [
@@ -397,6 +1584,148 @@
         ]
       }
     },
+    "/knowledge-base/entries/bulk-delete": {
+      "post": {
+        "operationId": "KnowledgeBaseController_bulkDeleteEntries",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDeleteEntriesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Selected entries deleted"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk delete multiple knowledge base entries",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/entries/{id}/reindex": {
+      "post": {
+        "operationId": "KnowledgeBaseController_reindexEntry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Re-indexing queued"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Knowledge entry not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Re-index a specific knowledge entry (re-run parsing/embedding)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/qualification": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getQualification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualificationResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get configured lead qualification rules",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "put": {
+        "operationId": "KnowledgeBaseController_updateQualification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateQualificationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update lead qualification rules and re-embed chunks",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
     "/knowledge-base/business-context": {
       "get": {
         "operationId": "KnowledgeBaseController_getBusinessContext",
@@ -422,6 +1751,70 @@
           }
         ],
         "summary": "Get current AI-generated business context summary",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "put": {
+        "operationId": "KnowledgeBaseController_updateBusinessContext",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusinessContextDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Business context updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessContextResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update or override business context summary",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/business-context/regenerate": {
+      "post": {
+        "operationId": "KnowledgeBaseController_regenerateBusinessContext",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Business context extraction job queued"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trigger re-extraction of business context from all knowledge sources",
         "tags": [
           "Knowledge Base"
         ]
@@ -502,6 +1895,36 @@
           }
         ],
         "summary": "Get scraping job status (website or 2gis)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/stats": {
+      "get": {
+        "operationId": "KnowledgeBaseController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeBaseStatsResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get aggregate Knowledge Base metrics and health statistics",
         "tags": [
           "Knowledge Base"
         ]
@@ -2118,6 +3541,9 @@
           "200": {
             "description": "AI configuration updated"
           },
+          "400": {
+            "description": "Validation failed"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -2128,6 +3554,111 @@
           }
         ],
         "summary": "Update workspace AI configuration",
+        "tags": [
+          "AI Engine"
+        ]
+      }
+    },
+    "/ai-engine/prompt-preview": {
+      "get": {
+        "operationId": "AiEngineController_getPromptPreview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Compiled prompt details and token estimate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptPreviewResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get live compiled system prompt preview with active variables and business context",
+        "tags": [
+          "AI Engine"
+        ]
+      }
+    },
+    "/ai-engine/tools": {
+      "get": {
+        "operationId": "AiEngineController_getTools",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of agent tools with parameters and enabled status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolsResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all available AI agent tools and their activation status",
+        "tags": [
+          "AI Engine"
+        ]
+      }
+    },
+    "/ai-engine/tools/{toolName}": {
+      "patch": {
+        "operationId": "AiEngineController_updateToolConfig",
+        "parameters": [
+          {
+            "name": "toolName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateToolConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool configuration updated"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Toggle activation or customize instructions for a specific AI tool",
         "tags": [
           "AI Engine"
         ]
@@ -2157,6 +3688,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation failed"
           },
           "401": {
             "description": "Unauthorized"
@@ -2438,331 +3972,6 @@
         "summary": "Mark conversation as read",
         "tags": [
           "Conversations"
-        ]
-      }
-    },
-    "/staff": {
-      "get": {
-        "operationId": "StaffController_list",
-        "parameters": [
-          {
-            "name": "isActive",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Staff list"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List all staff members for the workspace",
-        "tags": [
-          "Staff"
-        ]
-      },
-      "post": {
-        "operationId": "StaffController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateStaffDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Staff member created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Create a new staff member",
-        "tags": [
-          "Staff"
-        ]
-      }
-    },
-    "/staff/{id}": {
-      "patch": {
-        "operationId": "StaffController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStaffDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Staff updated"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Staff not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update staff member profile fields",
-        "tags": [
-          "Staff"
-        ]
-      },
-      "delete": {
-        "operationId": "StaffController_deactivate",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Staff deactivated"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Staff not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Deactivate staff member (soft delete)",
-        "tags": [
-          "Staff"
-        ]
-      }
-    },
-    "/staff/{id}/schedule": {
-      "get": {
-        "operationId": "StaffController_getSchedule",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "from",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "example": "2026-09-01",
-              "type": "string"
-            }
-          },
-          {
-            "name": "to",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "example": "2026-09-30",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Templates and overrides"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Staff not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get staff schedule templates and date overrides",
-        "tags": [
-          "Staff"
-        ]
-      },
-      "put": {
-        "operationId": "StaffController_setSchedule",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SetScheduleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Schedule updated"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Staff not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Replace full weekly schedule template for staff member",
-        "tags": [
-          "Staff"
-        ]
-      }
-    },
-    "/staff/{id}/overrides": {
-      "post": {
-        "operationId": "StaffController_addOverride",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddOverrideDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Override added"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Staff not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Add availability override (day off or custom hours)",
-        "tags": [
-          "Staff"
-        ]
-      }
-    },
-    "/staff/{id}/overrides/{overrideId}": {
-      "delete": {
-        "operationId": "StaffController_removeOverride",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "overrideId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Override removed"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Staff or override not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Remove a specific availability override",
-        "tags": [
-          "Staff"
         ]
       }
     },
@@ -3592,9 +4801,357 @@
         "type": "object",
         "properties": {}
       },
+      "RegisterStaffDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SwitchWorkspaceDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "VerifyEmailDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResendVerificationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateStaffDto": {
+        "type": "object",
+        "properties": {
+          "systemRole": {
+            "type": "string",
+            "enum": [
+              "OWNER",
+              "ADMIN_MANAGER",
+              "SPECIALIST"
+            ],
+            "default": "SPECIALIST",
+            "description": "System role determining dashboard permissions"
+          }
+        }
+      },
+      "InviteStaffDto": {
+        "type": "object",
+        "properties": {
+          "systemRole": {
+            "type": "string",
+            "enum": [
+              "OWNER",
+              "ADMIN_MANAGER",
+              "SPECIALIST"
+            ],
+            "default": "SPECIALIST",
+            "description": "System role determining dashboard permissions"
+          }
+        }
+      },
+      "UpdateStaffDto": {
+        "type": "object",
+        "properties": {
+          "systemRole": {
+            "type": "string",
+            "enum": [
+              "OWNER",
+              "ADMIN_MANAGER",
+              "SPECIALIST"
+            ],
+            "description": "System role determining dashboard permissions"
+          }
+        }
+      },
+      "SetScheduleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AddOverrideDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "BusinessProfileDataDto": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string",
+            "example": "Barber Pro Almaty"
+          },
+          "nicheProfile": {
+            "type": "string",
+            "enum": [
+              "REALTY",
+              "AUTO_SALES",
+              "AUTO_SERVICE",
+              "BEAUTY",
+              "CLINIC",
+              "FITNESS",
+              "CONSULTING",
+              "OTHER_CALENDAR"
+            ],
+            "example": "BEAUTY"
+          },
+          "subSegment": {
+            "type": "object",
+            "example": "barbershop"
+          },
+          "city": {
+            "type": "object",
+            "example": "Almaty"
+          },
+          "country": {
+            "type": "object",
+            "example": "KZ"
+          },
+          "businessPhone": {
+            "type": "object",
+            "example": "+77011112233"
+          },
+          "businessEmail": {
+            "type": "object",
+            "example": "info@barberpro.kz"
+          },
+          "businessAddress": {
+            "type": "object",
+            "example": "Abylai Khan Ave 45"
+          },
+          "businessDescription": {
+            "type": "object",
+            "example": "Premium barbershop and grooming lounge"
+          },
+          "websiteUrl": {
+            "type": "object",
+            "example": "https://barberpro.kz"
+          },
+          "instagramUrl": {
+            "type": "object",
+            "example": "https://instagram.com/barberpro_kz"
+          },
+          "workingHours": {
+            "type": "object",
+            "example": "Mon-Sun 10:00 - 21:00"
+          },
+          "teamSize": {
+            "type": "number",
+            "example": 5
+          },
+          "timezone": {
+            "type": "object",
+            "example": "Asia/Almaty"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-13T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "businessName"
+        ]
+      },
+      "BusinessProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.profile_retrieved"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/BusinessProfileDataDto"
+          }
+        },
+        "required": [
+          "code",
+          "profile"
+        ]
+      },
+      "UpdateBusinessProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateBusinessProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.profile_updated"
+          },
+          "message": {
+            "type": "string",
+            "example": "Business profile updated successfully."
+          },
+          "profile": {
+            "$ref": "#/components/schemas/BusinessProfileDataDto"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "profile"
+        ]
+      },
       "KnowledgeNotesDto": {
         "type": "object",
         "properties": {}
+      },
+      "ManualNoteItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "e458b29c-1234-4567-8901-abcdef123456"
+          },
+          "title": {
+            "type": "string",
+            "example": "Customer Parking Instructions"
+          },
+          "note": {
+            "type": "string",
+            "example": "Parking is free in the backyard with barrier code 4521."
+          },
+          "processingStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "COMPLETED",
+              "FAILED"
+            ],
+            "example": "COMPLETED"
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-08T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-08T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "note",
+          "processingStatus",
+          "active",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ManualNoteResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.note_retrieved"
+          },
+          "note": {
+            "$ref": "#/components/schemas/ManualNoteItemDto"
+          }
+        },
+        "required": [
+          "code",
+          "note"
+        ]
+      },
+      "UpdateManualNoteDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateManualNoteResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.note_updated"
+          },
+          "message": {
+            "type": "string",
+            "example": "Note updated and queued for re-indexing."
+          },
+          "note": {
+            "$ref": "#/components/schemas/ManualNoteItemDto"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "note"
+        ]
+      },
+      "TriggerWebsiteScrapeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TriggerTwoGisScrapeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SingleScraperStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "COMPLETED"
+          },
+          "targetUrl": {
+            "type": "string",
+            "example": "https://barberpro.kz"
+          },
+          "branchId": {
+            "type": "string",
+            "example": "70000001018000000"
+          },
+          "itemsFound": {
+            "type": "number",
+            "example": 14
+          },
+          "itemsDone": {
+            "type": "number",
+            "example": 14
+          },
+          "error": {
+            "type": "object",
+            "example": null
+          }
+        },
+        "required": [
+          "status",
+          "itemsFound",
+          "itemsDone"
+        ]
+      },
+      "ScrapersStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "website": {
+            "$ref": "#/components/schemas/SingleScraperStatusDto"
+          },
+          "twoGis": {
+            "$ref": "#/components/schemas/SingleScraperStatusDto"
+          }
+        },
+        "required": [
+          "website",
+          "twoGis"
+        ]
       },
       "KnowledgeEntryResponseDto": {
         "type": "object",
@@ -3717,6 +5274,130 @@
           "offset"
         ]
       },
+      "UpdateKnowledgeEntryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "BulkDeleteEntriesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "QualificationQuestionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "q1"
+          },
+          "field": {
+            "type": "string",
+            "example": "service"
+          },
+          "question": {
+            "type": "string",
+            "example": "What service are you looking for?"
+          },
+          "required": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "field",
+          "question",
+          "required"
+        ]
+      },
+      "QualificationRulesDataDto": {
+        "type": "object",
+        "properties": {
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QualificationQuestionItemDto"
+            }
+          },
+          "disqualifiers": {
+            "example": [
+              "Clients looking for pet grooming"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "autoPassConditions": {
+            "example": [
+              "VIP client or urgent booking"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "budgetMin": {
+            "type": "number",
+            "example": 5000
+          },
+          "budgetMax": {
+            "type": "number",
+            "example": 50000
+          },
+          "mortgage": {
+            "type": "boolean",
+            "example": false
+          },
+          "district": {
+            "type": "string",
+            "example": "Medeu"
+          },
+          "urgency": {
+            "type": "string",
+            "example": "high"
+          }
+        }
+      },
+      "QualificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "qualificationRulesSet": {
+            "type": "boolean",
+            "example": true
+          },
+          "qualificationRules": {
+            "$ref": "#/components/schemas/QualificationRulesDataDto"
+          }
+        },
+        "required": [
+          "qualificationRulesSet"
+        ]
+      },
+      "QualificationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateQualificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.qualification_rules_updated"
+          },
+          "message": {
+            "type": "string",
+            "example": "Lead qualification rules updated successfully."
+          },
+          "data": {
+            "$ref": "#/components/schemas/QualificationResponseDto"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
       "BusinessContextResponseDto": {
         "type": "object",
         "properties": {
@@ -3802,6 +5483,139 @@
           "cancellationPolicy",
           "contactInfo",
           "workingHours"
+        ]
+      },
+      "UpdateBusinessContextDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "KnowledgeCountsByTypeDto": {
+        "type": "object",
+        "properties": {
+          "DOCUMENT": {
+            "type": "number",
+            "example": 3
+          },
+          "MANUAL_NOTE": {
+            "type": "number",
+            "example": 8
+          },
+          "WEBSITE_CONTENT": {
+            "type": "number",
+            "example": 14
+          },
+          "LOCAL_LISTING": {
+            "type": "number",
+            "example": 40
+          },
+          "REALTY_LISTING": {
+            "type": "number",
+            "example": 0
+          },
+          "CAR_LISTING": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "DOCUMENT",
+          "MANUAL_NOTE",
+          "WEBSITE_CONTENT",
+          "LOCAL_LISTING",
+          "REALTY_LISTING",
+          "CAR_LISTING"
+        ]
+      },
+      "KnowledgeProcessingStatusSummaryDto": {
+        "type": "object",
+        "properties": {
+          "COMPLETED": {
+            "type": "number",
+            "example": 64
+          },
+          "PENDING": {
+            "type": "number",
+            "example": 1
+          },
+          "PROCESSING": {
+            "type": "number",
+            "example": 0
+          },
+          "FAILED": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "COMPLETED",
+          "PENDING",
+          "PROCESSING",
+          "FAILED"
+        ]
+      },
+      "AiEngineStatusSummaryDto": {
+        "type": "object",
+        "properties": {
+          "toolsActive": {
+            "type": "number",
+            "example": 4
+          },
+          "customInstructionsConfigured": {
+            "type": "boolean",
+            "example": true
+          },
+          "followUpActive": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "toolsActive",
+          "customInstructionsConfigured",
+          "followUpActive"
+        ]
+      },
+      "KnowledgeBaseStatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "totalEntries": {
+            "type": "number",
+            "example": 65
+          },
+          "countsByType": {
+            "$ref": "#/components/schemas/KnowledgeCountsByTypeDto"
+          },
+          "statusSummary": {
+            "$ref": "#/components/schemas/KnowledgeProcessingStatusSummaryDto"
+          },
+          "totalChunks": {
+            "type": "number",
+            "example": 218
+          },
+          "storageUsageBytes": {
+            "type": "number",
+            "example": 4829100
+          },
+          "lastIndexedAt": {
+            "type": "object",
+            "example": "2026-09-13T12:30:00.000Z"
+          },
+          "businessContextAvailable": {
+            "type": "boolean",
+            "example": true
+          },
+          "aiEngineStatus": {
+            "$ref": "#/components/schemas/AiEngineStatusSummaryDto"
+          }
+        },
+        "required": [
+          "totalEntries",
+          "countsByType",
+          "statusSummary",
+          "totalChunks",
+          "storageUsageBytes",
+          "businessContextAvailable",
+          "aiEngineStatus"
         ]
       },
       "OnboardingStateResponseDto": {
@@ -4029,10 +5843,6 @@
         "required": [
           "type"
         ]
-      },
-      "QualificationDto": {
-        "type": "object",
-        "properties": {}
       },
       "WebsiteScrapingDto": {
         "type": "object",
@@ -4313,9 +6123,140 @@
         "type": "object",
         "properties": {}
       },
+      "PromptPreviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "nicheProfile": {
+            "type": "string",
+            "example": "BEAUTY"
+          },
+          "todayStr": {
+            "type": "string",
+            "example": "2026-09-13"
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "example": "Воскресенье"
+          },
+          "businessContext": {
+            "type": "object",
+            "example": {
+              "company_name": "Barber Pro Lounge",
+              "key_services": [
+                "Мужская стрижка - 8000 ₸",
+                "Оформление бороды - 4000 ₸"
+              ],
+              "booking_policy": "Предоплата 50% для новых клиентов."
+            }
+          },
+          "customInstructions": {
+            "type": "string",
+            "example": "Всегда обращайся на «Вы». Если клиент спрашивает про скидки, предлагай 10% на первый визит."
+          },
+          "compiledSystemPrompt": {
+            "type": "string",
+            "example": "Ты — интеллектуальный виртуальный ассистент компании \"Barber Pro Lounge\"..."
+          },
+          "totalPromptTokensEstimate": {
+            "type": "number",
+            "example": 650
+          }
+        },
+        "required": [
+          "nicheProfile",
+          "todayStr",
+          "dayOfWeek",
+          "compiledSystemPrompt",
+          "totalPromptTokensEstimate"
+        ]
+      },
+      "AgentToolItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "search_knowledge_base"
+          },
+          "description": {
+            "type": "string",
+            "example": "Searches the business knowledge base (services, price lists, terms, working hours, FAQs, policies) using semantic vector search."
+          },
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "parameters": {
+            "type": "object",
+            "example": {
+              "type": "OBJECT",
+              "properties": {
+                "query": {
+                  "type": "STRING"
+                }
+              },
+              "required": [
+                "query"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "enabled",
+          "parameters"
+        ]
+      },
+      "ToolsResponseDto": {
+        "type": "object",
+        "properties": {
+          "tools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentToolItemDto"
+            }
+          }
+        },
+        "required": [
+          "tools"
+        ]
+      },
+      "UpdateToolConfigDto": {
+        "type": "object",
+        "properties": {}
+      },
       "TestMessageDto": {
         "type": "object",
         "properties": {}
+      },
+      "ToolExecutionTraceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "search_knowledge_base"
+          },
+          "args": {
+            "type": "object",
+            "example": {
+              "query": "цена окрашивания"
+            }
+          },
+          "result": {
+            "type": "object",
+            "example": {
+              "found": 2,
+              "results": [
+                "Окрашивание от 15000 ₸"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "args",
+          "result"
+        ]
       },
       "TestMessageResponseDto": {
         "type": "object",
@@ -4324,9 +6265,15 @@
             "type": "string",
             "example": "Добрый день! Рады вас принять. В пятницу у нас свободны слоты: 10:00, 13:00, 16:00. Какой вам удобен?"
           },
-          "ragChunksUsed": {
+          "toolCallsCount": {
             "type": "number",
-            "example": 3
+            "example": 1
+          },
+          "toolCalls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolExecutionTraceDto"
+            }
           },
           "latencyMs": {
             "type": "number",
@@ -4335,7 +6282,7 @@
         },
         "required": [
           "response",
-          "ragChunksUsed",
+          "toolCallsCount",
           "latencyMs"
         ]
       },
@@ -4358,22 +6305,6 @@
         "required": [
           "status"
         ]
-      },
-      "CreateStaffDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateStaffDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "SetScheduleDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "AddOverrideDto": {
-        "type": "object",
-        "properties": {}
       },
       "CreateBookingDto": {
         "type": "object",

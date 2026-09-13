@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Bot, Send, Sparkles, Clock, FileText, X } from "lucide-react";
+import { Bot, Send, Sparkles, Clock, FileText, Wrench, ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAiEngine } from "@/hooks/useAiEngine";
 
 interface AiSandboxDrawerProps {
@@ -16,6 +17,7 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
   const t = useTranslations("dashboard");
   const { runTest, isTesting, testResult, testError, clearTest } = useAiEngine();
   const [inputMessage, setInputMessage] = useState("");
+  const [isToolsExpanded, setIsToolsExpanded] = useState(true);
 
   if (!isOpen) return null;
 
@@ -50,6 +52,53 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
 
           {testResult && (
             <div className="space-y-3 pt-2">
+              {/* Tool Execution Logs Accordion */}
+              {testResult.toolCalls && testResult.toolCalls.length > 0 && (
+                <div className="rounded-xl border border-border/60 bg-muted/20 overflow-hidden text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setIsToolsExpanded(!isToolsExpanded)}
+                    className="w-full flex items-center justify-between p-2.5 bg-muted/40 text-left font-semibold text-foreground hover:bg-muted/60 transition-colors"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <Wrench className="w-3.5 h-3.5 text-primary" />
+                      <span>{t("ai.sim_tool_calls")}</span>
+                      <Badge variant="primary" className="text-[10px] px-1.5 py-0.2">
+                        {testResult.toolCallsCount || testResult.toolCalls.length}
+                      </Badge>
+                    </div>
+                    {isToolsExpanded ? (
+                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                    ) : (
+                      <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                    )}
+                  </button>
+
+                  {isToolsExpanded && (
+                    <div className="p-3 space-y-2.5 border-t border-border/40">
+                      {testResult.toolCalls.map((call, idx) => (
+                        <div key={idx} className="p-2.5 rounded-lg bg-card border border-border/40 space-y-1 font-mono text-[11px]">
+                          <div className="font-bold text-primary flex items-center gap-1">
+                            <span>▶ {call.name}()</span>
+                          </div>
+                          {call.args && (
+                            <div className="text-muted-foreground text-[10px] pl-3">
+                              <span className="font-semibold text-foreground">Args:</span> {JSON.stringify(call.args)}
+                            </div>
+                          )}
+                          {call.result && (
+                            <div className="text-emerald-600 text-[10px] pl-3">
+                              <span className="font-semibold text-foreground">Result:</span> {JSON.stringify(call.result)}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Bot Response Bubble */}
               <div className="p-3.5 rounded-2xl bg-card border border-primary/40 shadow-xs space-y-2">
                 <div className="flex items-center justify-between text-[11px] font-semibold text-primary">
                   <span className="flex items-center gap-1">
@@ -61,10 +110,12 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
                       <Clock className="w-3 h-3" />
                       <span>{testResult.latencyMs} мс</span>
                     </span>
-                    <span className="flex items-center gap-1">
-                      <FileText className="w-3 h-3" />
-                      <span>{testResult.ragChunksUsed} чанков</span>
-                    </span>
+                    {testResult.ragChunksUsed !== undefined && (
+                      <span className="flex items-center gap-1">
+                        <FileText className="w-3 h-3" />
+                        <span>{testResult.ragChunksUsed} чанков</span>
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -82,7 +133,7 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
           )}
         </div>
 
-        {/* Input */}
+        {/* Input Form */}
         <form onSubmit={handleSend} className="p-2 border-t border-border/40">
           <div className="flex items-center gap-2 bg-muted/50 border border-border/60 rounded-2xl p-2 focus-within:border-primary">
             <input

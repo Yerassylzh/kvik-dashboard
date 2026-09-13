@@ -87,6 +87,10 @@ export function useOnboardingFlow() {
           err instanceof Error
             ? err.message
             : 'Ошибка загрузки состояния онбординга';
+        if (msg.includes('email') || msg.includes('verify') || msg.includes('подтвержд')) {
+          router.replace('/verify-email');
+          return;
+        }
         setError(msg);
         toast.error(msg);
       } finally {

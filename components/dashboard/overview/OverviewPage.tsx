@@ -53,7 +53,7 @@ export function OverviewPage() {
         }
       />
 
-      <AiAgentStatusCard overview={overview} />
+      <AiAgentStatusCard overview={overview} isLoading={isLoading} />
 
       <KpiGrid overview={overview} isLoading={isLoading} />
 

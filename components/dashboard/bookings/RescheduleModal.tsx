@@ -125,10 +125,9 @@ export function RescheduleModal({
             size="sm"
             onClick={handleReschedule}
             disabled={!selectedSlot || isSubmitting}
-            className="gap-1.5"
+            leftIcon={<RefreshCw className="w-4 h-4" />}
           >
-            <RefreshCw className="w-4 h-4" />
-            <span>Перенести</span>
+            Перенести
           </Button>
         </div>
       </div>

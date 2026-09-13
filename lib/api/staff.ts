@@ -1,14 +1,23 @@
 import { apiClient } from './client';
+import { SystemRole } from '@/types/auth';
+
+export type InviteStatus = 'NONE' | 'PENDING' | 'ACCEPTED' | 'REVOKED';
 
 export interface StaffDto {
   id: string;
+  workspaceId: string;
+  userId?: string | null;
   name: string;
   role?: string | null;
+  systemRole: SystemRole;
   specializations?: string[] | null;
   phone?: string | null;
   email?: string | null;
   avatarUrl?: string | null;
-  isActive?: boolean;
+  isActive: boolean;
+  hasDashboardAccess: boolean;
+  inviteStatus: InviteStatus;
+  createdAt: string;
 }
 
 export interface AvailabilityTemplateDto {
@@ -37,20 +46,28 @@ export interface StaffScheduleResponse {
 export interface CreateStaffPayload {
   name: string;
   role?: string;
+  systemRole?: SystemRole;
   specializations?: string[];
   phone?: string;
   email?: string;
   avatarUrl?: string;
+  sendInvite?: boolean;
 }
 
 export interface UpdateStaffPayload {
   name?: string;
   role?: string;
+  systemRole?: SystemRole;
   specializations?: string[];
   phone?: string;
   email?: string;
   avatarUrl?: string;
   isActive?: boolean;
+}
+
+export interface InviteStaffPayload {
+  email?: string;
+  systemRole?: SystemRole;
 }
 
 export interface SetScheduleTemplateItem {
@@ -76,6 +93,11 @@ export const staffApi = {
     return data;
   },
 
+  getStaffById: async (id: string): Promise<StaffDto> => {
+    const { data } = await apiClient.get<StaffDto>(`/staff/${id}`);
+    return data;
+  },
+
   createStaff: async (payload: CreateStaffPayload): Promise<StaffDto> => {
     const { data } = await apiClient.post<StaffDto>('/staff', payload);
     return data;
@@ -91,6 +113,22 @@ export const staffApi = {
 
   deactivateStaff: async (id: string): Promise<{ code: string; message: string }> => {
     const { data } = await apiClient.delete<{ code: string; message: string }>(`/staff/${id}`);
+    return data;
+  },
+
+  inviteStaff: async (
+    id: string,
+    payload?: InviteStaffPayload
+  ): Promise<{ code: string; message: string; expiresAt?: string }> => {
+    const { data } = await apiClient.post<{ code: string; message: string; expiresAt?: string }>(
+      `/staff/${id}/invite`,
+      payload || {}
+    );
+    return data;
+  },
+
+  revokeInvite: async (id: string): Promise<{ code: string; message: string }> => {
+    const { data } = await apiClient.delete<{ code: string; message: string }>(`/staff/${id}/invite`);
     return data;
   },
 
@@ -136,3 +174,4 @@ export const staffApi = {
     return data;
   },
 };
+

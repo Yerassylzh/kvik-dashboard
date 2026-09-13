@@ -218,10 +218,9 @@ export function CreateBookingModal({
             type="submit"
             size="sm"
             disabled={!clientName.trim() || !clientPhone.trim() || !selectedSlot || isSubmitting}
-            className="gap-1.5"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
-            <span>Создать запись</span>
+            Создать запись
           </Button>
         </div>
       </form>

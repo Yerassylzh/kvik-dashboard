@@ -146,9 +146,9 @@ export function DevChatInspector({
                 onClick={() => onResetConversation(conversationData.conversationId)}
                 disabled={isResetting || isLoading}
                 title={t("dev_messaging.reset_title")}
-                className="h-8 text-xs gap-1.5"
+                leftIcon={<RotateCcw className={`w-3.5 h-3.5 ${isResetting ? "animate-spin" : ""}`} />}
+                className="h-8 text-xs"
               >
-                <RotateCcw className={`w-3.5 h-3.5 ${isResetting ? "animate-spin" : ""}`} />
                 <span className="hidden md:inline">{t("dev_messaging.reset_btn")}</span>
               </Button>
             )}
@@ -207,10 +207,10 @@ export function DevChatInspector({
               size="sm"
               variant="ghost"
               disabled={!lookupId.trim()}
-              className="h-7 px-2 text-[11px] gap-1 shrink-0"
+              leftIcon={<Search className="w-3 h-3" />}
+              className="h-7 px-2 text-[11px] shrink-0"
             >
-              <Search className="w-3 h-3" />
-              <span>{t("dev_messaging.lookup_btn")}</span>
+              {t("dev_messaging.lookup_btn")}
             </Button>
           </form>
         </div>

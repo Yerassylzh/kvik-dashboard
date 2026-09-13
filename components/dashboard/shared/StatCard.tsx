@@ -4,10 +4,12 @@ import React from "react";
 import clsx from "clsx";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { InteractiveCard } from "@/components/ui/motion/InteractiveCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface StatCardProps {
   label: string;
   value: string | number;
+  isLoading?: boolean;
   /** Optional delta percentage — positive = up, negative = down, 0 = neutral */
   delta?: number;
   /** Optional sub-label below value */
@@ -20,6 +22,7 @@ export interface StatCardProps {
 export function StatCard({
   label,
   value,
+  isLoading = false,
   delta,
   sublabel,
   icon,
@@ -53,7 +56,9 @@ export function StatCard({
             {icon}
           </div>
         )}
-        {delta !== undefined && DeltaIcon && (
+        {isLoading ? (
+          <Skeleton className="h-4 w-12 rounded-full" />
+        ) : delta !== undefined && DeltaIcon ? (
           <span
             className={clsx(
               "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full",
@@ -65,12 +70,19 @@ export function StatCard({
             <DeltaIcon className="h-3 w-3" />
             {Math.abs(delta)}%
           </span>
-        )}
+        ) : null}
       </div>
 
-      <p className="text-2xl font-extrabold text-foreground tracking-tight tabular-nums">
-        {value}
-      </p>
+      {isLoading ? (
+        <div className="my-1">
+          <Skeleton className="h-7 w-20 rounded-md" />
+        </div>
+      ) : (
+        <p className="text-2xl font-extrabold text-foreground tracking-tight tabular-nums">
+          {value}
+        </p>
+      )}
+
       <p className="text-xs font-semibold text-muted-foreground mt-1">{label}</p>
       {sublabel && (
         <p className="text-[10px] text-muted-foreground/70 mt-0.5">{sublabel}</p>

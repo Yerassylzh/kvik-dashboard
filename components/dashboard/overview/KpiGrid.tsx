@@ -12,7 +12,7 @@ interface KpiGridProps {
   isLoading?: boolean;
 }
 
-export function KpiGrid({ overview, isLoading }: KpiGridProps) {
+export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
   const t = useTranslations("dashboard");
 
   const revenueDisplay = overview?.revenue?.estimatedTotal
@@ -25,6 +25,7 @@ export function KpiGrid({ overview, isLoading }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_leads")}
           value={overview?.leads?.total ?? 0}
+          isLoading={isLoading}
           icon={<Users className="w-5 h-5" />}
         />
       </StaggerItem>
@@ -33,6 +34,7 @@ export function KpiGrid({ overview, isLoading }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_bookings")}
           value={overview?.bookings?.total ?? 0}
+          isLoading={isLoading}
           icon={<CalendarCheck className="w-5 h-5" />}
         />
       </StaggerItem>
@@ -41,6 +43,7 @@ export function KpiGrid({ overview, isLoading }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_conversations")}
           value={overview?.conversations?.total ?? 0}
+          isLoading={isLoading}
           icon={<MessageSquare className="w-5 h-5" />}
         />
       </StaggerItem>
@@ -49,6 +52,7 @@ export function KpiGrid({ overview, isLoading }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_revenue")}
           value={revenueDisplay}
+          isLoading={isLoading}
           icon={<TrendingUp className="w-5 h-5" />}
         />
       </StaggerItem>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { Terminal, FlaskConical, AlertTriangle } from "lucide-react";
@@ -66,9 +66,9 @@ export function DevOptionsCard() {
           size="sm"
           variant={isDevMode ? "destructive" : "outline"}
           onClick={toggle}
-          className="shrink-0 gap-1.5"
+          leftIcon={<FlaskConical className="w-3.5 h-3.5" />}
+          className="shrink-0 text-xs font-semibold"
         >
-          <FlaskConical className="w-3.5 h-3.5" />
           {isDevMode ? t("settings.dev_options_disable") : t("settings.dev_options_enable")}
         </Button>
       </div>

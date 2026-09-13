@@ -9,17 +9,20 @@ import {
   MessageSquare,
   Users,
   CalendarCheck,
+  CreditCard,
   Settings2,
   LogOut,
   Sparkles,
+  Database,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useRBAC } from '@/hooks/useRBAC';
 import { useDevMode } from '@/hooks/useDevMode';
 import { getOnboardingState } from '@/lib/api/onboarding';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { useInboxStore } from '@/store/inbox.store';
 import { useInboxRealtime } from '@/hooks/useInboxRealtime';
+import { WorkspaceSwitcher } from '@/components/dashboard/shared/WorkspaceSwitcher';
 import clsx from 'clsx';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -30,6 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout } = useAuth();
   const { getTotalUnread } = useInboxStore();
   const { isDevMode } = useDevMode();
+  const { isSpecialist, isAdminOrOwner } = useRBAC();
 
   const [isDemo, setIsDemo] = useState(false);
 
@@ -78,41 +82,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  const niche = user?.workspace?.nicheProfile || 'OTHER_CALENDAR';
-
-  const nicheBadges: Record<string, string> = {
-    BEAUTY: t('niche.beauty'),
-    CLINIC: t('niche.clinic'),
-    FITNESS: t('niche.fitness'),
-    CONSULTING: t('niche.consulting'),
-    OTHER_CALENDAR: t('niche.other_calendar'),
-  };
-
-  const navItems = [
-    { href: '/overview', label: t('nav.overview'), Icon: LayoutDashboard },
+  const allNavItems = [
+    { href: '/overview', label: t('nav.overview'), Icon: LayoutDashboard, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
     {
       href: '/inbox',
       label: t('nav.inbox'),
       Icon: MessageSquare,
       badge: getTotalUnread(),
+      roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
     },
-    { href: '/leads', label: t('nav.leads'), Icon: Users },
-    { href: '/bookings', label: t('nav.bookings'), Icon: CalendarCheck },
-    { href: '/settings', label: t('nav.settings'), Icon: Settings2 },
+    { href: '/leads', label: t('nav.leads'), Icon: Users, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
+    { href: '/bookings', label: t('nav.bookings'), Icon: CalendarCheck, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
+    { href: '/knowledge-base', label: t('nav.knowledge_base'), Icon: Database, roles: ['OWNER', 'ADMIN_MANAGER'] },
+    { href: '/billing', label: t('nav.billing'), Icon: CreditCard, roles: ['OWNER', 'ADMIN_MANAGER'] },
+    { href: '/settings', label: t('nav.settings'), Icon: Settings2, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
     ...(isDevMode
-      ? [{ href: '/dev-messaging', label: t('dev_messaging.nav_label'), Icon: Sparkles }]
+      ? [{ href: '/dev-messaging', label: t('dev_messaging.nav_label'), Icon: Sparkles, roles: ['OWNER', 'ADMIN_MANAGER'] }]
       : []),
   ];
 
-  const totalUnread = getTotalUnread();
+  const userRole = user?.role || (user?.staffProfile?.systemRole) || 'OWNER';
+  const navItems = allNavItems.filter((item) => item.roles.includes(userRole));
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="h-screen w-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Presentation Demo Mode Banner */}
       {isDemo && (
-        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2 shadow-md z-40">
+        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-white px-4 py-1.5 text-xs flex flex-wrap items-center justify-between gap-2 shadow-md z-40 shrink-0">
           <div className="flex items-center gap-2 font-medium">
-            <span className="bg-white/20 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider">
+            <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
               {t('demo.banner_tag')}
             </span>
             <span>{t('demo.banner_desc')}</span>
@@ -127,31 +125,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       )}
 
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 border-r border-border bg-card p-4 flex flex-col justify-between hidden md:flex flex-shrink-0">
-          <div>
+        <aside className="w-64 h-full border-r border-border/80 bg-card p-4 flex flex-col justify-between hidden md:flex shrink-0 overflow-y-auto themed-scroll">
+          <div className="space-y-4">
             {/* Logo */}
-            <div className="mb-6 px-2 py-1 flex items-center gap-2">
+            <div className="px-2 py-1 flex items-center gap-2.5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Kvik Logo" className="h-9 w-auto object-contain" />
-              <span className="text-xl font-extrabold tracking-tight text-foreground">
+              <img src="/logo.png" alt="Kvik Logo" className="h-8 w-auto object-contain" />
+              <span className="text-lg font-extrabold tracking-tight text-foreground">
                 Kvik<span className="text-primary">.ai</span>
               </span>
             </div>
 
-            {/* Niche Badge */}
-            <div className="mb-5 mx-1 px-3.5 py-2 rounded-xl bg-primary/10 border border-primary/20 text-xs shadow-xs">
-              <p className="text-primary font-semibold text-[10px] uppercase tracking-wider">
-                {t('sidebar.niche_label')}
-              </p>
-              <p className="text-foreground font-bold mt-0.5 text-xs">
-                {nicheBadges[niche] || nicheBadges.OTHER_CALENDAR}
-              </p>
-            </div>
+            {/* Workspace Switcher */}
+            <WorkspaceSwitcher />
 
             {/* Navigation */}
-            <nav className="space-y-1.5">
+            <nav className="space-y-1">
               {navItems.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 const Icon = item.Icon;
@@ -161,7 +152,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     key={item.href}
                     href={item.href}
                     className={clsx(
-                      'flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all border',
+                      'flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-xs transition-all border whitespace-nowrap',
                       isActive
                         ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                         : 'bg-transparent border-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground'
@@ -190,39 +181,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </nav>
           </div>
 
-          {/* User & Plan Footer */}
-          <div className="space-y-2 mt-4">
-            <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-xs shadow-2xs">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-muted-foreground font-medium">{t('sidebar.plan_label')}</span>
-                <span className="text-primary font-bold">{t('sidebar.plan_name')}</span>
-              </div>
-              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden mb-1">
-                <div
-                  className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 rounded-full"
-                  style={{ width: '68%' }}
-                />
-              </div>
-              <p className="text-[10px] text-muted-foreground">{t('sidebar.tokens_usage')}</p>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/60 text-xs flex items-center justify-between gap-2 shadow-2xs">
+          {/* User Profile Footer (Clean Capsule pinned inside viewport) */}
+          <div className="pt-3 border-t border-border/50">
+            <div className="p-2.5 rounded-xl bg-muted/30 border border-border/60 text-xs flex items-center justify-between gap-2 shadow-2xs">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                  {user?.email?.[0]?.toUpperCase() || 'A'}
+                <div className="h-7 w-7 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs shrink-0">
+                  {(user?.staffProfile?.name || user?.email)?.[0]?.toUpperCase() || 'A'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-foreground font-semibold truncate text-xs">
-                    {user?.email || 'demo@kvik.ai'}
+                  <p className="text-foreground font-semibold truncate text-xs leading-tight">
+                    {user?.staffProfile?.name || user?.email || 'demo@kvik.ai'}
                   </p>
-                  <p className="text-muted-foreground text-[10px]">{t('sidebar.role_admin')}</p>
+                  <p className="text-muted-foreground text-[10px] leading-tight mt-0.5">
+                    {user?.staffProfile?.role || t('sidebar.role_admin')}
+                  </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={logout}
                 title={t('sidebar.logout_title')}
-                className="p-1.5 rounded-lg bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 text-destructive transition-colors text-xs flex-shrink-0 cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-destructive/10 border border-transparent hover:border-destructive/20 text-muted-foreground hover:text-destructive transition-colors text-xs shrink-0 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -230,10 +209,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </aside>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
           {/* Topbar */}
-          <header className="h-16 border-b border-border/60 px-6 flex items-center justify-between bg-card/80 backdrop-blur-md flex-shrink-0 sticky top-0 z-30">
+          <header className="h-14 border-b border-border/60 px-6 flex items-center justify-between bg-card/80 backdrop-blur-md shrink-0 z-30">
             <div className="flex items-center gap-3">
               <h2 className="font-bold text-sm text-foreground">{t('header.title')}</h2>
             </div>
@@ -245,7 +224,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </header>
 
-          {/* Page content */}
+          {/* Page content scroll container */}
           <main className="p-6 flex-1 overflow-y-auto themed-scroll">
             {children}
           </main>

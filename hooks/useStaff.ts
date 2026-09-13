@@ -42,6 +42,24 @@ export function useStaff(isActive?: boolean) {
     [mutate]
   );
 
+  const inviteStaff = useCallback(
+    async (id: string, payload?: { email?: string; systemRole?: any }) => {
+      const res = await staffApi.inviteStaff(id, payload);
+      mutate();
+      return res;
+    },
+    [mutate]
+  );
+
+  const revokeInvite = useCallback(
+    async (id: string) => {
+      const res = await staffApi.revokeInvite(id);
+      mutate();
+      return res;
+    },
+    [mutate]
+  );
+
   return {
     staff: data || [],
     isLoading,
@@ -49,6 +67,8 @@ export function useStaff(isActive?: boolean) {
     createStaff,
     updateStaff,
     deactivateStaff,
+    inviteStaff,
+    revokeInvite,
     refresh: mutate,
   };
 }

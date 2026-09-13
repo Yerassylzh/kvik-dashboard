@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 export default function RegisterPage() {
   const t = useTranslations('auth');
   const router = useRouter();
-  const { register, isAuthenticated } = useAuth();
+  const { register, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,9 +20,13 @@ export default function RegisterPage() {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/onboarding');
+      if (user && !user.isEmailVerified) {
+        router.replace('/verify-email');
+      } else {
+        router.replace('/onboarding');
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +45,12 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await register({ email, password });
-      router.replace('/onboarding');
+      const res = await register({ email, password });
+      if (res.user && !res.user.isEmailVerified) {
+        router.replace('/verify-email');
+      } else {
+        router.replace('/onboarding');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('register.error_fallback'));
     } finally {

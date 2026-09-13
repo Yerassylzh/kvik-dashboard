@@ -36,9 +36,12 @@ export function BillingOverview() {
               </p>
             </div>
 
-            <Button size="sm" className="gap-1.5 shrink-0">
-              <span>Управление подпиской</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+            <Button
+              size="sm"
+              rightIcon={<ArrowUpRight className="w-3.5 h-3.5" />}
+              className="shrink-0 text-xs"
+            >
+              Управление подпиской
             </Button>
           </div>
 

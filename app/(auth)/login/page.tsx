@@ -15,7 +15,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '';
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,9 +23,13 @@ function LoginForm() {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.replace(from || '/onboarding');
+      if (user && !user.isEmailVerified) {
+        router.replace('/verify-email');
+      } else {
+        router.replace(from || '/onboarding');
+      }
     }
-  }, [isAuthenticated, from, router]);
+  }, [isAuthenticated, user, from, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +102,12 @@ function LoginForm() {
           {t('login.submit_button')}
         </Button>
       </form>
+
+      <div className="mt-4 text-center">
+        <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          {t('login.forgot_password')}
+        </Link>
+      </div>
 
       <div className="mt-6 pt-6 border-t border-border text-center text-xs text-muted-foreground">
         {t('login.no_account')}{' '}

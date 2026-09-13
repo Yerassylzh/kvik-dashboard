@@ -76,10 +76,10 @@ export function BookingsPage({ initialBookingId }: BookingsPageProps) {
             <Button
               size="sm"
               onClick={() => setIsCreateOpen(true)}
-              className="gap-1.5 text-xs rounded-xl"
+              leftIcon={<Plus className="w-4 h-4" />}
+              className="text-xs rounded-xl"
             >
-              <Plus className="w-4 h-4" />
-              <span>{t("bookings.new_booking_btn")}</span>
+              {t("bookings.new_booking_btn")}
             </Button>
           </div>
         }

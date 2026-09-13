@@ -5,13 +5,15 @@ import Link from "next/link";
 import { Bot, Sparkles, ArrowUpRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AnalyticsOverviewResponse } from "@/lib/api/analytics";
 
 interface AiAgentStatusCardProps {
   overview?: AnalyticsOverviewResponse;
+  isLoading?: boolean;
 }
 
-export function AiAgentStatusCard({ overview }: AiAgentStatusCardProps) {
+export function AiAgentStatusCard({ overview, isLoading = false }: AiAgentStatusCardProps) {
   const t = useTranslations("dashboard");
 
   const botHandled = overview?.conversations?.botHandled || 0;
@@ -49,32 +51,44 @@ export function AiAgentStatusCard({ overview }: AiAgentStatusCardProps) {
           <Button
             variant="outline"
             size="sm"
-            className="w-full sm:w-auto justify-center gap-1.5 text-xs border-primary/30 hover:bg-primary/10 whitespace-nowrap"
+            rightIcon={<ArrowUpRight className="w-3.5 h-3.5 text-primary" />}
+            className="w-full sm:w-auto justify-center text-xs border-primary/30 hover:bg-primary/10 whitespace-nowrap shrink-0"
           >
-            <span>{t("overview.ai_test_dialogue")}</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-primary shrink-0" />
+            {t("overview.ai_test_dialogue")}
           </Button>
         </Link>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border/50 text-center">
-        <div className="p-2.5 rounded-xl bg-muted/40">
+        <div className="p-2.5 rounded-xl bg-muted/40 flex flex-col items-center justify-center">
           <div className="text-xs text-muted-foreground">Автоматизация</div>
-          <div className="text-lg font-extrabold text-foreground mt-0.5 font-mono">
-            {automationRate}%
-          </div>
+          {isLoading ? (
+            <Skeleton className="h-6 w-14 rounded-md mt-1" />
+          ) : (
+            <div className="text-lg font-extrabold text-foreground mt-0.5 font-mono">
+              {automationRate}%
+            </div>
+          )}
         </div>
-        <div className="p-2.5 rounded-xl bg-muted/40">
+        <div className="p-2.5 rounded-xl bg-muted/40 flex flex-col items-center justify-center">
           <div className="text-xs text-muted-foreground">Ответов ИИ</div>
-          <div className="text-lg font-extrabold text-foreground mt-0.5 font-mono">
-            {botHandled}
-          </div>
+          {isLoading ? (
+            <Skeleton className="h-6 w-12 rounded-md mt-1" />
+          ) : (
+            <div className="text-lg font-extrabold text-foreground mt-0.5 font-mono">
+              {botHandled}
+            </div>
+          )}
         </div>
-        <div className="p-2.5 rounded-xl bg-muted/40">
+        <div className="p-2.5 rounded-xl bg-muted/40 flex flex-col items-center justify-center">
           <div className="text-xs text-muted-foreground">Перехватов</div>
-          <div className="text-lg font-extrabold text-foreground mt-0.5 font-mono">
-            {intercepted}
-          </div>
+          {isLoading ? (
+            <Skeleton className="h-6 w-12 rounded-md mt-1" />
+          ) : (
+            <div className="text-lg font-extrabold text-foreground mt-0.5 font-mono">
+              {intercepted}
+            </div>
+          )}
         </div>
       </div>
     </div>
