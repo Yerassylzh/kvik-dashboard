@@ -20,6 +20,7 @@ import { KbWebsiteScraperTab } from "./KbWebsiteScraperTab";
 import { KbTwoGisScraperTab } from "./KbTwoGisScraperTab";
 import { KbQualificationTab } from "./KbQualificationTab";
 import { KbSearchTesterModal } from "./KbSearchTesterModal";
+import { KbCautionModal } from "./KbCautionModal";
 import { BusinessContextManager } from "@/components/dashboard/settings/business-context/BusinessContextManager";
 import { AgentConfig } from "@/components/dashboard/settings/ai-agent/AgentConfig";
 import { SegmentedTabs } from "@/components/ui/tabs";
@@ -47,6 +48,23 @@ export function KnowledgeBaseManager() {
       : "documents"
   );
   const [isSearchTesterOpen, setIsSearchTesterOpen] = useState(false);
+  const [isCautionOpen, setIsCautionOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const acknowledged = localStorage.getItem("kvik_kb_caution_acknowledged");
+      if (!acknowledged) {
+        setIsCautionOpen(true);
+      }
+    }
+  }, []);
+
+  const handleConfirmCaution = () => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("kvik_kb_caution_acknowledged", "true");
+    }
+    setIsCautionOpen(false);
+  };
 
   useEffect(() => {
     if (tabQuery && ["sources", "business-context", "qualification", "ai-agent"].includes(tabQuery)) {
@@ -232,6 +250,13 @@ export function KnowledgeBaseManager() {
         results={searchResults}
         error={searchError}
         onSearch={runSearchTest}
+      />
+
+      {/* First-visit Caution Modal */}
+      <KbCautionModal
+        isOpen={isCautionOpen}
+        onConfirm={handleConfirmCaution}
+        onGoBack={() => router.push("/overview")}
       />
     </div>
   );

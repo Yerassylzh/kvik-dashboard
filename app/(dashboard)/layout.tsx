@@ -93,9 +93,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     },
     { href: '/leads', label: t('nav.leads'), Icon: Users, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
     { href: '/bookings', label: t('nav.bookings'), Icon: CalendarCheck, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
-    { href: '/knowledge-base', label: t('nav.knowledge_base'), Icon: Database, roles: ['OWNER', 'ADMIN_MANAGER'] },
     { href: '/billing', label: t('nav.billing'), Icon: CreditCard, roles: ['OWNER', 'ADMIN_MANAGER'] },
     { href: '/settings', label: t('nav.settings'), Icon: Settings2, roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'] },
+    { href: '/knowledge-base', label: t('nav.knowledge_base'), Icon: Database, roles: ['OWNER', 'ADMIN_MANAGER'] },
     ...(isDevMode
       ? [{ href: '/dev-messaging', label: t('dev_messaging.nav_label'), Icon: Sparkles, roles: ['OWNER', 'ADMIN_MANAGER'] }]
       : []),

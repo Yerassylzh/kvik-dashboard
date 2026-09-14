@@ -420,6 +420,17 @@ dashboard.knowledge.branch_synced_title
 dashboard.knowledge.bulk_delete
 dashboard.knowledge.catalog_items_title
 dashboard.knowledge.category_label
+dashboard.knowledge.caution_modal_back
+dashboard.knowledge.caution_modal_btn
+dashboard.knowledge.caution_modal_p1
+dashboard.knowledge.caution_modal_point1_desc
+dashboard.knowledge.caution_modal_point1_title
+dashboard.knowledge.caution_modal_point2_desc
+dashboard.knowledge.caution_modal_point2_title
+dashboard.knowledge.caution_modal_point3_desc
+dashboard.knowledge.caution_modal_point3_title
+dashboard.knowledge.caution_modal_subtitle
+dashboard.knowledge.caution_modal_title
 dashboard.knowledge.clear_twogis_data
 dashboard.knowledge.clear_website_data
 dashboard.knowledge.confirm_bulk_delete_desc
