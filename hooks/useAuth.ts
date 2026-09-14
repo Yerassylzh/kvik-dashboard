@@ -124,6 +124,9 @@ export function useAuth() {
       useOnboardingStore.getState().resetOnboarding();
       setPendingVerificationEmail(null);
       clearAuth();
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     }
   }, [clearAuth, setLoading, setPendingVerificationEmail]);
 

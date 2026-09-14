@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout } = useAuth();
   const { getTotalUnread } = useInboxStore();
   const { isDevMode } = useDevMode();
-  const { isSpecialist, isAdminOrOwner } = useRBAC();
+  const { isSpecialist, isAdminOrOwner, systemRole } = useRBAC();
 
   const [isDemo, setIsDemo] = useState(false);
 
@@ -101,8 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       : []),
   ];
 
-  const userRole = user?.role || (user?.staffProfile?.systemRole) || 'OWNER';
-  const navItems = allNavItems.filter((item) => item.roles.includes(userRole));
+  const navItems = allNavItems.filter((item) => item.roles.includes(systemRole));
 
   return (
     <div className="h-screen w-screen bg-background text-foreground flex flex-col overflow-hidden">

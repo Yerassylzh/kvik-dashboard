@@ -1,13 +1,17 @@
 'use client';
 
-import { useAuthStore } from '@/store/auth.store';
+import { useAuthStore, getCachedSystemRole } from '@/store/auth.store';
 import { SystemRole } from '@/types/auth';
 
 export function useRBAC() {
   const user = useAuthStore((state) => state.user);
 
-  // If user.role is defined directly on user or fallback to OWNER if not specified (legacy workspace owner)
-  const systemRole: SystemRole = user?.role || user?.staffProfile?.systemRole || 'OWNER';
+  // Synchronously resolve system role from active user, cached role in localStorage/cookie, or safe fallback
+  const systemRole: SystemRole =
+    user?.role ||
+    user?.staffProfile?.systemRole ||
+    getCachedSystemRole() ||
+    'SPECIALIST';
 
   const isOwner = systemRole === 'OWNER';
   const isAdminManager = systemRole === 'ADMIN_MANAGER';

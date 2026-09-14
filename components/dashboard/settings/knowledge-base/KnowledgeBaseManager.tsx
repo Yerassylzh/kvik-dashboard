@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useKnowledgeBase } from "@/hooks/useKnowledgeBase";
+import { useRBAC } from "@/hooks/useRBAC";
 import { KbStatsHeader } from "./KbStatsHeader";
 import { KbDocumentsTab } from "./KbDocumentsTab";
 import { KbNotesTab } from "./KbNotesTab";
@@ -47,17 +48,24 @@ export function KnowledgeBaseManager() {
       ? subtabQuery
       : "documents"
   );
+  const { isAdminOrOwner } = useRBAC();
   const [isSearchTesterOpen, setIsSearchTesterOpen] = useState(false);
   const [isCautionOpen, setIsCautionOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (!isAdminOrOwner) {
+      router.replace("/overview");
+    }
+  }, [isAdminOrOwner, router]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && isAdminOrOwner) {
       const acknowledged = localStorage.getItem("kvik_kb_caution_acknowledged");
       if (!acknowledged) {
         setIsCautionOpen(true);
       }
     }
-  }, []);
+  }, [isAdminOrOwner]);
 
   const handleConfirmCaution = () => {
     if (typeof window !== "undefined") {
@@ -155,6 +163,10 @@ export function KnowledgeBaseManager() {
       icon: <MapPin className="w-3.5 h-3.5" />,
     },
   ];
+
+  if (!isAdminOrOwner) {
+    return null;
+  }
 
   return (
     <div className="space-y-6 max-w-5xl">

@@ -1,7 +1,41 @@
 import { create } from 'zustand';
-import { User } from '@/types/auth';
+import { User, SystemRole } from '@/types/auth';
 
 const SESSION_KEY = 'kvik_pending_verification_email';
+const ROLE_COOKIE_KEY = 'kvik_role';
+const ROLE_STORAGE_KEY = 'kvik_user_role';
+
+export function getCachedSystemRole(): SystemRole | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const fromStorage = localStorage.getItem(ROLE_STORAGE_KEY) as SystemRole | null;
+    if (fromStorage && ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'].includes(fromStorage)) {
+      return fromStorage;
+    }
+    const match = document.cookie.match(new RegExp('(^| )' + ROLE_COOKIE_KEY + '=([^;]+)'));
+    if (match && ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'].includes(match[2])) {
+      return decodeURIComponent(match[2]) as SystemRole;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+export function saveCachedSystemRole(role: SystemRole | null) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (role) {
+      localStorage.setItem(ROLE_STORAGE_KEY, role);
+      document.cookie = `${ROLE_COOKIE_KEY}=${role}; path=/; max-age=2592000; SameSite=Lax`;
+    } else {
+      localStorage.removeItem(ROLE_STORAGE_KEY);
+      document.cookie = `${ROLE_COOKIE_KEY}=; path=/; max-age=0; SameSite=Lax`;
+    }
+  } catch {
+    // ignore
+  }
+}
 
 interface AuthState {
   user: User | null;
@@ -53,27 +87,35 @@ export const useAuthStore = create<AuthState>((set) => ({
       isAuthenticated: Boolean(token || state.user),
     })),
 
-  setUser: (user: User | null) =>
+  setUser: (user: User | null) => {
+    const role = user?.role || user?.staffProfile?.systemRole || null;
+    saveCachedSystemRole(role);
     set((state) => ({
       user,
       isAuthenticated: Boolean(state.accessToken || user),
-    })),
+    }));
+  },
 
-  setAuth: (user: User, accessToken: string) =>
+  setAuth: (user: User, accessToken: string) => {
+    const role = user?.role || user?.staffProfile?.systemRole || null;
+    saveCachedSystemRole(role);
     set({
       user,
       accessToken,
       isAuthenticated: true,
       isLoading: false,
-    }),
+    });
+  },
 
-  clearAuth: () =>
+  clearAuth: () => {
+    saveCachedSystemRole(null);
     set({
       user: null,
       accessToken: null,
       isAuthenticated: false,
       isLoading: false,
-    }),
+    });
+  },
 
   setLoading: (isLoading: boolean) => set({ isLoading }),
 

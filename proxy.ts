@@ -44,7 +44,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. ALL OTHER PAGES ARE PROTECTED
+  // 5. ALL OTHER PAGES ARE PROTECTED (Auth Guard)
   // Unauthorized users trying to access "/", "/onboarding", or any other route get redirected to /login
   if (!hasRefreshCookie) {
     const loginUrl = new URL('/login', request.url);
@@ -52,6 +52,24 @@ export function proxy(request: NextRequest) {
       loginUrl.searchParams.set('from', pathname);
     }
     return NextResponse.redirect(loginUrl);
+  }
+
+  // 6. Role-Based Route Guards (Proxy Level)
+  const roleCookie = request.cookies.get('kvik_role')?.value;
+  if (roleCookie === 'SPECIALIST') {
+    const isRestrictedForSpecialist =
+      pathname === '/knowledge-base' ||
+      pathname.startsWith('/knowledge-base/') ||
+      pathname === '/billing' ||
+      pathname.startsWith('/billing/') ||
+      pathname === '/settings/workspace' ||
+      pathname === '/settings/staff' ||
+      pathname === '/settings/channels' ||
+      pathname === '/settings/advanced';
+
+    if (isRestrictedForSpecialist) {
+      return NextResponse.redirect(new URL('/overview', request.url));
+    }
   }
 
   return NextResponse.next();
