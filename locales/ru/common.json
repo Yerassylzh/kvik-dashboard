@@ -7,7 +7,8 @@
     "skip": "Пропустить",
     "retry": "Повторить",
     "confirm": "Подтвердить",
-    "loading": "Загрузка..."
+    "loading": "Загрузка...",
+    "close": "Закрыть"
   },
   "status": {
     "active": "Активен",
@@ -24,5 +25,7 @@
   "status_completed": "Готово",
   "status_processing": "Обработка...",
   "status_pending": "В очереди",
-  "status_failed": "Ошибка"
+  "status_failed": "Ошибка",
+  "close": "Закрыть",
+  "loading": "Загрузка..."
 }

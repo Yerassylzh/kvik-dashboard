@@ -24,6 +24,7 @@ export function KbScrapedEntriesTable({
   onRefresh,
 }: KbScrapedEntriesTableProps) {
   const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
   const [inspectEntry, setInspectEntry] = useState<KnowledgeEntryDto | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -54,7 +55,7 @@ export function KbScrapedEntriesTable({
   if (isLoading && entries.length === 0) {
     return (
       <div className="p-8 text-center text-xs text-muted-foreground animate-pulse">
-        {t("common.loading")}
+        {tCommon("loading")}
       </div>
     );
   }
@@ -103,7 +104,7 @@ export function KbScrapedEntriesTable({
                         <MapPin className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
                       )}
                       <div className="min-w-0">
-                        <p className="font-semibold text-foreground truncate">
+                        <p className="font-semibold text-sm text-foreground truncate">
                           {item.title || item.sourceUrl || t("knowledge.untitled")}
                         </p>
                         {item.sourceUrl && (

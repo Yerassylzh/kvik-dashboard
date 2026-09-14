@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { StickyNote, Edit2, Trash2, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { StickyNote, Edit2, Trash2, CheckCircle2, Clock, AlertCircle, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +44,12 @@ export function KbNoteCard({
             <Badge variant="success" className="text-[10px] px-1.5 py-0.5">
               <CheckCircle2 className="w-2.5 h-2.5 mr-1" />
               {tCommon("status_completed")}
+            </Badge>
+          )}
+          {note.processingStatus === "PROCESSING" && (
+            <Badge variant="warning" className="text-[10px] px-1.5 py-0.5">
+              <RefreshCw className="w-2.5 h-2.5 mr-1 animate-spin" />
+              {tCommon("status_processing")}
             </Badge>
           )}
           {note.processingStatus === "PENDING" && (

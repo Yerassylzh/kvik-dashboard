@@ -39,7 +39,7 @@ export function Badge({
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border select-none",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border select-none whitespace-nowrap",
         variantStyles[variant],
         className
       )}
@@ -59,7 +59,7 @@ export function Badge({
         />
       )}
       {icon && <span className="shrink-0">{icon}</span>}
-      <span>{children}</span>
+      <span className="inline-flex items-center gap-1">{children}</span>
     </span>
   );
 }

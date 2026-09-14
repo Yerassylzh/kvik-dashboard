@@ -31,6 +31,14 @@ interface KbContentInspectorModalProps {
 
 type InspectorTab = "structured" | "raw";
 
+function formatBytes(bytes?: number): string {
+  if (!bytes || bytes === 0) return "0 KB";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
 export function KbContentInspectorModal({
   isOpen,
   onClose,
@@ -38,6 +46,8 @@ export function KbContentInspectorModal({
   initialEntry,
 }: KbContentInspectorModalProps) {
   const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
+
   const [entry, setEntry] = useState<KnowledgeEntryDto | null>(initialEntry || null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<InspectorTab>("structured");
@@ -62,12 +72,13 @@ export function KbContentInspectorModal({
     }
   }, [isOpen, entryId, initialEntry]);
 
-  // Extract human readable structured text
+  // Extract human readable structured text (prioritize structuredText for scrapers and extractors)
   const extractedText = useMemo(() => {
     if (!entry) return "";
     const d = entry.data;
     if (!d) return entry.title || "";
     if (typeof d === "string") return d;
+    if (typeof d.structuredText === "string") return d.structuredText;
     if (typeof d.text === "string") return d.text;
     if (typeof d.content === "string") return d.content;
     if (typeof d.markdown === "string") return d.markdown;
@@ -144,7 +155,7 @@ export function KbContentInspectorModal({
     URL.revokeObjectURL(url);
   };
 
-  const getIcon = () => {
+  const getTypeIcon = () => {
     switch (entry?.type) {
       case "WEBSITE_CONTENT":
         return <Globe className="w-4 h-4 text-indigo-500" />;
@@ -153,7 +164,7 @@ export function KbContentInspectorModal({
       case "MANUAL_NOTE":
         return <StickyNote className="w-4 h-4 text-amber-500" />;
       default:
-        return <FileText className="w-4 h-4 text-blue-500" />;
+        return <FileText className="w-4 h-4 text-primary" />;
     }
   };
 
@@ -168,16 +179,10 @@ export function KbContentInspectorModal({
       width="lg"
     >
       <div className="space-y-4 pt-1">
-        {/* Header Metadata Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-muted/20 border border-border/40 text-xs">
+        {/* Sleek Metadata Bar (No redundant inner title box) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-muted/30 border border-border/50 text-xs">
           <div className="flex items-center gap-2">
-            {getIcon()}
-            <span className="font-bold text-foreground truncate max-w-xs sm:max-w-sm">
-              {entry?.title || t("knowledge.untitled")}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
+            {getTypeIcon()}
             <Badge
               variant={entry?.processingStatus === "COMPLETED" ? "success" : "warning"}
               className="text-[10px] px-2 py-0.5"
@@ -185,7 +190,27 @@ export function KbContentInspectorModal({
               {entry?.processingStatus || "COMPLETED"}
             </Badge>
 
-            <span className="text-[11px] font-medium text-muted-foreground">
+            {entry?.fileSize ? (
+              <span className="text-[11px] font-mono text-muted-foreground">
+                {formatBytes(entry.fileSize)}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {entry?.sourceUrl && (
+              <a
+                href={entry.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary hover:underline font-mono text-[11px] flex items-center gap-1 max-w-[200px] truncate"
+              >
+                <ExternalLink className="w-3 h-3 shrink-0" />
+                <span className="truncate">{entry.sourceUrl}</span>
+              </a>
+            )}
+
+            <span className="text-[11px] font-medium">
               {entry?.active ? (
                 <span className="text-emerald-500 font-semibold">● {t("knowledge.active_enabled")}</span>
               ) : (
@@ -195,34 +220,9 @@ export function KbContentInspectorModal({
           </div>
         </div>
 
-        {/* Source URL if present */}
-        {entry?.sourceUrl && (
-          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-card border border-border/40 text-xs">
-            <div className="flex items-center gap-2 truncate">
-              <span className="text-muted-foreground shrink-0 font-medium">{t("knowledge.link_label")}:</span>
-              <a
-                href={entry.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary hover:underline font-mono truncate text-[11px]"
-              >
-                {entry.sourceUrl}
-              </a>
-            </div>
-            <a
-              href={entry.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="p-1 rounded-md text-muted-foreground hover:text-foreground shrink-0"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        )}
-
-        {/* Tab Controls */}
-        <div className="flex items-center justify-between border-b border-border/60 pb-2">
-          <div className="flex items-center gap-2">
+        {/* Tab & Action Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setActiveTab("structured")}
@@ -277,7 +277,7 @@ export function KbContentInspectorModal({
           </div>
         </div>
 
-        {/* Tab View */}
+        {/* Content View */}
         {activeTab === "structured" ? (
           <KbStructuredTextView
             isLoading={isLoading}
@@ -294,7 +294,7 @@ export function KbContentInspectorModal({
         {/* Footer */}
         <div className="flex justify-end pt-2 border-t border-border/40">
           <Button type="button" variant="outline" size="sm" onClick={onClose} className="text-xs">
-            {t("common.close")}
+            {tCommon("close")}
           </Button>
         </div>
       </div>

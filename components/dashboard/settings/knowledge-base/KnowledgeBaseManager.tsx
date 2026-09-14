@@ -10,10 +10,8 @@ import {
   UserCheck,
   Sparkles,
   Bot,
-  Search,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import clsx from "clsx";
 import { useKnowledgeBase } from "@/hooks/useKnowledgeBase";
 import { KbStatsHeader } from "./KbStatsHeader";
 import { KbDocumentsTab } from "./KbDocumentsTab";
@@ -24,6 +22,7 @@ import { KbQualificationTab } from "./KbQualificationTab";
 import { KbSearchTesterModal } from "./KbSearchTesterModal";
 import { BusinessContextManager } from "@/components/dashboard/settings/business-context/BusinessContextManager";
 import { AgentConfig } from "@/components/dashboard/settings/ai-agent/AgentConfig";
+import { SegmentedTabs } from "@/components/ui/tabs";
 
 type MainTab = "sources" | "business-context" | "qualification" | "ai-agent";
 type SourceSubTab = "documents" | "notes" | "website" | "twogis";
@@ -90,153 +89,81 @@ export function KnowledgeBaseManager() {
     refreshAll,
   } = useKnowledgeBase();
 
+  const mainTabs = [
+    {
+      id: "sources" as MainTab,
+      label: t("knowledge.tab_sources"),
+      icon: <FileText className="w-3.5 h-3.5 text-primary" />,
+      count: (documents.length || 0) + (notes.length || 0),
+    },
+    {
+      id: "business-context" as MainTab,
+      label: t("settings.nav_business_context"),
+      icon: <Sparkles className="w-3.5 h-3.5 text-indigo-500" />,
+    },
+    {
+      id: "qualification" as MainTab,
+      label: t("knowledge.tab_qualification"),
+      icon: <UserCheck className="w-3.5 h-3.5 text-emerald-500" />,
+    },
+    {
+      id: "ai-agent" as MainTab,
+      label: t("settings.nav_ai"),
+      icon: <Bot className="w-3.5 h-3.5 text-primary" />,
+    },
+  ];
+
+  const sourceTabs = [
+    {
+      id: "documents" as SourceSubTab,
+      label: t("knowledge.docs_title"),
+      icon: <FileText className="w-3.5 h-3.5" />,
+      count: documents.length,
+    },
+    {
+      id: "notes" as SourceSubTab,
+      label: t("knowledge.notes_title"),
+      icon: <StickyNote className="w-3.5 h-3.5" />,
+      count: notes.length,
+    },
+    {
+      id: "website" as SourceSubTab,
+      label: t("knowledge.website_title"),
+      icon: <Globe className="w-3.5 h-3.5" />,
+    },
+    {
+      id: "twogis" as SourceSubTab,
+      label: t("knowledge.twogis_title"),
+      icon: <MapPin className="w-3.5 h-3.5" />,
+    },
+  ];
+
   return (
     <div className="space-y-6 max-w-5xl">
-      {/* Top Compact Stats Header */}
+      {/* Top Stats Header */}
       <KbStatsHeader
         stats={stats}
         isLoading={isStatsLoading}
         onOpenSearchTester={() => setIsSearchTesterOpen(true)}
       />
 
-      {/* Level 1 Main Navigation Bar */}
-      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-muted/40 border border-border/60 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <button
-          type="button"
-          onClick={() => handleTabChange("sources")}
-          className={clsx(
-            "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0",
-            activeMainTab === "sources"
-              ? "bg-card text-foreground shadow-xs border border-border/60"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <FileText className="w-3.5 h-3.5 text-primary" />
-          <span>{t("knowledge.tab_sources")}</span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-muted font-mono">
-            {(documents.length || 0) + (notes.length || 0)}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTabChange("business-context")}
-          className={clsx(
-            "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0",
-            activeMainTab === "business-context"
-              ? "bg-card text-foreground shadow-xs border border-border/60"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-          <span>{t("settings.nav_business_context")}</span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-indigo-500/10 text-indigo-500 font-mono font-bold">
-            L2
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTabChange("qualification")}
-          className={clsx(
-            "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0",
-            activeMainTab === "qualification"
-              ? "bg-card text-foreground shadow-xs border border-border/60"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <UserCheck className="w-3.5 h-3.5 text-emerald-500" />
-          <span>{t("knowledge.tab_qualification")}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTabChange("ai-agent")}
-          className={clsx(
-            "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0",
-            activeMainTab === "ai-agent"
-              ? "bg-card text-foreground shadow-xs border border-border/60"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <Bot className="w-3.5 h-3.5 text-primary" />
-          <span>{t("settings.nav_ai")}</span>
-        </button>
-      </div>
+      {/* Level 1 Main Navigation */}
+      <SegmentedTabs
+        tabs={mainTabs}
+        activeTab={activeMainTab}
+        onChange={handleTabChange}
+        className="w-full sm:w-full"
+      />
 
       {/* 1. Sources Tab Content */}
       {activeMainTab === "sources" && (
         <div className="space-y-4">
           {/* Source Sub-Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
-            <button
-              type="button"
-              onClick={() => handleSubtabChange("documents")}
-              className={clsx(
-                "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all shrink-0",
-                activeSourceTab === "documents"
-                  ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
-                  : "bg-card border-border/40 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>{t("knowledge.docs_title")}</span>
-              <span className={clsx(
-                "text-[10px] px-1.5 py-0.2 rounded-full font-mono ml-1",
-                activeSourceTab === "documents" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted"
-              )}>
-                {documents.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSubtabChange("notes")}
-              className={clsx(
-                "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all shrink-0",
-                activeSourceTab === "notes"
-                  ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
-                  : "bg-card border-border/40 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <StickyNote className="w-3.5 h-3.5" />
-              <span>{t("knowledge.notes_title")}</span>
-              <span className={clsx(
-                "text-[10px] px-1.5 py-0.2 rounded-full font-mono ml-1",
-                activeSourceTab === "notes" ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted"
-              )}>
-                {notes.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSubtabChange("website")}
-              className={clsx(
-                "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all shrink-0",
-                activeSourceTab === "website"
-                  ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
-                  : "bg-card border-border/40 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Globe className="w-3.5 h-3.5" />
-              <span>{t("knowledge.website_title")}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSubtabChange("twogis")}
-              className={clsx(
-                "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all shrink-0",
-                activeSourceTab === "twogis"
-                  ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
-                  : "bg-card border-border/40 text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{t("knowledge.twogis_title")}</span>
-            </button>
-          </div>
+          <SegmentedTabs
+            tabs={sourceTabs}
+            activeTab={activeSourceTab}
+            onChange={handleSubtabChange}
+          />
 
           {/* Sub-tab view */}
           <div className="p-5 rounded-2xl bg-card border border-border/60 shadow-xs">

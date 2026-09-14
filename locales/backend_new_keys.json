@@ -1,17 +1,1 @@
-{
-  "knowledge.profile_retrieved": "Профиль бизнеса получен",
-  "knowledge.profile_updated": "Профиль бизнеса успешно обновлен",
-  "knowledge.note_saved": "Заметка сохранена",
-  "knowledge.note_retrieved": "Заметка получена",
-  "knowledge.note_updated": "Заметка успешно обновлена и отправлена на индексацию",
-  "knowledge.note_deleted": "Заметка успешно удалена",
-  "knowledge.website_scraping_started": "Сканирование сайта запущено",
-  "knowledge.2gis_scraping_started": "Синхронизация 2GIS запущена",
-  "knowledge.scraped_data_cleared": "Данные скрейпинга успешно очищены",
-  "knowledge.entry_updated": "Элемент базы знаний успешно обновлен",
-  "knowledge.bulk_deleted": "Выбранные элементы базы знаний успешно удалены",
-  "knowledge.entry_reindexing_queued": "Элемент отправлен на повторную индексацию",
-  "knowledge.qualification_rules_updated": "Правила квалификации лидов успешно сохранены",
-  "ai_engine.tool_updated": "Настройки инструмента ИИ успешно сохранены",
-  "ai_engine.config_updated": "Конфигурация ИИ успешно обновлена"
-}
+{}

@@ -211,6 +211,7 @@ channels.whatsapp_subscription_failed
 common.active
 common.buttons.back
 common.buttons.cancel
+common.buttons.close
 common.buttons.confirm
 common.buttons.continue
 common.buttons.loading
@@ -218,9 +219,11 @@ common.buttons.retry
 common.buttons.save
 common.buttons.skip
 common.cancel
+common.close
 common.confirm
 common.delete
 common.inactive
+common.loading
 common.save
 common.status.active
 common.status.connected
@@ -412,6 +415,8 @@ dashboard.knowledge.active_enabled
 dashboard.knowledge.active_for_ai
 dashboard.knowledge.add_note
 dashboard.knowledge.address_label
+dashboard.knowledge.branch_id_label
+dashboard.knowledge.branch_synced_title
 dashboard.knowledge.bulk_delete
 dashboard.knowledge.catalog_items_title
 dashboard.knowledge.category_label
@@ -448,6 +453,7 @@ dashboard.knowledge.inspect_data
 dashboard.knowledge.inspect_data_btn
 dashboard.knowledge.inspector_desc
 dashboard.knowledge.inspector_title
+dashboard.knowledge.items_label
 dashboard.knowledge.link_label
 dashboard.knowledge.loading_data
 dashboard.knowledge.no_documents
@@ -495,6 +501,11 @@ dashboard.knowledge.search_tester_description
 dashboard.knowledge.search_tester_title
 dashboard.knowledge.start_scan
 dashboard.knowledge.start_twogis_sync
+dashboard.knowledge.stat_chunks
+dashboard.knowledge.stat_indexing
+dashboard.knowledge.stat_sources
+dashboard.knowledge.stat_storage
+dashboard.knowledge.stat_synced
 dashboard.knowledge.stats_all_indexed
 dashboard.knowledge.stats_indexing_in_progress
 dashboard.knowledge.stats_indexing_status
@@ -506,6 +517,7 @@ dashboard.knowledge.status_crawl_label
 dashboard.knowledge.status_sync_label
 dashboard.knowledge.symbols_count
 dashboard.knowledge.synced_items
+dashboard.knowledge.synced_items_count
 dashboard.knowledge.syncing
 dashboard.knowledge.tab_qualification
 dashboard.knowledge.tab_raw_json

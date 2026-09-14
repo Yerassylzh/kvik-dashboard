@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FileText, Trash2, RefreshCw, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +55,7 @@ export function KbDocumentRow({
       <td className="p-3">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-primary shrink-0" />
-          <span className="font-semibold text-foreground max-w-xs truncate">
+          <span className="font-semibold text-sm text-foreground max-w-xs truncate">
             {doc.fileName || t("knowledge.doc_fallback")}
           </span>
         </div>
@@ -89,13 +90,24 @@ export function KbDocumentRow({
         )}
       </td>
       <td className="p-3">
-        <label className="flex items-center gap-1.5 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={doc.active}
-            onChange={() => onToggleActive(doc)}
-            className="w-3.5 h-3.5 rounded text-primary accent-primary"
-          />
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={doc.active}
+            onClick={() => onToggleActive(doc)}
+            className={clsx(
+              "relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+              doc.active ? "bg-primary" : "bg-muted"
+            )}
+          >
+            <span
+              className={clsx(
+                "pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                doc.active ? "translate-x-3" : "translate-x-0"
+              )}
+            />
+          </button>
           <span className="text-[11px] text-muted-foreground">
             {doc.active ? t("knowledge.active_enabled") : t("knowledge.active_disabled")}
           </span>

@@ -15,6 +15,7 @@ interface AiPromptInspectorModalProps {
 
 export function AiPromptInspectorModal({ isOpen, onClose }: AiPromptInspectorModalProps) {
   const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
   const { config, isLoading } = useAiEngine();
   const [isCopied, setIsCopied] = useState(false);
 
@@ -86,7 +87,7 @@ export function AiPromptInspectorModal({ isOpen, onClose }: AiPromptInspectorMod
         {/* Footer */}
         <div className="flex justify-end pt-2 border-t border-border/40">
           <Button type="button" variant="outline" size="sm" onClick={onClose} className="text-xs">
-            {t("common.close")}
+            {tCommon("close")}
           </Button>
         </div>
       </div>

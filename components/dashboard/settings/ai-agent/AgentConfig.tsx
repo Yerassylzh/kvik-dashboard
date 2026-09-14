@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Sparkles, Check, Play, Save, Eye, Clock, MessageSquare } from "lucide-react";
+import { Sparkles, Check, Play, Save, Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { Button } from "@/components/ui/button";
@@ -15,29 +15,14 @@ export function AgentConfig() {
   const { config, updateConfig, isLoading } = useAiEngine();
 
   const [customInstructions, setCustomInstructions] = useState("");
-  const [overflowTimeout, setOverflowTimeout] = useState(30);
-  const [followUp24h, setFollowUp24h] = useState(true);
-  const [followUp72h, setFollowUp72h] = useState(true);
-
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSandboxOpen, setIsSandboxOpen] = useState(false);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
 
   useEffect(() => {
-    if (config) {
-      if (config.customInstructions !== undefined) {
-        setCustomInstructions(config.customInstructions || "");
-      }
-      if (config.liveOverflowTimeoutSeconds !== undefined) {
-        setOverflowTimeout(config.liveOverflowTimeoutSeconds);
-      }
-      if (config.followUp24hEnabled !== undefined) {
-        setFollowUp24h(config.followUp24hEnabled);
-      }
-      if (config.followUp72hEnabled !== undefined) {
-        setFollowUp72h(config.followUp72hEnabled);
-      }
+    if (config && config.customInstructions !== undefined) {
+      setCustomInstructions(config.customInstructions || "");
     }
   }, [config]);
 
@@ -47,9 +32,6 @@ export function AgentConfig() {
     try {
       await updateConfig({
         customInstructions,
-        liveOverflowTimeoutSeconds: overflowTimeout,
-        followUp24hEnabled: followUp24h,
-        followUp72hEnabled: followUp72h,
       });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
@@ -72,7 +54,7 @@ export function AgentConfig() {
             </h3>
           </div>
           <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
-            Настройка дополнительных инструкций к промпту, логики перехвата диалога менеджером и автоматических дожимов
+            Настройка дополнительных инструкций, правил общения и тестирование диалога в интерактивной песочнице
           </p>
         </div>
 
@@ -105,92 +87,19 @@ export function AgentConfig() {
         {/* Card 1: Custom Instructions */}
         <SectionCard
           title={t("settings.ai_instructions")}
-          description="Специфические правила, приветствие, скидки и формулировки для вашего бизнеса"
+          description="Специфические правила, приветствие, скидки, тон общения и формулировки для вашего бизнеса"
         >
           <div className="space-y-2 pt-2">
             <Textarea
-              rows={4}
+              rows={6}
               value={customInstructions}
               onChange={(e) => setCustomInstructions(e.target.value)}
               placeholder={t("settings.ai_instructions_placeholder")}
               className="text-xs leading-relaxed"
             />
             <p className="text-[11px] text-muted-foreground">
-              {t("dashboard.ai.custom_instructions_hint")}
+              Инструкции динамически компилируются в системный промпт ИИ и влияют на все входящие обращения клиентов
             </p>
-          </div>
-        </SectionCard>
-
-        {/* Card 2: Live Overflow Timeout */}
-        <SectionCard
-          title="Автоматический возврат диалога ИИ (Live Overflow)"
-          description="Если оператор перехватил диалог, но не отвечает клиенту"
-        >
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <label className="font-semibold text-foreground flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-primary" />
-                <span>{t("settings.ai_overflow_label")}</span>
-              </label>
-              <span className="font-mono font-bold text-primary bg-card px-2 py-0.5 rounded-lg border border-border/40">
-                {overflowTimeout} {t("settings.ai_overflow_seconds")}
-              </span>
-            </div>
-
-            <input
-              type="range"
-              min={15}
-              max={120}
-              step={5}
-              value={overflowTimeout}
-              onChange={(e) => setOverflowTimeout(Number(e.target.value))}
-              className="w-full accent-primary h-2 bg-muted rounded-lg cursor-pointer"
-            />
-            <p className="text-[11px] text-muted-foreground">
-              {t("dashboard.ai.overflow_hint")}
-            </p>
-          </div>
-        </SectionCard>
-
-        {/* Card 3: Automated Follow-up Toggles */}
-        <SectionCard
-          title="Автоматические дожимы (Follow-up)"
-          description="Автоматические сообщения клиентам при отсутствии активности"
-        >
-          <div className="space-y-3 pt-2">
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border/50 cursor-pointer hover:border-border transition-colors">
-              <input
-                type="checkbox"
-                checked={followUp24h}
-                onChange={(e) => setFollowUp24h(e.target.checked)}
-                className="rounded border-border text-primary focus:ring-primary h-4 w-4"
-              />
-              <div className="text-xs">
-                <span className="font-semibold text-foreground block">
-                  {t("settings.ai_followup_24h")}
-                </span>
-                <span className="text-muted-foreground text-[11px]">
-                  {t("dashboard.ai.followup_24h_desc")}
-                </span>
-              </div>
-            </label>
-
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border/50 cursor-pointer hover:border-border transition-colors">
-              <input
-                type="checkbox"
-                checked={followUp72h}
-                onChange={(e) => setFollowUp72h(e.target.checked)}
-                className="rounded border-border text-primary focus:ring-primary h-4 w-4"
-              />
-              <div className="text-xs">
-                <span className="font-semibold text-foreground block">
-                  {t("settings.ai_followup_72h")}
-                </span>
-                <span className="text-muted-foreground text-[11px]">
-                  {t("dashboard.ai.followup_72h_desc")}
-                </span>
-              </div>
-            </label>
           </div>
         </SectionCard>
 

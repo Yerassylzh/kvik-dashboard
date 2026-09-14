@@ -512,8 +512,8 @@
     "qual_autopass_placeholder": "Например: VIP клиент, запись на премиум комплекс...",
     "inspector_title": "Содержимое источника",
     "inspector_desc": "Просмотр извлеченных текстовых данных и структуры для RAG",
-    "tab_structured": "Структурированный текст",
-    "tab_raw_json": "Исходный JSON",
+    "tab_structured": "Текст",
+    "tab_raw_json": "JSON",
     "copy_btn": "Копировать",
     "copied_btn": "Скопировано",
     "download_btn": "Скачать",
@@ -539,7 +539,16 @@
     "inspect_data": "Просмотр извлеченных данных",
     "inspect_data_btn": "Данные",
     "confirm_delete_entry_title": "Удаление элемента",
-    "confirm_delete_entry_desc": "Вы уверены, что хотите удалить этот элемент из базы знаний? Связанные векторные фрагменты также будут удалены."
+    "confirm_delete_entry_desc": "Вы уверены, что хотите удалить этот элемент из базы знаний? Связанные векторные фрагменты также будут удалены.",
+    "branch_synced_title": "Синхронизированный каталог 2GIS",
+    "branch_id_label": "ID филиала:",
+    "synced_items_count": "Элементов каталога:",
+    "stat_sources": "источников",
+    "stat_chunks": "чанков",
+    "stat_storage": "хранилище",
+    "stat_indexing": "Индексация...",
+    "stat_synced": "Синхронизировано",
+    "items_label": "эл."
   },
   "ai": {
     "tools_title": "Инструменты и функции ИИ (Tool Calling)",

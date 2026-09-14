@@ -14,7 +14,7 @@ import {
 } from '@/lib/api/knowledgeBase';
 
 export function useKnowledgeBase() {
-  // 1. Stats
+  // 1. Stats (Polls if any pending/processing jobs exist)
   const {
     data: stats,
     error: statsError,
@@ -23,10 +23,18 @@ export function useKnowledgeBase() {
   } = useSWR<KnowledgeBaseStatsDto>(
     'knowledge-base/stats',
     () => knowledgeBaseApi.getStats(),
-    { revalidateOnFocus: true }
+    {
+      revalidateOnFocus: true,
+      refreshInterval: (data) => {
+        const hasPending =
+          (data?.statusSummary?.PENDING ?? 0) > 0 ||
+          (data?.statusSummary?.PROCESSING ?? 0) > 0;
+        return hasPending ? 3000 : 0;
+      },
+    }
   );
 
-  // 2. Documents
+  // 2. Documents (Polls if any document is being parsed/indexed)
   const {
     data: documents = [],
     error: docsError,
@@ -35,10 +43,18 @@ export function useKnowledgeBase() {
   } = useSWR<KnowledgeDocumentDto[]>(
     'knowledge-base/documents',
     () => knowledgeBaseApi.getDocuments(),
-    { revalidateOnFocus: true }
+    {
+      revalidateOnFocus: true,
+      refreshInterval: (data) => {
+        const hasPending = data?.some(
+          (d) => d.processingStatus === 'PENDING' || d.processingStatus === 'PROCESSING'
+        );
+        return hasPending ? 3000 : 0;
+      },
+    }
   );
 
-  // 3. Manual Notes
+  // 3. Manual Notes (Polls if any note is being structured/indexed)
   const {
     data: notes = [],
     error: notesError,
@@ -47,7 +63,15 @@ export function useKnowledgeBase() {
   } = useSWR<ManualNoteDto[]>(
     'knowledge-base/notes',
     () => knowledgeBaseApi.getNotes(),
-    { revalidateOnFocus: true }
+    {
+      revalidateOnFocus: true,
+      refreshInterval: (data) => {
+        const hasPending = data?.some(
+          (n) => n.processingStatus === 'PENDING' || n.processingStatus === 'PROCESSING'
+        );
+        return hasPending ? 3000 : 0;
+      },
+    }
   );
 
   // 4. Scrapers Status (Polls every 4s if any scraper is active)
