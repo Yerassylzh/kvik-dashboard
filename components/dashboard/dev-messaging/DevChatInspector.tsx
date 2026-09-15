@@ -47,7 +47,9 @@ const CHANNEL_BADGES: Record<ChannelType, { label: string; bg: string; text: str
 interface DevChatInspectorProps {
   conversationData: ConversationMessagesResponse | null;
   isLoading: boolean;
-  isPolling: boolean;
+  isWaitingForBot?: boolean;
+  /** @deprecated use isWaitingForBot */
+  isPolling?: boolean;
   onRefresh: () => void;
   onResetConversation: (conversationId: string) => Promise<void>;
   onLookupConversation: (conversationId: string) => void;
@@ -57,6 +59,7 @@ interface DevChatInspectorProps {
 export function DevChatInspector({
   conversationData,
   isLoading,
+  isWaitingForBot,
   isPolling,
   onRefresh,
   onResetConversation,
@@ -67,6 +70,8 @@ export function DevChatInspector({
   const [copied, setCopied] = useState(false);
   const [lookupId, setLookupId] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const waiting = isWaitingForBot ?? isPolling ?? false;
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -132,7 +137,7 @@ export function DevChatInspector({
 
           {/* Action buttons */}
           <div className="flex items-center gap-1.5 shrink-0">
-            {isPolling && (
+            {waiting && (
               <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-accent-ai/10 text-accent-ai text-[10px] font-medium animate-pulse">
                 <Sparkles className="w-3 h-3" />
                 <span className="hidden sm:inline">{t("dev_messaging.auto_poll_active")}</span>

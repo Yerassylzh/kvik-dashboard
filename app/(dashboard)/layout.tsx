@@ -36,6 +36,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { isSpecialist, isAdminOrOwner, systemRole } = useRBAC();
 
   const [isDemo, setIsDemo] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Initialize Socket.IO real-time inbox events
   useInboxRealtime(user?.workspace?.id);
@@ -140,9 +145,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Workspace Switcher */}
             <WorkspaceSwitcher />
 
-            {/* Navigation */}
+            {/* Navigation — rendered only after mount to avoid hydration mismatch
+                (role defaults to SPECIALIST on SSR but may differ on client) */}
             <nav className="space-y-1">
-              {navItems.map((item) => {
+              {mounted && navItems.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 const Icon = item.Icon;
 

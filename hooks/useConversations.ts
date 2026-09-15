@@ -40,7 +40,6 @@ export function useConversations(initialParams?: ListConversationsParams) {
     mutate: mutateConversations,
   } = useSWR(['conversations', queryParams], () => conversationsApi.getConversations(queryParams), {
     revalidateOnFocus: true,
-    refreshInterval: 10000,
   });
 
   return {
@@ -69,7 +68,6 @@ export function useConversationMessages(conversationId: string | null) {
     () => (conversationId ? conversationsApi.getMessages(conversationId, { limit: 100 }) : null),
     {
       revalidateOnFocus: true,
-      refreshInterval: 5000,
     }
   );
 

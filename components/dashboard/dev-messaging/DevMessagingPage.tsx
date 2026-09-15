@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, FlaskConical } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/shared/PageHeader";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
 import { useToast } from "@/components/ui/toast/ToastContext";
+import { useAuthStore } from "@/store/auth.store";
+import { useDevMessagingSocket } from "@/hooks/useDevMessagingSocket";
 import {
   provisionMockChannels,
   simulateInbound,
@@ -15,6 +17,7 @@ import {
   type ChannelType,
   type MockChannel,
   type ConversationMessagesResponse,
+  type DevMessage,
 } from "@/lib/api/devMessaging";
 import { isDevEnvironment } from "@/hooks/useDevMode";
 import { DevChannelProvisioner } from "./DevChannelProvisioner";
@@ -24,6 +27,7 @@ import { DevChatInspector } from "./DevChatInspector";
 export function DevMessagingPage() {
   const t = useTranslations("dashboard");
   const toast = useToast();
+  const { user } = useAuthStore();
 
   // Provision state
   const [isProvisioning, setIsProvisioning] = useState(false);
@@ -41,19 +45,24 @@ export function DevMessagingPage() {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [conversationData, setConversationData] = useState<ConversationMessagesResponse | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  const [isPolling, setIsPolling] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
 
-  const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const pollEndTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Clear timers on unmount
-  useEffect(() => {
-    return () => {
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-      if (pollEndTimerRef.current) clearTimeout(pollEndTimerRef.current);
-    };
+  // Socket.IO realtime connection
+  const handleSocketMessage = useCallback((convId: string, message: DevMessage) => {
+    setConversationData((prev) => {
+      if (!prev || prev.conversationId !== convId) return prev;
+      if (prev.messages.some((m) => m.id === message.id)) return prev;
+      return {
+        ...prev,
+        messages: [...prev.messages, message],
+      };
+    });
   }, []);
+
+  const { isWaitingForBot, armBotWatcher } = useDevMessagingSocket({
+    workspaceId: user?.workspace?.id,
+    onMessage: handleSocketMessage,
+  });
 
   // Hard guard for production
   if (!isDevEnvironment()) {
@@ -97,33 +106,6 @@ export function DevMessagingPage() {
     }
   }, [toast]);
 
-  const startAutoPolling = useCallback((convId: string) => {
-    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-    if (pollEndTimerRef.current) clearTimeout(pollEndTimerRef.current);
-
-    setIsPolling(true);
-
-    let initialCount = 0;
-    pollTimerRef.current = setInterval(async () => {
-      const updated = await fetchHistoryById(convId, true);
-      if (updated) {
-        if (!initialCount) {
-          initialCount = updated.messages.length;
-        } else if (updated.messages.length > initialCount) {
-          // New message received (e.g. BOT reply) -> stop polling
-          if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-          setIsPolling(false);
-        }
-      }
-    }, 2000);
-
-    // Stop polling after 16 seconds maximum
-    pollEndTimerRef.current = setTimeout(() => {
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-      setIsPolling(false);
-    }, 16000);
-  }, [fetchHistoryById]);
-
   const handleSimulate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageText.trim()) return;
@@ -143,7 +125,7 @@ export function DevMessagingPage() {
       if (result.conversationId) {
         setActiveConversationId(result.conversationId);
         await fetchHistoryById(result.conversationId);
-        startAutoPolling(result.conversationId);
+        armBotWatcher(result.conversationId);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to simulate inbound message";
@@ -243,7 +225,7 @@ export function DevMessagingPage() {
           <DevChatInspector
             conversationData={conversationData}
             isLoading={isLoadingHistory}
-            isPolling={isPolling}
+            isWaitingForBot={isWaitingForBot}
             onRefresh={() => {
               if (activeConversationId) {
                 fetchHistoryById(activeConversationId);

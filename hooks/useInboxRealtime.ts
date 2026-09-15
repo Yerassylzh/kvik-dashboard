@@ -5,36 +5,47 @@ import { io, type Socket } from 'socket.io-client';
 import { useAuthStore } from '@/store/auth.store';
 import { useInboxStore } from '@/store/inbox.store';
 import { useSWRConfig } from 'swr';
+import { getSocketBaseUrl } from '@/lib/api/socketUrl';
 import type { MessageDto, ConversationDto } from '@/lib/api/conversations';
 
 export function useInboxRealtime(workspaceId?: string) {
   const socketRef = useRef<Socket | null>(null);
   const { accessToken } = useAuthStore();
-  const { setUnreadCount, activeConversationId } = useInboxStore();
+  const { setUnreadCount } = useInboxStore();
   const { mutate } = useSWRConfig();
+
+  // Keep workspaceId synced if socket is already connected
+  useEffect(() => {
+    if (socketRef.current?.connected && workspaceId) {
+      socketRef.current.emit('workspace.join', { workspaceId });
+    }
+  }, [workspaceId]);
 
   useEffect(() => {
     if (!accessToken || typeof window === 'undefined') return;
 
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+    const socketUrl = getSocketBaseUrl();
     const socket = io(`${socketUrl}/conversations`, {
       auth: { token: accessToken },
       transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
     });
 
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      if (workspaceId) {
-        socket.emit('workspace.join', { workspaceId });
+      const currentWorkspaceId = workspaceId || useAuthStore.getState().user?.workspace?.id;
+      if (currentWorkspaceId) {
+        socket.emit('workspace.join', { workspaceId: currentWorkspaceId });
       }
     });
 
     socket.on('message.new', (payload: { conversationId: string; message: MessageDto }) => {
+      const currentActiveId = useInboxStore.getState().activeConversationId;
+
       // If the message belongs to the currently open conversation, append it
-      if (payload.conversationId === activeConversationId) {
+      if (payload.conversationId === currentActiveId) {
         mutate(
           ['conversation/messages', payload.conversationId],
           (current: { data: MessageDto[]; total: number } | undefined) => {
@@ -70,12 +81,14 @@ export function useInboxRealtime(workspaceId?: string) {
     });
 
     return () => {
-      if (workspaceId) {
-        socket.emit('workspace.leave', { workspaceId });
+      const currentWorkspaceId = workspaceId || useAuthStore.getState().user?.workspace?.id;
+      if (currentWorkspaceId) {
+        socket.emit('workspace.leave', { workspaceId: currentWorkspaceId });
       }
       socket.disconnect();
+      socketRef.current = null;
     };
-  }, [accessToken, workspaceId, activeConversationId, setUnreadCount, mutate]);
+  }, [accessToken, workspaceId, setUnreadCount, mutate]);
 
   return {
     socket: socketRef.current,
