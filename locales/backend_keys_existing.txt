@@ -26,11 +26,13 @@ api.auth.register_success
 api.auth.resend_cooldown
 api.auth.user_not_found
 api.auth.verification_code_sent
+api.bookings.business_schedule_not_configured
 api.bookings.created
 api.bookings.missing_client_info
 api.bookings.not_found
 api.bookings.rescheduled
 api.bookings.slot_conflict
+api.bookings.staff_not_bookable
 api.bookings.staff_not_found
 api.bookings.status_updated
 api.channels.channel_disconnected
@@ -100,6 +102,7 @@ api.staff.not_found
 api.staff.override_added
 api.staff.override_not_found
 api.staff.override_removed
+api.staff.schedule_reset
 api.staff.schedule_updated
 api.staff.updated
 api.system.internal_error
@@ -112,3 +115,8 @@ api.validation.password
 api.validation.required
 api.workspace.not_found
 api.workspace.updated
+api.workspaces.empty_schedule_templates
+api.workspaces.not_found
+api.workspaces.override_not_found
+api.workspaces.override_removed
+api.workspaces.schedule_updated

@@ -3,20 +3,20 @@
 @layer base {
   :root {
     /* ==========================================================================
-       CORE BRAND & ACCENTS
+       CORE BRAND & ACCENTS (MoonAI Enterprise Standard)
        ========================================================================== */
-    /* Primary CTA background, active states, key interactive elements */
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary CTA background, active states, key interactive elements (#7C3AED) */
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 0 0% 100%;
 
     /* Secondary actions, badges, subtle button fills */
-    --secondary: 210 40% 96.1%;
+    --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     /* Brand Accent & Gradients */
-    --accent-brand: #4f46e5;
-    --accent-ai: #0284c7;
-    --accent-success: #059669;
+    --accent-brand: #7c3aed;
+    --accent-ai: #7c3aed;
+    --accent-success: #10b981;
 
     /* ==========================================================================
        SURFACES & BACKGROUNDS
@@ -24,52 +24,52 @@
     /* Main page canvas background */
     --background: 0 0% 100%;
     /* Default text color on main background */
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 222.2 47.4% 11.2%;
 
     /* Cards, dropdowns, modals, and popovers */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222.2 47.4% 11.2%;
 
     /* ==========================================================================
        TYPOGRAPHY & TEXT MUTING
        ========================================================================== */
     /* De-emphasized text (subtitles, placeholders, metadata, timestamps) */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 25% 35%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
     /* ==========================================================================
        BORDERS & STATUSES
        ========================================================================== */
     /* Default border color for inputs, cards, dividers */
-    --border: 214.3 31.8% 85%;
+    --border: 220 13% 91%;
 
     /* Errors, destructive buttons, delete confirmations */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
     --destructive-subtle: 0 86% 97%;
     --destructive-subtle-text: 0 74% 42%;
     --destructive-subtle-border: 0 84% 88%;
 
     /* Warnings */
     --warning: 38 92% 50%;
-    --warning-foreground: 48 96% 89%;
+    --warning-foreground: 0 0% 100%;
     --warning-subtle: 45 100% 96%;
     --warning-subtle-text: 28 85% 35%;
     --warning-subtle-border: 45 93% 82%;
 
     /* Success */
     --success: 142 76% 36%;
-    --success-foreground: 144 70% 98%;
+    --success-foreground: 0 0% 100%;
     --success-subtle: 138 76% 96%;
     --success-subtle-text: 142 76% 25%;
     --success-subtle-border: 142 60% 82%;
 
     /* Info */
-    --info: 199 89% 48%;
-    --info-foreground: 210 40% 98%;
-    --info-subtle: 204 94% 96%;
-    --info-subtle-text: 201 96% 28%;
-    --info-subtle-border: 199 89% 82%;
+    --info: 262.1 83.3% 57.8%;
+    --info-foreground: 0 0% 100%;
+    --info-subtle: 262 100% 97%;
+    --info-subtle-text: 262 83% 45%;
+    --info-subtle-border: 262 70% 90%;
   }
 }
 
@@ -96,14 +96,16 @@
   --color-accent-brand: var(--accent-brand);
   --color-accent-ai: var(--accent-ai);
   --color-accent-success: var(--accent-success);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.011em;
 }
 
 /* ==========================================================================

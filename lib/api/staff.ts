@@ -173,5 +173,12 @@ export const staffApi = {
     );
     return data;
   },
+
+  resetSchedule: async (id: string): Promise<{ code: string; message: string }> => {
+    const { data } = await apiClient.delete<{ code: string; message: string }>(
+      `/staff/${id}/schedule`
+    );
+    return data;
+  },
 };
 

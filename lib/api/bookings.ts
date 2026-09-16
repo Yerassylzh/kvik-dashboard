@@ -24,10 +24,18 @@ export interface TimeSlot {
   startTime: string; // e.g. "09:00"
   endTime: string;   // e.g. "10:00"
   available: boolean;
+  staff?: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 export interface AvailableSlotsResponse {
   date: string;
+  dayOfWeek?: number;
+  isBusinessOpen?: boolean;
+  durationMinutes?: number;
+  totalAvailableSlots?: number;
   staffId?: string;
   slots: TimeSlot[];
 }
@@ -64,9 +72,9 @@ export const bookingsApi = {
   },
 
   getAvailableSlots: async (params: {
-    staffId?: string;
     date: string; // YYYY-MM-DD
-    durationMinutes: number;
+    staffId?: string;
+    durationMinutes?: number;
   }): Promise<AvailableSlotsResponse> => {
     const { data } = await apiClient.get<AvailableSlotsResponse>('/bookings/slots', { params });
     return data;

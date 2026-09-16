@@ -1,10 +1,5 @@
-import type { Metadata } from "next";
-import { BookingsPage } from "@/components/dashboard/bookings/BookingsPage";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Записи — Kvik.ai",
-};
-
-export default function Page() {
-  return <BookingsPage />;
+export default function BookingsRedirectPage() {
+  redirect("/calendar");
 }

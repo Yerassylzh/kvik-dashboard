@@ -1,7 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { Bot, Send, Sparkles, Clock, FileText, Wrench, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Bot,
+  Send,
+  Sparkles,
+  Clock,
+  FileText,
+  Wrench,
+  ChevronDown,
+  ChevronRight,
+  Calendar,
+  Users,
+  CheckCircle,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -28,6 +40,21 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
     await runTest(inputMessage.trim());
   };
 
+  const renderToolBadge = (toolName: string) => {
+    switch (toolName) {
+      case "get_available_slots":
+        return <Badge variant="primary" className="text-[9px] px-1.5 py-0 font-mono">{t("ai.tool_badge_slots")}</Badge>;
+      case "get_business_schedule":
+        return <Badge variant="outline" className="text-[9px] px-1.5 py-0 font-mono">{t("ai.tool_badge_schedule")}</Badge>;
+      case "get_staff_members":
+        return <Badge variant="outline" className="text-[9px] px-1.5 py-0 font-mono">{t("ai.tool_badge_staff")}</Badge>;
+      case "create_booking":
+        return <Badge variant="success" className="text-[9px] px-1.5 py-0 font-mono">{t("ai.tool_badge_booking")}</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -43,10 +70,10 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50 text-xs text-muted-foreground space-y-1">
             <div className="font-semibold text-foreground flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span>Тестирование ИИ в реальном времени</span>
+              <span>{t("ai.sandbox_banner_title")}</span>
             </div>
             <p>
-              Проверьте, как ИИ отвечает на вопросы о ценах, услугах и свободных слотах. Сообщения не отправляются реальным клиентам.
+              {t("ai.sandbox_banner_desc")}
             </p>
           </div>
 
@@ -58,7 +85,7 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
                   <button
                     type="button"
                     onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-                    className="w-full flex items-center justify-between p-2.5 bg-muted/40 text-left font-semibold text-foreground hover:bg-muted/60 transition-colors"
+                    className="w-full flex items-center justify-between p-2.5 bg-muted/40 text-left font-semibold text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-1.5">
                       <Wrench className="w-3.5 h-3.5 text-primary" />
@@ -77,17 +104,20 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
                   {isToolsExpanded && (
                     <div className="p-3 space-y-2.5 border-t border-border/40">
                       {testResult.toolCalls.map((call, idx) => (
-                        <div key={idx} className="p-2.5 rounded-lg bg-card border border-border/40 space-y-1 font-mono text-[11px]">
-                          <div className="font-bold text-primary flex items-center gap-1">
-                            <span>▶ {call.name}()</span>
+                        <div key={idx} className="p-2.5 rounded-lg bg-card border border-border/40 space-y-1.5 font-mono text-[11px]">
+                          <div className="font-bold text-primary flex items-center justify-between">
+                            <span className="flex items-center gap-1">
+                              <span>▶ {call.name}()</span>
+                            </span>
+                            {renderToolBadge(call.name)}
                           </div>
                           {call.args && (
-                            <div className="text-muted-foreground text-[10px] pl-3">
+                            <div className="text-muted-foreground text-[10px] pl-2 border-l-2 border-primary/20">
                               <span className="font-semibold text-foreground">Args:</span> {JSON.stringify(call.args)}
                             </div>
                           )}
                           {call.result && (
-                            <div className="text-emerald-600 text-[10px] pl-3">
+                            <div className="text-emerald-600 dark:text-emerald-400 text-[10px] pl-2 border-l-2 border-emerald-500/30 overflow-x-auto">
                               <span className="font-semibold text-foreground">Result:</span> {JSON.stringify(call.result)}
                             </div>
                           )}
@@ -103,17 +133,17 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
                 <div className="flex items-center justify-between text-[11px] font-semibold text-primary">
                   <span className="flex items-center gap-1">
                     <Bot className="w-3.5 h-3.5" />
-                    <span>Ответ ИИ</span>
+                    <span>{t("ai.response_label")}</span>
                   </span>
                   <div className="flex items-center gap-2 text-muted-foreground font-mono">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      <span>{testResult.latencyMs} мс</span>
+                      <span>{testResult.latencyMs} {t("ai.ms_unit")}</span>
                     </span>
                     {testResult.ragChunksUsed !== undefined && (
                       <span className="flex items-center gap-1">
                         <FileText className="w-3 h-3" />
-                        <span>{testResult.ragChunksUsed} чанков</span>
+                        <span>{testResult.ragChunksUsed} {t("ai.chunks_unit")}</span>
                       </span>
                     )}
                   </div>
@@ -140,18 +170,19 @@ export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={t("settings.test_input_placeholder")}
+              placeholder={t("ai.sandbox_input_placeholder")}
               disabled={isTesting}
-              className="flex-1 bg-transparent px-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+              className="flex-1 bg-transparent text-xs text-foreground px-2 focus:outline-none"
             />
             <Button
               type="submit"
               size="sm"
+              loading={isTesting}
               disabled={!inputMessage.trim() || isTesting}
-              className="gap-1.5 h-8 px-3 rounded-xl text-xs"
+              leftIcon={<Send className="w-3.5 h-3.5" />}
+              className="text-xs rounded-xl"
             >
-              <span>{isTesting ? "Обработка..." : "Тест"}</span>
-              <Send className="w-3.5 h-3.5" />
+              {t("ai.send_btn")}
             </Button>
           </div>
         </form>

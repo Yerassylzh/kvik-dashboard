@@ -34,22 +34,22 @@ export function LeadFilters({
   const t = useTranslations("dashboard");
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-      <div className="flex items-center gap-2 flex-1 max-w-md">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+      <div className="flex items-center gap-2 flex-1 max-w-sm">
         <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t("leads.search_placeholder")}
-            className="w-full bg-card border border-border/60 rounded-xl pl-9 pr-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-all"
+            className="w-full bg-card border border-border/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-all"
           />
         </div>
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
-        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/50">
+        <div className="flex items-center gap-0.5 bg-muted/50 p-0.5 rounded-lg border border-border/70">
           {channels.map((ch) => {
             const isSelected = selectedChannel === ch.id;
             const label = ch.id ? ch.labelKey : t("leads.filter_channel_all");
@@ -60,9 +60,9 @@ export function LeadFilters({
                 type="button"
                 onClick={() => onChannelChange(ch.id)}
                 className={clsx(
-                  "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all",
+                  "px-2 py-1 rounded-md text-xs font-medium transition-all cursor-pointer",
                   isSelected
-                    ? "bg-background text-foreground shadow-sm border border-border/50"
+                    ? "bg-card text-foreground shadow-2xs font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -72,32 +72,32 @@ export function LeadFilters({
           })}
         </div>
 
-        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/50">
+        <div className="flex items-center gap-0.5 bg-muted/50 p-0.5 rounded-lg border border-border/70">
           <button
             type="button"
             onClick={() => onViewModeChange("kanban")}
             className={clsx(
-              "p-1.5 rounded-lg text-xs transition-all",
+              "p-1.5 rounded-md text-xs transition-all cursor-pointer",
               viewMode === "kanban"
-                ? "bg-background text-foreground shadow-sm border border-border/50"
+                ? "bg-card text-foreground shadow-2xs font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             )}
             title={t("leads.tab_kanban")}
           >
-            <LayoutGrid className="w-4 h-4" />
+            <LayoutGrid className="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
             onClick={() => onViewModeChange("list")}
             className={clsx(
-              "p-1.5 rounded-lg text-xs transition-all",
+              "p-1.5 rounded-md text-xs transition-all cursor-pointer",
               viewMode === "list"
-                ? "bg-background text-foreground shadow-sm border border-border/50"
+                ? "bg-card text-foreground shadow-2xs font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             )}
             title={t("leads.tab_list")}
           >
-            <List className="w-4 h-4" />
+            <List className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

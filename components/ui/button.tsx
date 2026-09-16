@@ -25,25 +25,25 @@ export interface ButtonProps
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm focus:ring-primary/20",
+    "bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs focus:ring-primary/20 active:scale-[0.99]",
   default:
-    "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm focus:ring-primary/20",
+    "bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs focus:ring-primary/20 active:scale-[0.99]",
   secondary:
-    "bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border focus:ring-secondary/20",
+    "bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/80 focus:ring-secondary/20",
   outline:
-    "bg-transparent hover:bg-muted text-foreground border border-border hover:border-primary/40 focus:ring-primary/20",
+    "bg-card hover:bg-muted/80 text-foreground border border-border/80 hover:border-border focus:ring-primary/20",
   ghost:
     "bg-transparent hover:bg-muted text-muted-foreground hover:text-foreground focus:ring-primary/20",
   destructive:
-    "bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-sm focus:ring-destructive/20",
+    "bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-xs focus:ring-destructive/20",
   success:
-    "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm focus:ring-emerald-500/20",
+    "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs focus:ring-emerald-500/20",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-xs rounded-lg gap-1.5",
-  md: "px-4 py-2.5 text-xs sm:text-sm rounded-xl gap-2",
-  lg: "px-6 py-3.5 text-sm sm:text-base rounded-xl gap-2.5",
+  sm: "px-2.5 py-1.5 text-xs rounded-lg gap-1.5",
+  md: "px-3.5 py-2 text-xs sm:text-sm rounded-lg gap-2",
+  lg: "px-5 py-2.5 text-sm sm:text-base rounded-xl gap-2.5",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

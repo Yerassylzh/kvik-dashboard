@@ -46,20 +46,23 @@ export function LeadsPage({ initialLeadId }: LeadsPageProps) {
   };
 
   return (
-    <FadeIn direction="up" distance={20} duration={0.25} className="space-y-6">
-      <PageHeader
-        title={t("leads.title")}
-        description={t("leads.desc")}
-      />
+    <FadeIn direction="up" distance={10} duration={0.2} className="space-y-4 sm:space-y-5">
+      <div className="pb-3 border-b border-border/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
+            {t("clients.title")}
+          </h1>
+        </div>
 
-      <LeadFilters
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        search={search}
-        onSearchChange={handleSearchChange}
-        selectedChannel={channel}
-        onChannelChange={handleChannelChange}
-      />
+        <LeadFilters
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          search={search}
+          onSearchChange={handleSearchChange}
+          selectedChannel={channel}
+          onChannelChange={handleChannelChange}
+        />
+      </div>
 
       {viewMode === "kanban" ? (
         <LeadsKanban

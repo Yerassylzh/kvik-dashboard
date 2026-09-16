@@ -106,6 +106,15 @@ export function useStaffSchedule(staffId: string | null, from?: string, to?: str
     [staffId, mutate]
   );
 
+  const resetSchedule = useCallback(
+    async () => {
+      if (!staffId) return;
+      await staffApi.resetSchedule(staffId);
+      mutate();
+    },
+    [staffId, mutate]
+  );
+
   return {
     schedule: data,
     templates: data?.templates || [],
@@ -115,6 +124,7 @@ export function useStaffSchedule(staffId: string | null, from?: string, to?: str
     setSchedule,
     addOverride,
     removeOverride,
+    resetSchedule,
     refresh: mutate,
   };
 }

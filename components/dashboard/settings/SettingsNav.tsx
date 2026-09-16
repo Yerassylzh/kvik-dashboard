@@ -35,7 +35,6 @@ const navGroups: NavGroup[] = [
     groupKey: "settings.group_business",
     items: [
       { href: "/settings/workspace", labelKey: "settings.nav_workspace", icon: Building2, roles: ["OWNER"] },
-      { href: "/settings/staff", labelKey: "settings.nav_staff", icon: Users, roles: ["OWNER", "ADMIN_MANAGER"] },
     ],
   },
   {
@@ -59,14 +58,14 @@ export function SettingsNav() {
   const { systemRole } = useRBAC();
 
   return (
-    <div className="w-full border-b border-border/60 pb-2">
-      <nav className="flex items-center gap-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1">
+    <div className="w-full border-b border-border/70 pb-0">
+      <nav className="flex items-center gap-1 overflow-x-auto themed-scroll -mb-[1px]">
         {navGroups.map((group, gIdx) => {
           const visibleItems = group.items.filter((item) => item.roles.includes(systemRole));
           if (visibleItems.length === 0) return null;
 
           return (
-            <div key={group.groupKey} className="flex items-center gap-1.5 shrink-0">
+            <div key={group.groupKey} className="flex items-center gap-1 shrink-0">
               {gIdx > 0 && (
                 <div className="h-4 w-px bg-border/60 mx-1 hidden sm:block shrink-0" />
               )}
@@ -79,10 +78,10 @@ export function SettingsNav() {
                     key={item.href}
                     href={item.href}
                     className={clsx(
-                      "flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border shrink-0",
+                      "flex items-center gap-2 px-3 py-2 text-xs font-medium whitespace-nowrap transition-all border-b-2 shrink-0 select-none",
                       isActive
-                        ? "bg-primary text-primary-foreground border-primary shadow-xs font-bold"
-                        : "bg-card/40 hover:bg-card border-border/40 hover:border-border text-muted-foreground hover:text-foreground"
+                        ? "border-primary text-primary font-semibold"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-border/80"
                     )}
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -91,10 +90,10 @@ export function SettingsNav() {
                     {item.badge && (
                       <span
                         className={clsx(
-                          "text-[10px] px-1.5 py-0.2 rounded-md font-mono font-bold ml-0.5",
+                          "text-[10px] px-1.5 py-0.2 rounded-full font-mono font-semibold ml-0.5",
                           isActive
-                            ? "bg-primary-foreground/20 text-primary-foreground"
-                            : "bg-primary/10 text-primary border border-primary/20"
+                            ? "bg-primary/15 text-primary font-bold"
+                            : "bg-muted text-muted-foreground"
                         )}
                       >
                         {item.badge}

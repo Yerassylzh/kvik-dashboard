@@ -11,17 +11,9 @@ interface SettingsPageWrapperProps {
 }
 
 export function SettingsPageWrapper({ children }: SettingsPageWrapperProps) {
-  const t = useTranslations("dashboard");
-
   return (
-    <FadeIn direction="up" distance={20} duration={0.25} className="space-y-6 max-w-5xl">
-      <PageHeader
-        title={t("settings.title")}
-        description={t("page.settings_desc")}
-      />
-
+    <FadeIn direction="up" distance={8} duration={0.2} className="space-y-4 max-w-5xl">
       <SettingsNav />
-
       <div className="w-full pt-1">{children}</div>
     </FadeIn>
   );

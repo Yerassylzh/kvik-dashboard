@@ -29,6 +29,162 @@
         ]
       }
     },
+    "/workspaces/schedule": {
+      "get": {
+        "operationId": "WorkspacesController_getSchedule",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-09-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-09-30",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business weekly schedule and active overrides"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get business weekly schedule templates and date overrides",
+        "tags": [
+          "Workspaces"
+        ]
+      },
+      "put": {
+        "operationId": "WorkspacesController_setSchedule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetWorkspaceScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Business schedule updated"
+          },
+          "400": {
+            "description": "Invalid schedule format"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set or update business weekly schedule templates",
+        "tags": [
+          "Workspaces"
+        ]
+      }
+    },
+    "/workspaces/schedule/overrides": {
+      "post": {
+        "operationId": "WorkspacesController_addOverride",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddWorkspaceOverrideDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Business override created or updated"
+          },
+          "400": {
+            "description": "Invalid override data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a date-level business override (holiday / closed day / custom hours)",
+        "tags": [
+          "Workspaces"
+        ]
+      }
+    },
+    "/workspaces/schedule/overrides/{id}": {
+      "delete": {
+        "operationId": "WorkspacesController_removeOverride",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business override removed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Override not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a business date override",
+        "tags": [
+          "Workspaces"
+        ]
+      }
+    },
     "/auth/register": {
       "post": {
         "operationId": "AuthController_register",
@@ -766,6 +922,42 @@
           }
         ],
         "summary": "Replace full weekly schedule template for staff member",
+        "tags": [
+          "Staff"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_resetSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Staff schedule reset to business default"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reset staff schedule to inherit default business schedule",
         "tags": [
           "Staff"
         ]
@@ -4793,6 +4985,14 @@
       }
     },
     "schemas": {
+      "SetWorkspaceScheduleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AddWorkspaceOverrideDto": {
+        "type": "object",
+        "properties": {}
+      },
       "RegisterDto": {
         "type": "object",
         "properties": {}
@@ -4937,10 +5137,6 @@
           "instagramUrl": {
             "type": "object",
             "example": "https://instagram.com/barberpro_kz"
-          },
-          "workingHours": {
-            "type": "object",
-            "example": "Mon-Sun 10:00 - 21:00"
           },
           "teamSize": {
             "type": "number",
@@ -5464,11 +5660,6 @@
             "type": "object",
             "example": "+7 (707) 123-45-67, info@beautysalon.kz",
             "nullable": true
-          },
-          "workingHours": {
-            "type": "object",
-            "example": "Mon-Sun 09:00 - 21:00",
-            "nullable": true
           }
         },
         "required": [
@@ -5481,8 +5672,7 @@
           "teamSummary",
           "bookingPolicy",
           "cancellationPolicy",
-          "contactInfo",
-          "workingHours"
+          "contactInfo"
         ]
       },
       "UpdateBusinessContextDto": {

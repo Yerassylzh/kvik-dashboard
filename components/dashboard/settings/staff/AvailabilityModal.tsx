@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Check, Clock, Save } from "lucide-react";
+import { Check, Clock, Save, RotateCcw, Building2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useStaffSchedule } from "@/hooks/useStaff";
 import type { StaffDto } from "@/lib/api/staff";
+import { toast } from "sonner";
 
 interface AvailabilityModalProps {
   staff: StaffDto | null;
@@ -30,7 +32,7 @@ const DEFAULT_SCHEDULE: Record<number, DayConfig> = {
 
 export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalProps) {
   const t = useTranslations("dashboard");
-  const { templates, setSchedule, isLoading: isScheduleLoading } = useStaffSchedule(
+  const { templates, setSchedule, resetSchedule, isLoading: isScheduleLoading } = useStaffSchedule(
     staff?.id || null
   );
 
@@ -46,7 +48,10 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
 
   const [activeDays, setActiveDays] = useState<Record<number, DayConfig>>(DEFAULT_SCHEDULE);
   const [isSaving, setIsSaving] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
+  const hasCustomSchedule = Boolean(templates && templates.length > 0);
 
   // Sync with fetched templates when available
   useEffect(() => {
@@ -54,8 +59,8 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
       const mapped: Record<number, DayConfig> = {};
       for (const item of templates) {
         mapped[item.dayOfWeek] = {
-          start: item.startTime.slice(0, 5),
-          end: item.endTime.slice(0, 5),
+          start: item.startTime?.slice(0, 5) || "09:00",
+          end: item.endTime?.slice(0, 5) || "18:00",
           duration: item.slotDuration || 60,
         };
       }
@@ -90,14 +95,28 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
       }));
       await setSchedule(list);
       setIsSaved(true);
+      toast.success(t("staff.schedule_saved"));
       setTimeout(() => {
         setIsSaved(false);
         onClose();
-      }, 1200);
+      }, 1000);
     } catch {
       // Error handled by global interceptor
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleResetToClinic = async () => {
+    setIsResetting(true);
+    try {
+      await resetSchedule();
+      toast.success(t("staff.reset_success"));
+      setActiveDays(DEFAULT_SCHEDULE);
+    } catch {
+      // Error handled by global interceptor
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -111,6 +130,51 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
       description={t("staff.schedule_desc")}
     >
       <div className="space-y-5">
+        {/* Inheritance Status Banner */}
+        <div className="flex items-center justify-between p-3 rounded-xl border border-border/70 bg-muted/20 text-xs">
+          <div className="flex items-center gap-2">
+            {hasCustomSchedule ? (
+              <>
+                <User className="w-4 h-4 text-primary" />
+                <div>
+                  <span className="font-semibold text-foreground">
+                    {t("staff.schedule_custom_label")}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t("staff.schedule_custom_desc")}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <Building2 className="w-4 h-4 text-emerald-500" />
+                <div>
+                  <span className="font-semibold text-foreground">
+                    {t("staff.schedule_inherited_label")}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t("staff.schedule_inherited_desc")}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+
+          {hasCustomSchedule && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              loading={isResetting}
+              onClick={handleResetToClinic}
+              leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+              className="text-[11px] h-7 px-2.5"
+            >
+              {t("staff.reset_to_clinic_btn")}
+            </Button>
+          )}
+        </div>
+
         {isScheduleLoading ? (
           <div className="space-y-2.5">
             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
@@ -134,7 +198,7 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
                   className={`flex items-center justify-between p-3 rounded-xl border transition-all text-xs ${
                     isWorking
                       ? "bg-card border-border/80 shadow-2xs"
-                      : "bg-muted/20 border-border/40 opacity-70"
+                      : "bg-muted/10 border-border/30 opacity-60"
                   }`}
                 >
                   <label className="flex items-center gap-3 cursor-pointer select-none">
@@ -155,7 +219,7 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
 
                   {isWorking ? (
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 bg-muted/40 border border-border/60 rounded-lg px-2 py-1">
+                      <div className="flex items-center gap-1 bg-muted/30 border border-border/60 rounded-lg px-2 py-1">
                         <Clock className="w-3 h-3 text-muted-foreground shrink-0" />
                         <input
                           type="time"
@@ -170,7 +234,7 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
                         />
                       </div>
                       <span className="text-muted-foreground text-xs">—</span>
-                      <div className="flex items-center gap-1 bg-muted/40 border border-border/60 rounded-lg px-2 py-1">
+                      <div className="flex items-center gap-1 bg-muted/30 border border-border/60 rounded-lg px-2 py-1">
                         <Clock className="w-3 h-3 text-muted-foreground shrink-0" />
                         <input
                           type="time"
@@ -186,7 +250,7 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
                       </div>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground text-[11px] font-medium px-2 py-0.5 rounded-md bg-muted/50">
+                    <span className="text-muted-foreground text-[11px] font-medium px-2 py-0.5 rounded-md bg-muted/40">
                       {t("staff.day_off")}
                     </span>
                   )}

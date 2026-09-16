@@ -28,41 +28,43 @@ export function OverviewPage() {
   const { bookings } = useBookings();
 
   return (
-    <FadeIn direction="up" distance={20} duration={0.25} className="space-y-6">
-      <PageHeader
-        title={t("page.overview_title")}
-        description={t("page.overview_desc")}
-        action={
-          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/50">
-            {periodButtons.map((btn) => (
-              <button
-                key={btn.id}
-                type="button"
-                onClick={() => setPreset(btn.id)}
-                className={clsx(
-                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
-                  preset === btn.id
-                    ? "bg-background text-foreground shadow-sm border border-border/50"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {t(btn.labelKey as any)}
-              </button>
-            ))}
-          </div>
-        }
-      />
+    <FadeIn direction="up" distance={10} duration={0.2} className="space-y-4 sm:space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/70">
+        <div>
+          <h1 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
+            {t("page.overview_title")}
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border/70 w-fit">
+          {periodButtons.map((btn) => (
+            <button
+              key={btn.id}
+              type="button"
+              onClick={() => setPreset(btn.id)}
+              className={clsx(
+                "px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer",
+                preset === btn.id
+                  ? "bg-card text-foreground shadow-2xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {t(btn.labelKey as any)}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <AiAgentStatusCard overview={overview} isLoading={isLoading} />
 
       <KpiGrid overview={overview} isLoading={isLoading} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         <LeadFunnelChart funnel={funnel} isLoading={isLoading} />
         <TodayBookings bookings={bookings} isLoading={isLoading} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         <ChannelDistributionCard channels={channels} isLoading={isLoading} />
         <StaffWorkloadTable staffList={staffAnalytics} isLoading={isLoading} />
       </div>

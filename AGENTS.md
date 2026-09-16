@@ -10,34 +10,54 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Development Guidelines
 
-## General Implementation Rules
+## 1. General Implementation Rules
 
-- Do not write code, which's size larger than 400 lines of code. If it's possible to split that into logical components, split that. Try to reuse components which repeat. Do not repeat yourself
-- If you don't have any context about this project, what it does, features, look at dev_docs/Project Architecture.md file. You also can view some other files inside dev_docs/ folder. Look at their names first, don't waste tokens reading irrelevant files.
+- **Modularity & File Size:** Never exceed 400 lines per file. Split complex views into focused sub-components. Follow DRY principles.
+- **Product Context:** Reference `dev_docs/` for domain specifications, business logic, and API contracts.
 
-## Translation Rules
+---
 
-The product is Russian-only. `locales/ru/` is the source of truth; all values are Russian.
+## 2. Design Aesthetics & Component System (Enterprise Standard)
 
-- **UI String Resolution:** Always use `useTranslations('<namespace>')` (Client Components) or `getTranslations('<namespace>')` (Server Components) from `next-intl` for user-facing UI text. Do not hardcode raw UI strings directly in TSX.
-- **Namespace Convention:** The first segment of a dotted key (before the first ".") is the **namespace** and maps to the locale file name in `locales/<lang>/`. For example, `onboarding.data_source.realty_label` belongs to namespace `onboarding` → file `locales/ru/onboarding.json`, stored under the nested path `data_source.realty_label`. Always write keys in the full `<namespace>.<path.to.key>` form.
-- **Existing Keys:** Before creating a new key, GREP, not fully read `locales/translation_keys_existing.txt` (all keys) or `locales/backend_keys_existing.txt` (backend `api.*` keys only). Both are auto-regenerated on every commit. Reuse an existing key when the string already exists.
-- **New Keys:** Add new keys with their Russian values to `locales/translation_keys_new.json`, then merge them into the locale files with `scripts/apply-translation-keys.mjs`. The script never modifies the input files and skips keys that already exist, so it is safe to re-run.
-- **Backend Keys:** Backend response translations (`api` namespace, resolved client-side by the axios interceptor against `locales/ru/api.json`) use a separate input file: `locales/backend_new_keys.json`. The same merge script sends those keys into `api.json` (a leading `api.` on keys is optional).
-- **File Access:** Do not edit files inside `locales/` directly — change values via the new-keys files + the merge script.
+- **Aesthetic Standard:** Strictly **Modern Minimalist Light SaaS** (inspired by MoonAI, Linear Light, and Stripe).
+  - Pure white card surfaces (`bg-card` / `bg-white`), subtle off-white sidebar (`#F8F9FA`), and ultra-fine borders (`border-border/80`).
+  - Crisp typography: Google `Inter` font with Cyrillic + Latin support. Deep slate headings (`text-foreground` / `#0F172A`), muted metadata (`text-muted-foreground` / `#64748B`). Use `tabular-nums` for all numbers, dates, prices, and metrics.
+- **Anti-AI Rules (Strictly Prohibited):**
+  - **No AI visual effects:** Zero gradient text, zero glowing borders, zero `animate-ping` / radar pulse rings.
+  - **No paragraph bloat:** Keep page headings concise (20–24px bold) with at most a 1-line subtitle or none.
+  - **No visual clutter:** Never nest borders within gray bordered cards. Never render duplicate page title banners below the topbar.
+- **Single Accent Color Rule:**
+  - Signature brand accent is **MoonAI Violet** (`#7C3AED` / `var(--primary)`).
+  - Used **strictly in 5 places**: (1) active nav item tint + icon, (2) primary CTA buttons, (3) active toggle switches, (4) primary badges, (5) focus rings. Everything else is white, slate, or neutral gray.
+- **Component Primitives Reuse:**
+  - **UI Primitives (`components/ui/*`):** `Button`, `Input`, `Textarea`, `Badge`, `Dialog`, `Sheet`, `Popover`, `Table`, `Card`, `SegmentedTabs`, `Toaster`.
+  - **Shared Dashboard Components (`components/dashboard/shared/*`):** `DashboardPageHeader` (underline/pill tabs), `StatCard` (KPI metrics), `SectionCard` (content panels), `StatusBadge` (entity states), `WorkspaceSwitcher`.
+  - **Zero Custom CSS Files:** Use standard Tailwind utility classes directly.
+  - **Snappy Transitions:** Use `FadeIn.tsx` and `motion` with subtle 0.15s–0.25s durations.
 
-## Styling & Color System
+---
 
-- **Single Source of Truth:** All design tokens, theme variables, and color palettes are defined exclusively in `global.css` (or `globals.css`).
-- **No Hardcoded Values:** Do not invent or hardcode hex/RGB values directly in component files or inline styles unless specifically requested.
-- **Color Inspection Protocol:**
-  - When creating or modifying UI components, inspect `global.css` to locate the correct CSS custom properties or Tailwind utility classes (e.g., `bg-primary`, `text-muted`, `border-border`).
-  - Read the inline comments inside `global.css` to determine the correct semantic usage for each color token (e.g., background surfaces, muted text, active/hover states, destructive alerts).
-- **Contrast & Foreground Token Rules:**
-  - `*-foreground` tokens (e.g. `text-primary-foreground`, `text-destructive-foreground`, `text-secondary-foreground`) are designed **exclusively** for text rendered on top of the corresponding solid fill background (`bg-primary`, `bg-destructive`, etc.).
-  - **Never** use `text-destructive-foreground` on light/tinted backgrounds (e.g., `bg-destructive/10`, `bg-destructive/20`), because `--destructive-foreground` is near-white (`210 40% 98%`), making text invisible.
-  - For soft/tinted alerts and banners, use the semantic helper classes (`.alert-destructive`, `.alert-warning`, `.alert-success`, `.alert-info`) or use saturated dark text tokens (e.g. `text-destructive`, `text-amber-700`, `text-emerald-700`).
-- **Tailwind Integration:** Always prefer semantic Tailwind utility classes mapped to CSS variables over raw CSS property overrides.
+## 3. Navigation Architecture
 
-## During Development
-You should use english for comments, when replying inside of the dev chat. However the content presented to the client/user should be in ru.
+- **Global Sidebar (210px):** Fixed width, exactly **6 core destinations** (`/overview`, `/inbox`, `/calendar`, `/clients`, `/ai-studio`, `/settings`). Active item gets a soft violet tint pill (`bg-primary/10 text-primary font-semibold`).
+- **Contextual Top Tabs:** Secondary domain workflows live in horizontal tabs inside `DashboardPageHeader` (2px underline active indicator), never in nested sidebars.
+
+---
+
+## 4. Translation & Localization Rules
+
+The product is Russian-only. `locales/ru/` is the single source of truth.
+
+ALL THE TEXTS USED WITHIN THE PLATFORM MUST FOLLOW TRANSLATION SYSTEM:
+
+- **UI String Resolution:** Always resolve strings via `useTranslations('<namespace>')` or `getTranslations('<namespace>')` from `next-intl`. Never hardcode raw Russian text directly in TSX.
+- **Adding Keys:** Add new keys with Russian values to `locales/translation_keys_new.json` (or `backend_new_keys.json` for `api.json`), then run:
+  1. `node scripts/apply-translation-keys.mjs`
+  2. `node scripts/export-translation-keys.mjs`
+- **File Access:** Never edit `locales/ru/*.json` directly — always merge via scripts.
+
+---
+
+## 5. Communication & Language
+
+Use English for development notes, technical comments, and chat explanations. All text rendered to end-users in UI components must be in Russian.

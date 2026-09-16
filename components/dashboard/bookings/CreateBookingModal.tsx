@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, User, Calendar, Plus } from "lucide-react";
+import { Clock, User, Calendar, Plus, AlertCircle, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { useAvailableSlots } from "@/hooks/useSlots";
 import type { StaffDto } from "@/lib/api/staff";
 import type { CreateBookingPayload } from "@/lib/api/bookings";
@@ -27,10 +28,11 @@ export function CreateBookingModal({
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  const [staffId, setStaffId] = useState<string>(staffList[0]?.id || "");
+  const [staffId, setStaffId] = useState<string>("");
   const [date, setDate] = useState<string>(todayStr);
   const [durationMinutes, setDurationMinutes] = useState<number>(60);
   const [selectedSlot, setSelectedSlot] = useState<string>("");
+  const [assignedStaffId, setAssignedStaffId] = useState<string>("");
 
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("+7");
@@ -39,7 +41,7 @@ export function CreateBookingModal({
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { slots, isLoading: isSlotsLoading } = useAvailableSlots({
+  const { slots, isBusinessOpen, totalAvailableSlots, isLoading: isSlotsLoading } = useAvailableSlots({
     staffId: staffId || undefined,
     date,
     durationMinutes,
@@ -51,10 +53,18 @@ export function CreateBookingModal({
 
     setIsSubmitting(true);
     try {
-      const startTime = `${date}T${selectedSlot}:00Z`;
+      // Build ISO datetime in local time
+      const [year, month, day] = date.split("-").map(Number);
+      const [hours, minutes] = selectedSlot.split(":").map(Number);
+      const localDate = new Date(year, month - 1, day, hours, minutes);
+      const startTime = localDate.toISOString();
+
+      // Resolve final staff ID: user selected or auto-assigned from slot specialist
+      const finalStaffId = staffId || assignedStaffId || undefined;
+
       await onCreate({
-        staffId: staffId || undefined,
-        serviceName: serviceName || "Услуга",
+        staffId: finalStaffId,
+        serviceName: serviceName || t("bookings.default_service"),
         price: price ? Number(price) : undefined,
         clientName: clientName.trim(),
         clientPhone: clientPhone.trim(),
@@ -69,6 +79,7 @@ export function CreateBookingModal({
       setPrice("");
       setNotes("");
       setSelectedSlot("");
+      setAssignedStaffId("");
     } catch {
       // Error handled by parent / interceptor
     } finally {
@@ -83,23 +94,26 @@ export function CreateBookingModal({
       isOpen={isOpen}
       onClose={onClose}
       variant="dialog"
-      title="Новая запись"
-      description="Создание записи клиента с проверкой доступных слотов"
+      title={t("bookings.new_booking_modal_title")}
+      description={t("bookings.new_booking_modal_desc")}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Staff & Date Selection */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">Специалист</label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("bookings.specialist_label")}
+            </label>
             <select
               value={staffId}
               onChange={(e) => {
                 setStaffId(e.target.value);
                 setSelectedSlot("");
+                setAssignedStaffId("");
               }}
               className="w-full bg-card border border-border/60 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary"
             >
-              <option value="">Любой специалист</option>
+              <option value="">{t("bookings.any_specialist")}</option>
               {staffList.map((st) => (
                 <option key={st.id} value={st.id}>
                   {st.name} {st.role ? `(${st.role})` : ""}
@@ -109,44 +123,70 @@ export function CreateBookingModal({
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">Дата</label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("bookings.date_label")}
+            </label>
             <input
               type="date"
               value={date}
               onChange={(e) => {
                 setDate(e.target.value);
                 setSelectedSlot("");
+                setAssignedStaffId("");
               }}
               className="w-full bg-card border border-border/60 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary font-mono"
             />
           </div>
         </div>
 
+        {/* Business Closed Banner */}
+        {!isBusinessOpen && (
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{t("bookings.clinic_closed_alert")}</span>
+          </div>
+        )}
+
         {/* Dynamic Slot Engine */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground flex items-center justify-between">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
             <span>{t("bookings.slot_select_title")}</span>
-            {isSlotsLoading && <span className="text-[11px] text-primary animate-pulse">Загрузка слотов...</span>}
-          </label>
+            {isSlotsLoading ? (
+              <span className="text-[11px] text-primary animate-pulse">
+                {t("bookings.slots_loading")}
+              </span>
+            ) : (
+              <span className="text-[11px] text-muted-foreground font-mono font-normal">
+                {totalAvailableSlots} {t("bookings.slots_count_suffix")}
+              </span>
+            )}
+          </div>
 
-          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-36 overflow-y-auto p-1">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 max-h-36 overflow-y-auto p-1">
             {slots.length === 0 && !isSlotsLoading && (
               <div className="col-span-full text-center py-4 text-xs text-muted-foreground">
-                Нет доступных слотов на эту дату
+                {t("bookings.no_slots_available")}
               </div>
             )}
 
             {slots.map((slot) => {
               const isSelected = selectedSlot === slot.startTime;
               const isAvailable = slot.available;
+              const staffNames = slot.staff?.map((s) => s.name).join(", ");
 
               return (
                 <button
                   key={slot.startTime}
                   type="button"
                   disabled={!isAvailable}
-                  onClick={() => setSelectedSlot(slot.startTime)}
-                  className={`py-1.5 px-2 rounded-lg text-xs font-mono font-semibold transition-all border ${
+                  title={staffNames ? `${t("bookings.specialist_label")}: ${staffNames}` : undefined}
+                  onClick={() => {
+                    setSelectedSlot(slot.startTime);
+                    if (!staffId && slot.staff && slot.staff.length > 0) {
+                      setAssignedStaffId(slot.staff[0].id);
+                    }
+                  }}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-mono font-semibold transition-all border flex flex-col items-center justify-center cursor-pointer ${
                     isSelected
                       ? "bg-primary text-primary-foreground border-primary shadow-xs"
                       : isAvailable
@@ -154,73 +194,102 @@ export function CreateBookingModal({
                       : "bg-muted/30 border-border/30 text-muted-foreground/40 cursor-not-allowed line-through"
                   }`}
                 >
-                  {slot.startTime}
+                  <span>{slot.startTime}</span>
+                  {!staffId && slot.staff && slot.staff.length > 0 && isAvailable && (
+                    <span className="text-[9px] font-sans opacity-80 truncate max-w-full font-normal">
+                      {slot.staff.length > 1 ? `${slot.staff.length}` : slot.staff[0].name.split(" ")[0]}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Client Fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border/40">
+        {/* Client Details */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">{t("bookings.client_name")} *</label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("bookings.client_name_label")}
+            </label>
             <Input
               type="text"
               required
+              placeholder="Анна Смирнова"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder="Айгерим Бекова"
+              className="text-xs"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">{t("bookings.client_phone")} *</label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("bookings.client_phone_label")}
+            </label>
             <Input
               type="tel"
               required
+              placeholder="+7 (777) 123-45-67"
               value={clientPhone}
               onChange={(e) => setClientPhone(e.target.value)}
-              placeholder="+7 701 123 4567"
+              className="text-xs font-mono"
             />
           </div>
-        </div>
 
-        {/* Service & Price */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">{t("bookings.service")}</label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("bookings.service_label")}
+            </label>
             <Input
               type="text"
+              placeholder={t("bookings.service_placeholder")}
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
-              placeholder="Стрижка, Маникюр..."
+              className="text-xs"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">{t("bookings.price")}</label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("bookings.price_label")}
+            </label>
             <Input
               type="number"
+              placeholder="15000"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="5000"
+              className="text-xs font-mono"
             />
           </div>
         </div>
 
-        {/* Submit */}
+        {/* Notes */}
+        <div className="space-y-1">
+          <label className="text-xs font-semibold text-muted-foreground">
+            {t("bookings.notes_label")}
+          </label>
+          <Input
+            type="text"
+            placeholder={t("bookings.notes_placeholder")}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="text-xs"
+          />
+        </div>
+
+        {/* Action Buttons */}
         <div className="flex justify-end gap-2 pt-3 border-t border-border/40">
           <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
-            Отмена
+            {t("bookings.cancel_btn")}
           </Button>
           <Button
             type="submit"
             size="sm"
             disabled={!clientName.trim() || !clientPhone.trim() || !selectedSlot || isSubmitting}
+            loading={isSubmitting}
             leftIcon={<Plus className="w-4 h-4" />}
           >
-            Создать запись
+            {t("bookings.create_booking_btn")}
           </Button>
         </div>
       </form>

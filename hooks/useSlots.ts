@@ -8,20 +8,24 @@ export function useAvailableSlots(params: {
   date?: string; // YYYY-MM-DD
   durationMinutes?: number;
 }) {
-  const shouldFetch = Boolean(params.staffId && params.date && params.durationMinutes);
+  const duration = params.durationMinutes || 60;
+  const shouldFetch = Boolean(params.date);
 
   const { data, error, isLoading, mutate } = useSWR<AvailableSlotsResponse | null>(
-    shouldFetch ? ['bookings/slots', params.staffId, params.date, params.durationMinutes] : null,
+    shouldFetch ? ['bookings/slots', params.date, params.staffId, duration] : null,
     () =>
       bookingsApi.getAvailableSlots({
-        staffId: params.staffId!,
         date: params.date!,
-        durationMinutes: params.durationMinutes || 60,
+        staffId: params.staffId || undefined,
+        durationMinutes: duration,
       })
   );
 
   return {
     slots: data?.slots || [],
+    isBusinessOpen: data?.isBusinessOpen ?? true,
+    totalAvailableSlots: data?.totalAvailableSlots ?? 0,
+    dayOfWeek: data?.dayOfWeek,
     isLoading,
     error,
     refresh: mutate,

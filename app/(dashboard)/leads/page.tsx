@@ -1,10 +1,5 @@
-import type { Metadata } from "next";
-import { LeadsPage } from "@/components/dashboard/leads/LeadsPage";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Лиды (CRM) — Kvik.ai",
-};
-
-export default function Page() {
-  return <LeadsPage />;
+export default function LeadsRedirectPage() {
+  redirect("/clients");
 }

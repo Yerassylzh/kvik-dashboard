@@ -36,15 +36,15 @@ export function WorkspaceSwitcher() {
   // Only one workspace — render as plain badge
   if (workspaces.length <= 1) {
     return (
-      <div className="mx-0.5 px-3 py-2 rounded-xl bg-muted/40 border border-border/60 text-xs flex items-center justify-between shadow-2xs">
+      <div className="px-2.5 py-1.5 rounded-lg bg-card border border-border/80 text-xs flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
           <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
-          <span className="text-foreground font-semibold truncate text-xs">
+          <span className="text-foreground font-medium truncate text-xs">
             {user?.workspace?.name || t('workspace_switcher.no_workspace')}
           </span>
         </div>
         {user?.role && (
-          <span className="text-[10px] font-semibold text-muted-foreground shrink-0 ml-2">
+          <span className="text-[10px] font-medium text-muted-foreground shrink-0 ml-1.5">
             {roleLabels[user.role] || user.role}
           </span>
         )}
@@ -71,15 +71,15 @@ export function WorkspaceSwitcher() {
   };
 
   return (
-    <div ref={ref} className="relative mx-0.5">
+    <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full px-3 py-2 rounded-xl bg-muted/40 border border-border/60 text-xs flex items-center justify-between shadow-2xs hover:bg-muted/60 hover:border-border transition-all cursor-pointer"
+        className="w-full px-2.5 py-1.5 rounded-lg bg-card border border-border/80 text-xs flex items-center justify-between hover:border-zinc-300 transition-all cursor-pointer"
       >
         <div className="flex items-center gap-2 min-w-0">
           <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
-          <span className="text-foreground font-semibold truncate">
+          <span className="text-foreground font-medium truncate">
             {activeWs?.workspaceName || user?.workspace?.name || t('workspace_switcher.no_workspace')}
           </span>
         </div>
@@ -92,8 +92,8 @@ export function WorkspaceSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border/80 rounded-xl shadow-lg py-1.5 text-xs">
-          <p className="px-3.5 pb-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold border-b border-border/40 mb-1">
+        <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border/90 rounded-lg shadow-sm py-1 text-xs">
+          <p className="px-3 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold border-b border-border/40 mb-0.5">
             {t('workspace_switcher.switch_label')}
           </p>
 
@@ -108,14 +108,14 @@ export function WorkspaceSwitcher() {
                 disabled={isLoading}
                 onClick={() => handleSwitch(ws)}
                 className={clsx(
-                  'flex items-center justify-between gap-2 w-full px-3.5 py-2 text-left transition-colors',
+                  'flex items-center justify-between gap-2 w-full px-3 py-1.5 text-left transition-colors',
                   isActive
-                    ? 'bg-primary/5 text-foreground'
-                    : 'hover:bg-muted/60 text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary/10 text-primary font-semibold'
+                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
                 )}
               >
                 <div className="min-w-0">
-                  <p className={clsx('font-semibold truncate', isActive && 'text-foreground')}>
+                  <p className={clsx('font-medium truncate', isActive && 'text-primary font-semibold')}>
                     {ws.workspaceName}
                   </p>
                   <p className="text-[10px] text-muted-foreground">

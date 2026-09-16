@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Building2, Globe, Clock, Check, Save, MapPin, Phone } from "lucide-react";
+import { Building2, Globe, Check, Save, MapPin, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ export function WorkspaceForm() {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
-  const [workingHours, setWorkingHours] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
   const [isSaved, setIsSaved] = useState(false);
@@ -40,7 +39,6 @@ export function WorkspaceForm() {
           if (p.city) setCity(p.city);
           if (p.businessAddress) setAddress(p.businessAddress);
           if (p.businessPhone) setPhone(p.businessPhone);
-          if (p.workingHours) setWorkingHours(p.workingHours);
           if (p.websiteUrl) setWebsiteUrl(p.websiteUrl);
           if (p.instagramUrl) setInstagramUrl(p.instagramUrl);
         }
@@ -59,7 +57,6 @@ export function WorkspaceForm() {
         city,
         businessAddress: address,
         businessPhone: phone,
-        workingHours,
         websiteUrl: websiteUrl.trim() || undefined,
         instagramUrl: instagramUrl.trim() || undefined,
       });
@@ -74,15 +71,15 @@ export function WorkspaceForm() {
 
   return (
     <form onSubmit={handleSave} className="space-y-6 max-w-4xl">
-      {/* Card 1: Company Profile */}
+      {/* Card: Company Profile */}
       <SectionCard
-        title="Профиль компании"
-        description="Основные данные бизнеса, контакты и отображаемое имя для клиентов"
+        title={t("settings.company_profile_title")}
+        description={t("settings.company_profile_desc")}
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <div className="space-y-1.5 sm:col-span-2">
             <label className="text-xs font-semibold text-foreground">
-              Название компании
+              {t("settings.company_name_label")}
             </label>
             <Input
               type="text"
@@ -96,7 +93,7 @@ export function WorkspaceForm() {
 
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-foreground">
-              Сфера деятельности (Ниша)
+              {t("settings.niche_label")}
             </label>
             <select
               value={niche}
@@ -113,7 +110,7 @@ export function WorkspaceForm() {
 
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-foreground">
-              Контактный телефон
+              {t("settings.contact_phone_label")}
             </label>
             <Input
               type="tel"
@@ -125,7 +122,9 @@ export function WorkspaceForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">Город</label>
+            <label className="text-xs font-semibold text-foreground">
+              {t("settings.city_label")}
+            </label>
             <Input
               type="text"
               value={city}
@@ -136,7 +135,9 @@ export function WorkspaceForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">Адрес</label>
+            <label className="text-xs font-semibold text-foreground">
+              {t("settings.address_label")}
+            </label>
             <Input
               type="text"
               value={address}
@@ -147,7 +148,9 @@ export function WorkspaceForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">Веб-сайт</label>
+            <label className="text-xs font-semibold text-foreground">
+              {t("settings.website_label")}
+            </label>
             <Input
               type="url"
               value={websiteUrl}
@@ -158,33 +161,14 @@ export function WorkspaceForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-foreground">Instagram</label>
+            <label className="text-xs font-semibold text-foreground">
+              {t("settings.instagram_label")}
+            </label>
             <Input
               type="url"
               value={instagramUrl}
               onChange={(e) => setInstagramUrl(e.target.value)}
               placeholder="https://instagram.com/mysalon"
-              className="text-xs"
-            />
-          </div>
-        </div>
-      </SectionCard>
-
-      {/* Card 2: Working Schedule */}
-      <SectionCard
-        title="Режим работы"
-        description="Стандартный график и часы работы для бота и клиентов"
-      >
-        <div className="pt-2">
-          <div className="space-y-1.5 max-w-md">
-            <label className="text-xs font-semibold text-foreground">
-              График работы
-            </label>
-            <Input
-              type="text"
-              value={workingHours}
-              onChange={(e) => setWorkingHours(e.target.value)}
-              placeholder="Пн-Вс: 10:00 - 21:00"
               className="text-xs"
             />
           </div>
@@ -200,7 +184,7 @@ export function WorkspaceForm() {
           </span>
         ) : (
           <span className="text-[11px] text-muted-foreground">
-            Данные профиля используются в клиентских диалогах и подтверждениях записей
+            {t("settings.profile_footer_hint")}
           </span>
         )}
 

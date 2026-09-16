@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, RefreshCw } from "lucide-react";
+import { Clock, RefreshCw, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export function RescheduleModal({
 
   const duration = booking?.durationMinutes || 60;
 
-  const { slots, isLoading } = useAvailableSlots({
+  const { slots, isBusinessOpen, totalAvailableSlots, isLoading } = useAvailableSlots({
     staffId: booking?.staffId || undefined,
     date,
     durationMinutes: duration,
@@ -43,7 +43,11 @@ export function RescheduleModal({
 
     setIsSubmitting(true);
     try {
-      const startTime = `${date}T${selectedSlot}:00Z`;
+      const [year, month, day] = date.split("-").map(Number);
+      const [hours, minutes] = selectedSlot.split(":").map(Number);
+      const localDate = new Date(year, month - 1, day, hours, minutes);
+      const startTime = localDate.toISOString();
+
       await onReschedule(booking.id, startTime, duration);
       onClose();
     } catch {
@@ -59,12 +63,14 @@ export function RescheduleModal({
       onClose={onClose}
       variant="dialog"
       title={t("bookings.reschedule_btn")}
-      description={`Перенос записи для ${booking.clientName}`}
+      description={t("bookings.reschedule_desc", { name: booking.clientName })}
     >
       <div className="space-y-4">
         {/* Date input */}
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-muted-foreground">Новая дата</label>
+          <label className="text-xs font-semibold text-muted-foreground">
+            {t("bookings.new_date_label")}
+          </label>
           <input
             type="date"
             value={date}
@@ -76,17 +82,33 @@ export function RescheduleModal({
           />
         </div>
 
+        {/* Business Closed Banner */}
+        {!isBusinessOpen && (
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{t("bookings.clinic_closed_short")}</span>
+          </div>
+        )}
+
         {/* Slot Grid */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground flex items-center justify-between">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
             <span>{t("bookings.slot_select_title")}</span>
-            {isLoading && <span className="text-[11px] text-primary animate-pulse">Загрузка слотов...</span>}
-          </label>
+            {isLoading ? (
+              <span className="text-[11px] text-primary animate-pulse">
+                {t("bookings.slots_loading")}
+              </span>
+            ) : (
+              <span className="text-[11px] text-muted-foreground font-mono font-normal">
+                {totalAvailableSlots} {t("bookings.slots_count_suffix")}
+              </span>
+            )}
+          </div>
 
           <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1">
             {slots.length === 0 && !isLoading && (
               <div className="col-span-full text-center py-6 text-xs text-muted-foreground">
-                Нет доступных слотов на эту дату
+                {t("bookings.no_slots_available")}
               </div>
             )}
 
@@ -104,7 +126,7 @@ export function RescheduleModal({
                     isSelected
                       ? "bg-primary text-primary-foreground border-primary shadow-xs"
                       : isAvailable
-                      ? "bg-card border-border/60 text-foreground hover:border-primary/50"
+                      ? "bg-card border-border/60 text-foreground hover:border-primary/50 cursor-pointer"
                       : "bg-muted/30 border-border/30 text-muted-foreground/40 cursor-not-allowed line-through"
                   }`}
                 >
@@ -118,16 +140,17 @@ export function RescheduleModal({
         {/* Footer actions */}
         <div className="flex justify-end gap-2 pt-3 border-t border-border/40">
           <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
-            Отмена
+            {t("bookings.cancel_btn")}
           </Button>
           <Button
             type="button"
             size="sm"
             onClick={handleReschedule}
             disabled={!selectedSlot || isSubmitting}
+            loading={isSubmitting}
             leftIcon={<RefreshCw className="w-4 h-4" />}
           >
-            Перенести
+            {t("bookings.reschedule_action_btn")}
           </Button>
         </div>
       </div>

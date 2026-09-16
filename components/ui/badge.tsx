@@ -6,6 +6,8 @@ import clsx from "clsx";
 export type BadgeVariant =
   | "default"
   | "primary"
+  | "secondary"
+  | "outline"
   | "success"
   | "warning"
   | "destructive"
@@ -20,7 +22,9 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 const variantStyles: Record<BadgeVariant, string> = {
   default: "bg-muted text-muted-foreground border-border",
-  primary: "bg-primary/10 text-accent-brand border-primary/20",
+  secondary: "bg-secondary text-secondary-foreground border-border",
+  outline: "bg-transparent text-foreground border-border",
+  primary: "bg-primary/10 text-primary border-primary/20",
   success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
   warning: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
   destructive: "bg-destructive/10 text-destructive border-destructive/20",
@@ -53,13 +57,13 @@ export function Badge({
             variant === "warning" && "bg-amber-500",
             variant === "destructive" && "bg-destructive",
             variant === "info" && "bg-blue-500",
-            variant === "primary" && "bg-accent-brand",
-            (variant === "default" || variant === "muted") && "bg-muted-foreground"
+            variant === "primary" && "bg-primary",
+            (variant === "default" || variant === "muted" || variant === "secondary" || variant === "outline") && "bg-muted-foreground"
           )}
         />
       )}
       {icon && <span className="shrink-0">{icon}</span>}
-      <span className="inline-flex items-center gap-1">{children}</span>
+      {children}
     </span>
   );
 }

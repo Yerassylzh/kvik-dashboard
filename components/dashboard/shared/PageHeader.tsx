@@ -13,17 +13,17 @@ export interface PageHeaderProps {
 
 export function PageHeader({ title, description, action, className }: PageHeaderProps) {
   return (
-    <FadeIn direction="up" distance={12}>
+    <FadeIn direction="up" distance={8}>
       <div
         className={clsx(
-          "pb-5 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+          "pb-3.5 border-b border-border/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3",
           className
         )}
       >
-        <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">{title}</h1>
+        <div className="min-w-0 space-y-0.5">
+          <h1 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">{title}</h1>
           {description && (
-            <p className="text-xs text-muted-foreground mt-1">{description}</p>
+            <p className="text-xs text-muted-foreground leading-normal">{description}</p>
           )}
         </div>
         {action && <div className="flex-shrink-0">{action}</div>}
