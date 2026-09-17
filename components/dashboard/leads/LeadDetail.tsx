@@ -1,39 +1,37 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import {
-  Phone,
-  Mail,
-  Calendar,
-  MessageSquare,
-  Clock,
-  ExternalLink,
-  Archive,
-  Sparkles,
-} from "lucide-react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/dashboard/shared/StatusBadge";
-import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 import { useLeadDetail } from "@/hooks/useLeads";
-import type { LeadStatus } from "@/lib/api/leads";
+import { DisqualifyDialog } from "./DisqualifyDialog";
+import { QualifyDialog } from "./QualifyDialog";
+import { LeadTimeline } from "./LeadTimeline";
+import { LeadNotes } from "./LeadNotes";
+import { LeadDetailHeader } from "./LeadDetailHeader";
+import { LeadDetailProfile } from "./LeadDetailProfile";
+import type { LeadStatus, LeadLossReason } from "@/lib/api/leads";
 
 interface LeadDetailProps {
   leadId: string | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusChange: (leadId: string, status: LeadStatus) => void;
+  onStatusChange: (
+    leadId: string,
+    status: LeadStatus,
+    opts?: { reason?: string; lossReason?: LeadLossReason | null }
+  ) => Promise<void> | void;
+  onDisqualify?: (leadId: string, lossReason: LeadLossReason, lossNotes?: string) => Promise<void>;
+  onQualify?: (leadId: string, payload: { serviceInterest?: string; budget?: number; notes?: string }) => Promise<void>;
   onArchive: (leadId: string) => void;
 }
 
-const statusOptions: Array<{ id: LeadStatus; label: string }> = [
-  { id: "NEW", label: "Новые" },
-  { id: "QUALIFIED", label: "Квалифицирован" },
-  { id: "APPOINTMENT_SET", label: "Запись создана" },
-  { id: "DEAL_WON", label: "Успешно" },
-  { id: "DEAL_LOST", label: "Отказ" },
+const statusOptions: Array<{ id: LeadStatus; labelKey: string }> = [
+  { id: "NEW", labelKey: "leads.stage_new" },
+  { id: "QUALIFIED", labelKey: "leads.stage_qualified" },
+  { id: "APPOINTMENT_SET", labelKey: "leads.stage_appointment" },
+  { id: "DEAL_WON", labelKey: "leads.stage_won" },
+  { id: "DEAL_LOST", labelKey: "leads.stage_lost" },
 ];
 
 export function LeadDetail({
@@ -41,179 +39,149 @@ export function LeadDetail({
   isOpen,
   onClose,
   onStatusChange,
+  onDisqualify,
+  onQualify,
   onArchive,
 }: LeadDetailProps) {
   const t = useTranslations("dashboard");
-  const { lead, isLoading } = useLeadDetail(leadId);
+  const { lead, refresh } = useLeadDetail(leadId);
+  const [activeTab, setActiveTab] = useState<"profile" | "timeline" | "notes">("profile");
+  const [isDisqualifyOpen, setIsDisqualifyOpen] = useState(false);
+  const [isQualifyOpen, setIsQualifyOpen] = useState(false);
 
   if (!isOpen) return null;
 
+  const handleStageClick = (targetStage: LeadStatus) => {
+    if (!lead) return;
+    if (targetStage === "DEAL_LOST") {
+      setIsDisqualifyOpen(true);
+    } else {
+      onStatusChange(lead.id, targetStage);
+    }
+  };
+
+  const handleConfirmDisqualify = async (lossReason: LeadLossReason, lossNotes?: string) => {
+    if (!lead) return;
+    if (onDisqualify) {
+      await onDisqualify(lead.id, lossReason, lossNotes);
+    } else {
+      await onStatusChange(lead.id, "DEAL_LOST", { lossReason, reason: lossNotes });
+    }
+    refresh();
+  };
+
+  const handleConfirmQualify = async (payload: { serviceInterest?: string; budget?: number; notes?: string }) => {
+    if (!lead) return;
+    if (onQualify) {
+      await onQualify(lead.id, payload);
+    } else {
+      await onStatusChange(lead.id, "QUALIFIED", { reason: payload.notes });
+    }
+    refresh();
+  };
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      variant="panel"
-      title={t("leads.detail_title")}
-      description="Карточка клиента и история взаимодействий"
-    >
-      <div className="space-y-6">
-        {/* Header Profile */}
-        <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/40 border border-border/50">
-          <EntityAvatar name={lead?.name || "Лид"} size="lg" />
-          <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-lg text-foreground truncate">
-              {lead?.name || "Без имени"}
-            </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <StatusBadge type="lead" status={lead?.status || "NEW"} />
-              {lead?.sourceChannel && (
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-md font-mono">
-                  {lead.sourceChannel}
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        variant="panel"
+        title={t("leads.detail_title")}
+        description="Карточка клиента и история взаимодействий"
+      >
+        <div className="space-y-5">
+          {/* Header Profile & Quick Actions */}
+          <LeadDetailHeader
+            lead={lead}
+            onOpenQualify={() => setIsQualifyOpen(true)}
+            onOpenDisqualify={() => setIsDisqualifyOpen(true)}
+          />
+
+          {/* Tabs Navigation */}
+          <div className="flex border-b border-border/70 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setActiveTab("profile")}
+              className={`pb-2.5 px-3 border-b-2 transition-colors ${
+                activeTab === "profile"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t("leads.tab_profile")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("timeline")}
+              className={`pb-2.5 px-3 border-b-2 transition-colors ${
+                activeTab === "timeline"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t("leads.tab_timeline")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("notes")}
+              className={`pb-2.5 px-3 border-b-2 transition-colors ${
+                activeTab === "notes"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t("leads.tab_notes")}
+              {lead?.notes && lead.notes.length > 0 && (
+                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-muted font-mono">
+                  {lead.notes.length}
                 </span>
               )}
-            </div>
+            </button>
           </div>
-        </div>
 
-        {/* Status Switcher */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Изменить этап сделки
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {statusOptions.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => lead && onStatusChange(lead.id, opt.id)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                  lead?.status === opt.id
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-card border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
+          {/* Tab 1: Profile */}
+          {activeTab === "profile" && lead && (
+            <LeadDetailProfile
+              lead={lead}
+              statusOptions={statusOptions}
+              onStageClick={handleStageClick}
+              onArchive={onArchive}
+              onRefresh={refresh}
+            />
+          )}
 
-        {/* Contact Info */}
-        <div className="space-y-3">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {t("leads.detail_contact")}
-          </h4>
-          <div className="space-y-2 text-sm">
-            {lead?.phone && (
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50">
-                <Phone className="w-4 h-4 text-muted-foreground" />
-                <span className="font-mono text-foreground font-medium">{lead.phone}</span>
-              </div>
-            )}
-            {lead?.email && (
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground">{lead.email}</span>
-              </div>
-            )}
-          </div>
-        </div>
+          {/* Tab 2: Timeline */}
+          {activeTab === "timeline" && lead && (
+            <LeadTimeline leadId={lead.id} />
+          )}
 
-        {/* Niche Data / Service Interest */}
-        {lead?.nicheData && typeof lead.nicheData === "object" && (
-          <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("leads.detail_interest")}
-            </h4>
-            <div className="p-3.5 rounded-xl bg-card border border-border/50 text-xs text-foreground space-y-1">
-              {Object.entries(lead.nicheData as Record<string, string>).map(([k, v]) => (
-                <div key={k} className="flex justify-between">
-                  <span className="text-muted-foreground capitalize">{k}:</span>
-                  <span className="font-medium">{String(v)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Linked Conversations */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {t("leads.detail_dialogues")}
-          </h4>
-          {(!lead?.conversations || lead.conversations.length === 0) ? (
-            <p className="text-xs text-muted-foreground py-2">Диалогов пока нет</p>
-          ) : (
-            <div className="space-y-2">
-              {lead.conversations.map((conv: any) => (
-                <Link
-                  key={conv.id}
-                  href={`/inbox/${conv.id}`}
-                  className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/50 hover:border-primary/40 transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <MessageSquare className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-medium text-foreground">
-                      Диалог ({conv.channelType})
-                    </span>
-                  </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
-                </Link>
-              ))}
-            </div>
+          {/* Tab 3: Notes */}
+          {activeTab === "notes" && lead && (
+            <LeadNotes
+              leadId={lead.id}
+              notes={lead.notes}
+              onNoteChange={refresh}
+            />
           )}
         </div>
+      </Modal>
 
-        {/* Linked Bookings */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {t("leads.detail_bookings")}
-          </h4>
-          {(!lead?.bookings || lead.bookings.length === 0) ? (
-            <p className="text-xs text-muted-foreground py-2">Записей пока нет</p>
-          ) : (
-            <div className="space-y-2">
-              {lead.bookings.map((booking: any) => (
-                <div
-                  key={booking.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/50"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Calendar className="w-4 h-4 text-primary" />
-                    <div>
-                      <div className="text-xs font-semibold text-foreground">
-                        {booking.serviceName || "Услуга"}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {new Date(booking.startTime).toLocaleDateString("ru-RU")}
-                      </div>
-                    </div>
-                  </div>
-                  <StatusBadge type="booking" status={booking.status} />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Disqualify Dialog */}
+      <DisqualifyDialog
+        isOpen={isDisqualifyOpen}
+        onClose={() => setIsDisqualifyOpen(false)}
+        onConfirm={handleConfirmDisqualify}
+      />
 
-        {/* Archive Button */}
-        <div className="pt-4 border-t border-border/50">
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => {
-              if (lead) {
-                onArchive(lead.id);
-                onClose();
-              }
-            }}
-            leftIcon={<Archive className="w-4 h-4" />}
-            className="w-full text-xs font-semibold"
-          >
-            {t("leads.archive_btn")}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+      {/* Qualify Dialog */}
+      <QualifyDialog
+        isOpen={isQualifyOpen}
+        onClose={() => setIsQualifyOpen(false)}
+        onConfirm={handleConfirmQualify}
+        initialService={(lead?.nicheData as any)?.serviceInterest || ""}
+      />
+    </>
   );
 }
+
+

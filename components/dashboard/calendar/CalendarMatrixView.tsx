@@ -1,0 +1,107 @@
+"use client";
+
+import React from "react";
+import { format } from "date-fns";
+import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
+import type { BookingDto } from "@/lib/api/bookings";
+import type { StaffDto } from "@/lib/api/staff";
+
+interface CalendarMatrixViewProps {
+  activeStaff: StaffDto[];
+  bookings: BookingDto[];
+  onSelectBooking: (bookingId: string) => void;
+}
+
+export function CalendarMatrixView({
+  activeStaff,
+  bookings,
+  onSelectBooking,
+}: CalendarMatrixViewProps) {
+  const t = useTranslations("dashboard");
+
+  if (activeStaff.length === 0) {
+    return (
+      <div className="col-span-full p-8 text-center border border-dashed border-border/80 rounded-xl bg-card">
+        <p className="text-xs font-medium text-muted-foreground">
+          {t("calendar.empty_slots")}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+      {activeStaff.map((member) => {
+        const staffBookings = bookings.filter((b) => b.staffId === member.id);
+        return (
+          <div
+            key={member.id}
+            className="p-3.5 sm:p-4 rounded-xl border border-border/80 bg-card space-y-3"
+          >
+            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-md bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-xs">
+                  {member.name?.[0]?.toUpperCase() || "M"}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground leading-tight">
+                    {member.name}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {member.role || "Специалист"}
+                  </p>
+                </div>
+              </div>
+              <Badge variant="outline" className="text-[10px] font-mono">
+                {staffBookings.length}
+              </Badge>
+            </div>
+
+            <div className="space-y-1.5 min-h-[100px]">
+              {staffBookings.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-center p-4 text-[11px] text-muted-foreground/70">
+                  {t("calendar.empty_slots")}
+                </div>
+              ) : (
+                staffBookings.map((b) => (
+                  <div
+                    key={b.id}
+                    onClick={() => onSelectBooking(b.id)}
+                    className="p-2 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/50 transition-all cursor-pointer space-y-0.5"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-foreground font-mono">
+                        {b.startTime ? format(new Date(b.startTime), "HH:mm") : "00:00"}
+                      </span>
+                      <Badge
+                        variant={
+                          b.status === "CONFIRMED"
+                            ? "success"
+                            : b.status === "PENDING"
+                            ? "warning"
+                            : "default"
+                        }
+                        className="text-[9px] px-1.5 py-0"
+                      >
+                        {b.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs font-medium text-foreground truncate">
+                      {b.clientName || "Клиент"}
+                    </p>
+                    {b.serviceName && (
+                      <p className="text-[10px] text-muted-foreground truncate">
+                        {b.serviceName}
+                      </p>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

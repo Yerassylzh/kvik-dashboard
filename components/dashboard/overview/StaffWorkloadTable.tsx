@@ -28,7 +28,7 @@ export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffW
               <th className="pb-2.5 font-medium">Специалист</th>
               <th className="pb-2.5 font-medium text-center">Всего записей</th>
               <th className="pb-2.5 font-medium text-center">Выполнено</th>
-              <th className="pb-2.5 font-medium text-right">Выручка</th>
+              <th className="pb-2.5 font-medium text-right">{t("overview.staff_completion_rate")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/40">
@@ -48,7 +48,7 @@ export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffW
                     <Skeleton className="h-3 w-8 rounded-full mx-auto" />
                   </td>
                   <td className="py-2.5 text-right">
-                    <Skeleton className="h-3 w-16 rounded-full ml-auto" />
+                    <Skeleton className="h-3 w-12 rounded-full ml-auto" />
                   </td>
                 </tr>
               ))
@@ -59,26 +59,32 @@ export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffW
                 </td>
               </tr>
             ) : (
-              staffList.map((staff) => (
-                <tr key={staff.staffId} className="hover:bg-muted/30 transition-colors">
-                  <td className="py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <EntityAvatar name={staff.staffName} size="xs" />
-                      <span className="font-medium text-foreground text-xs">{staff.staffName}</span>
-                    </div>
-                  </td>
-                  <td className="py-2.5 text-center font-mono text-xs text-foreground">
-                    {staff.totalBookings}
-                  </td>
-                  <td className="py-2.5 text-center font-mono text-xs text-emerald-500 font-semibold">
-                    {staff.completedBookings}
-                  </td>
-                  <td className="py-2.5 text-right font-mono text-xs text-foreground font-semibold">
-                    {Number(staff.estimatedRevenue || 0).toLocaleString("ru-RU")}{" "}
-                    {t("common.currency")}
-                  </td>
-                </tr>
-              ))
+              staffList.map((staff) => {
+                const rate =
+                  staff.totalBookings > 0
+                    ? `${Math.round((staff.completedBookings / staff.totalBookings) * 100)}%`
+                    : "—";
+
+                return (
+                  <tr key={staff.staffId} className="hover:bg-muted/30 transition-colors">
+                    <td className="py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <EntityAvatar name={staff.staffName} size="xs" />
+                        <span className="font-medium text-foreground text-xs">{staff.staffName}</span>
+                      </div>
+                    </td>
+                    <td className="py-2.5 text-center font-mono text-xs text-foreground">
+                      {staff.totalBookings}
+                    </td>
+                    <td className="py-2.5 text-center font-mono text-xs text-emerald-500 font-semibold">
+                      {staff.completedBookings}
+                    </td>
+                    <td className="py-2.5 text-right font-mono text-xs text-foreground font-semibold">
+                      {rate}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

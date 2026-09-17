@@ -28,6 +28,7 @@ api.auth.user_not_found
 api.auth.verification_code_sent
 api.bookings.business_schedule_not_configured
 api.bookings.created
+api.bookings.marked_no_show
 api.bookings.missing_client_info
 api.bookings.not_found
 api.bookings.rescheduled
@@ -78,7 +79,14 @@ api.knowledge.qualification_rules_updated
 api.knowledge.scraped_data_cleared
 api.knowledge.website_scraping_started
 api.leads.archived
+api.leads.disqualified
+api.leads.invalid_status_transition
+api.leads.loss_reason_required
 api.leads.not_found
+api.leads.note_created
+api.leads.note_deleted
+api.leads.note_not_found
+api.leads.qualified
 api.leads.status_updated
 api.leads.updated
 api.onboarding.channel_connected

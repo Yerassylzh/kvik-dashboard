@@ -17,7 +17,8 @@ export type BookingStatus =
   | "CONFIRMED"
   | "COMPLETED"
   | "CANCELLED"
-  | "DECLINED";
+  | "DECLINED"
+  | "NO_SHOW";
 
 // ─── Conversation status ──────────────────────────────────────────────────────
 export type ConversationStatus =
@@ -41,6 +42,7 @@ const statusClassMap: Record<EntityStatus, string> = {
   COMPLETED:          "status-completed",
   CANCELLED:          "status-cancelled",
   DECLINED:           "status-declined",
+  NO_SHOW:            "status-declined",
   // Conversation
   BOT_ACTIVE:         "status-bot-active",
   MANAGER_INTERCEPTED:"status-intercepted",
@@ -59,6 +61,7 @@ const statusLabelMap: Record<EntityStatus, string> = {
   COMPLETED:           "Завершено",
   CANCELLED:           "Отменено",
   DECLINED:            "Отклонено",
+  NO_SHOW:             "Не пришел",
   BOT_ACTIVE:          "ИИ-агент",
   MANAGER_INTERCEPTED: "Менеджер",
   CLOSED:              "Закрыт",

@@ -1,24 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Sparkles,
-  Save,
-  Check,
-  RefreshCw,
-  Info,
-  Building,
-  DollarSign,
-  ShieldAlert,
-  Clock,
-} from "lucide-react";
+import { Sparkles, Save, Check, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { StringListField } from "./StringListField";
 import { useBusinessContext } from "@/hooks/useBusinessContext";
+import { BusinessGeneralSection } from "./BusinessGeneralSection";
+import { BusinessServicesSection } from "./BusinessServicesSection";
+import { BusinessRulesSection } from "./BusinessRulesSection";
 import type { UpdateBusinessContextDto } from "@/lib/api/businessContext";
 
 export function BusinessContextManager() {
@@ -67,6 +56,10 @@ export function BusinessContextManager() {
       });
     }
   }, [context]);
+
+  const handlePatchForm = (patch: Partial<UpdateBusinessContextDto>) => {
+    setForm((prev) => ({ ...prev, ...patch }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,187 +123,9 @@ export function BusinessContextManager() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Card 1: Основные сведения */}
-        <SectionCard
-          title={t("settings.bc_section_general")}
-          description="Базовые характеристики бизнеса, профиль и график"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t("settings.bc_business_type")}
-              </label>
-              <Input
-                type="text"
-                value={form.businessType || ""}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, businessType: e.target.value }))
-                }
-                placeholder={t("settings.bc_business_type_placeholder")}
-                className="text-xs"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t("settings.bc_specialization")}
-              </label>
-              <Input
-                type="text"
-                value={form.specialization || ""}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, specialization: e.target.value }))
-                }
-                placeholder={t("settings.bc_specialization_placeholder")}
-                className="text-xs"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t("settings.bc_contact_info")}
-              </label>
-              <Input
-                type="text"
-                value={form.contactInfo || ""}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, contactInfo: e.target.value }))
-                }
-                placeholder={t("settings.bc_contact_info_placeholder")}
-                className="text-xs"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t("settings.bc_working_hours")}
-              </label>
-              <Input
-                type="text"
-                value={form.workingHours || ""}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, workingHours: e.target.value }))
-                }
-                placeholder={t("settings.bc_working_hours_placeholder")}
-                className="text-xs"
-              />
-            </div>
-          </div>
-        </SectionCard>
-
-        {/* Card 2: Услуги, цены и преимущества */}
-        <SectionCard
-          title={t("settings.bc_section_services")}
-          description="Каталог услуг с диапазоном цен и ключевые преимущества"
-        >
-          <div className="space-y-5 pt-2">
-            <StringListField
-              label={t("settings.bc_services_offered")}
-              description="ИИ использует эти формулировки и цены при консультации клиентов"
-              placeholder={t("settings.bc_services_add_placeholder")}
-              items={form.servicesOffered || []}
-              onChange={(items) =>
-                setForm((prev) => ({ ...prev, servicesOffered: items }))
-              }
-              badgeColor="border-primary/20 bg-primary/5 text-foreground"
-            />
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t("settings.bc_pricing_policy")}
-              </label>
-              <Textarea
-                rows={2}
-                value={form.pricingPolicy || ""}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, pricingPolicy: e.target.value }))
-                }
-                placeholder={t("settings.bc_pricing_policy_placeholder")}
-                className="text-xs"
-              />
-            </div>
-
-            <StringListField
-              label={t("settings.bc_key_differentiators")}
-              description="Факторы, выгодно отличающие вас от конкурентов"
-              placeholder={t("settings.bc_differentiators_add_placeholder")}
-              items={form.keyDifferentiators || []}
-              onChange={(items) =>
-                setForm((prev) => ({ ...prev, keyDifferentiators: items }))
-              }
-              badgeColor="border-emerald-500/20 bg-emerald-500/5 text-foreground"
-            />
-          </div>
-        </SectionCard>
-
-        {/* Card 3: Правила, ограничения и команда */}
-        <SectionCard
-          title={t("settings.bc_section_rules")}
-          description="Политики бронирования, отмены, штат и строгие ограничения"
-        >
-          <div className="space-y-5 pt-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  {t("settings.bc_booking_policy")}
-                </label>
-                <Input
-                  type="text"
-                  value={form.bookingPolicy || ""}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, bookingPolicy: e.target.value }))
-                  }
-                  placeholder={t("settings.bc_booking_policy_placeholder")}
-                  className="text-xs"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  {t("settings.bc_cancellation_policy")}
-                </label>
-                <Input
-                  type="text"
-                  value={form.cancellationPolicy || ""}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      cancellationPolicy: e.target.value,
-                    }))
-                  }
-                  placeholder={t("settings.bc_cancellation_policy_placeholder")}
-                  className="text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                {t("settings.bc_team_summary")}
-              </label>
-              <Input
-                type="text"
-                value={form.teamSummary || ""}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, teamSummary: e.target.value }))
-                }
-                placeholder={t("settings.bc_team_summary_placeholder")}
-                className="text-xs"
-              />
-            </div>
-
-            <StringListField
-              label={t("settings.bc_restrictions")}
-              description="Четкие правила того, что салон НЕ делает (услуги, возраст, форматы)"
-              placeholder={t("settings.bc_restrictions_add_placeholder")}
-              items={form.restrictions || []}
-              onChange={(items) =>
-                setForm((prev) => ({ ...prev, restrictions: items }))
-              }
-              badgeColor="border-amber-500/20 bg-amber-500/5 text-foreground"
-            />
-          </div>
-        </SectionCard>
+        <BusinessGeneralSection form={form} onChange={handlePatchForm} />
+        <BusinessServicesSection form={form} onChange={handlePatchForm} />
+        <BusinessRulesSection form={form} onChange={handlePatchForm} />
 
         {/* Save Bar */}
         <div className="flex items-center justify-between p-4 rounded-2xl bg-card border border-border/60 sticky bottom-4 shadow-md backdrop-blur-md">

@@ -4182,7 +4182,8 @@
                 "CONFIRMED",
                 "CANCELLED",
                 "DECLINED",
-                "COMPLETED"
+                "COMPLETED",
+                "NO_SHOW"
               ]
             }
           }
@@ -4299,6 +4300,51 @@
           }
         ],
         "summary": "Get booking detail by ID",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}/no-show": {
+      "post": {
+        "operationId": "BookingsController_markNoShow",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoShowBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking marked as no-show and lead updated to DEAL_LOST"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark booking as not attended (No-Show)",
         "tags": [
           "Bookings"
         ]
@@ -4428,6 +4474,26 @@
                 "TELEGRAM"
               ]
             }
+          },
+          {
+            "name": "lossReason",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DISQUALIFIED_BY_POLICY",
+                "OUT_OF_SERVICE_AREA",
+                "PRICE_TOO_HIGH",
+                "UNSUPPORTED_SERVICE",
+                "CLIENT_DECLINED",
+                "UNRESPONSIVE_AFTER_FOLLOWUP",
+                "CANCELLED_WITHOUT_REBOOK",
+                "NO_SHOW",
+                "SPAM",
+                "OTHER"
+              ]
+            }
           }
         ],
         "responses": {
@@ -4467,6 +4533,36 @@
           }
         ],
         "summary": "Get lead counts grouped by status",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/funnel": {
+      "get": {
+        "operationId": "LeadsController_getFunnel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Funnel analytics metrics and stage transitions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadFunnelResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get CRM lead conversion funnel and loss reasons breakdown",
         "tags": [
           "Leads"
         ]
@@ -4583,6 +4679,99 @@
         ]
       }
     },
+    "/leads/{id}/qualify": {
+      "post": {
+        "operationId": "LeadsController_qualify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualifyLeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lead qualified successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Force qualify a lead with updated criteria",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/{id}/disqualify": {
+      "post": {
+        "operationId": "LeadsController_disqualify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisqualifyLeadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lead marked as lost"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Disqualify a lead with loss reason",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
     "/leads/{id}/status": {
       "patch": {
         "operationId": "LeadsController_updateStatus",
@@ -4610,6 +4799,9 @@
           "200": {
             "description": "Status updated"
           },
+          "400": {
+            "description": "Loss reason required or invalid transition"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -4623,6 +4815,152 @@
           }
         ],
         "summary": "Update lead status (funnel stage)",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/{id}/timeline": {
+      "get": {
+        "operationId": "LeadsController_getTimeline",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated timeline events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadTimelineResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get lead timeline audit log",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/{id}/notes": {
+      "post": {
+        "operationId": "LeadsController_addNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeadNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Note created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add internal manager note to lead profile",
+        "tags": [
+          "Leads"
+        ]
+      }
+    },
+    "/leads/{id}/notes/{noteId}": {
+      "delete": {
+        "operationId": "LeadsController_deleteNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "noteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Note deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Lead or note not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete internal note from lead profile",
         "tags": [
           "Leads"
         ]
@@ -6500,6 +6838,10 @@
         "type": "object",
         "properties": {}
       },
+      "NoShowBookingDto": {
+        "type": "object",
+        "properties": {}
+      },
       "UpdateBookingStatusDto": {
         "type": "object",
         "properties": {
@@ -6510,7 +6852,8 @@
               "CONFIRMED",
               "CANCELLED",
               "DECLINED",
-              "COMPLETED"
+              "COMPLETED",
+              "NO_SHOW"
             ]
           }
         },
@@ -6521,6 +6864,150 @@
       "RescheduleBookingDto": {
         "type": "object",
         "properties": {}
+      },
+      "LeadFunnelStageDto": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "QUALIFIED",
+              "APPOINTMENT_SET",
+              "DEAL_WON",
+              "DEAL_LOST"
+            ],
+            "example": "NEW"
+          },
+          "count": {
+            "type": "number",
+            "example": 142
+          },
+          "conversionFromPrevious": {
+            "type": "number",
+            "example": 100
+          },
+          "dropoffRate": {
+            "type": "number",
+            "example": 43.7
+          }
+        },
+        "required": [
+          "stage",
+          "count",
+          "conversionFromPrevious",
+          "dropoffRate"
+        ]
+      },
+      "LossReasonBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "DISQUALIFIED_BY_POLICY",
+              "OUT_OF_SERVICE_AREA",
+              "PRICE_TOO_HIGH",
+              "UNSUPPORTED_SERVICE",
+              "CLIENT_DECLINED",
+              "UNRESPONSIVE_AFTER_FOLLOWUP",
+              "CANCELLED_WITHOUT_REBOOK",
+              "NO_SHOW",
+              "SPAM",
+              "OTHER"
+            ],
+            "example": "PRICE_TOO_HIGH"
+          },
+          "count": {
+            "type": "number",
+            "example": 18
+          },
+          "percentage": {
+            "type": "number",
+            "example": 37.5
+          }
+        },
+        "required": [
+          "reason",
+          "count",
+          "percentage"
+        ]
+      },
+      "LeadFunnelResponseDto": {
+        "type": "object",
+        "properties": {
+          "funnel": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeadFunnelStageDto"
+            }
+          },
+          "overallConversionRate": {
+            "type": "number",
+            "example": 33.8
+          },
+          "averageTimeToWonHours": {
+            "type": "number",
+            "example": 18.5
+          },
+          "lossReasonsBreakdown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LossReasonBreakdownDto"
+            }
+          },
+          "topLossReason": {
+            "type": "string",
+            "enum": [
+              "DISQUALIFIED_BY_POLICY",
+              "OUT_OF_SERVICE_AREA",
+              "PRICE_TOO_HIGH",
+              "UNSUPPORTED_SERVICE",
+              "CLIENT_DECLINED",
+              "UNRESPONSIVE_AFTER_FOLLOWUP",
+              "CANCELLED_WITHOUT_REBOOK",
+              "NO_SHOW",
+              "SPAM",
+              "OTHER"
+            ],
+            "nullable": true,
+            "example": "PRICE_TOO_HIGH"
+          }
+        },
+        "required": [
+          "funnel",
+          "overallConversionRate",
+          "averageTimeToWonHours",
+          "lossReasonsBreakdown",
+          "topLossReason"
+        ]
+      },
+      "QualifyLeadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DisqualifyLeadDto": {
+        "type": "object",
+        "properties": {
+          "lossReason": {
+            "type": "string",
+            "enum": [
+              "DISQUALIFIED_BY_POLICY",
+              "OUT_OF_SERVICE_AREA",
+              "PRICE_TOO_HIGH",
+              "UNSUPPORTED_SERVICE",
+              "CLIENT_DECLINED",
+              "UNRESPONSIVE_AFTER_FOLLOWUP",
+              "CANCELLED_WITHOUT_REBOOK",
+              "NO_SHOW",
+              "SPAM",
+              "OTHER"
+            ]
+          }
+        },
+        "required": [
+          "lossReason"
+        ]
       },
       "UpdateLeadStatusDto": {
         "type": "object",
@@ -6534,6 +7021,21 @@
               "DEAL_WON",
               "DEAL_LOST"
             ]
+          },
+          "lossReason": {
+            "type": "string",
+            "enum": [
+              "DISQUALIFIED_BY_POLICY",
+              "OUT_OF_SERVICE_AREA",
+              "PRICE_TOO_HIGH",
+              "UNSUPPORTED_SERVICE",
+              "CLIENT_DECLINED",
+              "UNRESPONSIVE_AFTER_FOLLOWUP",
+              "CANCELLED_WITHOUT_REBOOK",
+              "NO_SHOW",
+              "SPAM",
+              "OTHER"
+            ]
           }
         },
         "required": [
@@ -6541,6 +7043,107 @@
         ]
       },
       "UpdateLeadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LeadTimelineItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "timeline-event-uuid-1"
+          },
+          "previousStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "QUALIFIED",
+              "APPOINTMENT_SET",
+              "DEAL_WON",
+              "DEAL_LOST"
+            ],
+            "nullable": true,
+            "example": "QUALIFIED"
+          },
+          "newStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "QUALIFIED",
+              "APPOINTMENT_SET",
+              "DEAL_WON",
+              "DEAL_LOST"
+            ],
+            "example": "APPOINTMENT_SET"
+          },
+          "changedBy": {
+            "type": "string",
+            "enum": [
+              "AI",
+              "MANAGER",
+              "SYSTEM"
+            ],
+            "example": "AI"
+          },
+          "reason": {
+            "type": "object",
+            "nullable": true,
+            "example": "Appointment booked for 2026-09-19 14:00 with Anna"
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "example": {
+              "bookingId": "booking-uuid-1",
+              "serviceName": "Маникюр"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-17T14:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "previousStatus",
+          "newStatus",
+          "changedBy",
+          "reason",
+          "metadata",
+          "createdAt"
+        ]
+      },
+      "LeadTimelineResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeadTimelineItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 3
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 30
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit"
+        ]
+      },
+      "CreateLeadNoteDto": {
         "type": "object",
         "properties": {}
       },
@@ -6658,23 +7261,6 @@
           "avgResponseTimeSeconds"
         ]
       },
-      "RevenueKpiDto": {
-        "type": "object",
-        "properties": {
-          "estimatedTotal": {
-            "type": "string",
-            "example": "105000.00"
-          },
-          "currency": {
-            "type": "string",
-            "example": "KZT"
-          }
-        },
-        "required": [
-          "estimatedTotal",
-          "currency"
-        ]
-      },
       "OverviewResponseDto": {
         "type": "object",
         "properties": {
@@ -6689,17 +7275,13 @@
           },
           "conversations": {
             "$ref": "#/components/schemas/ConversationsKpiDto"
-          },
-          "revenue": {
-            "$ref": "#/components/schemas/RevenueKpiDto"
           }
         },
         "required": [
           "period",
           "leads",
           "bookings",
-          "conversations",
-          "revenue"
+          "conversations"
         ]
       },
       "FunnelStageDto": {
@@ -6843,10 +7425,6 @@
           "cancelledBookings": {
             "type": "number",
             "example": 2
-          },
-          "estimatedRevenue": {
-            "type": "string",
-            "example": "63000.00"
           }
         },
         "required": [
@@ -6854,8 +7432,7 @@
           "staffName",
           "totalBookings",
           "completedBookings",
-          "cancelledBookings",
-          "estimatedRevenue"
+          "cancelledBookings"
         ]
       },
       "ChannelType": {

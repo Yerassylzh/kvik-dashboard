@@ -15,16 +15,17 @@ interface KpiGridProps {
 export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
   const t = useTranslations("dashboard");
 
-  const revenueDisplay = overview?.revenue?.estimatedTotal
-    ? `${Number(overview.revenue.estimatedTotal).toLocaleString("ru-RU")} ${t("common.currency")}`
-    : `0 ${t("common.currency")}`;
+  const totalLeads = overview?.leads?.total ?? 0;
+  const dealWon = overview?.leads?.dealWon ?? 0;
+  const conversionRate =
+    totalLeads > 0 ? ((dealWon / totalLeads) * 100).toFixed(1) : "0.0";
 
   return (
     <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StaggerItem>
         <StatCard
           label={t("overview.kpi_leads")}
-          value={overview?.leads?.total ?? 0}
+          value={totalLeads}
           isLoading={isLoading}
           icon={<Users className="w-5 h-5" />}
         />
@@ -50,8 +51,8 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
 
       <StaggerItem>
         <StatCard
-          label={t("overview.kpi_revenue")}
-          value={revenueDisplay}
+          label={t("overview.kpi_conversion")}
+          value={`${conversionRate}%`}
           isLoading={isLoading}
           icon={<TrendingUp className="w-5 h-5" />}
         />

@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Clock } from "lucide-react";
+import { Clock, User, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { InteractiveCard } from "@/components/ui/motion/InteractiveCard";
 import { StatusBadge } from "@/components/dashboard/shared/StatusBadge";
 import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
@@ -21,6 +22,7 @@ const channelColors: Record<string, string> = {
 };
 
 export function LeadCard({ lead, onSelect }: LeadCardProps) {
+  const t = useTranslations("dashboard");
   const formattedDate = lead.lastActivityAt
     ? new Date(lead.lastActivityAt).toLocaleDateString("ru-RU", {
         day: "numeric",
@@ -47,18 +49,38 @@ export function LeadCard({ lead, onSelect }: LeadCardProps) {
             {lead.phone && (
               <p className="text-xs text-muted-foreground font-mono truncate">{lead.phone}</p>
             )}
+            {lead.assignedStaff && (
+              <p className="flex items-center gap-1 text-[11px] text-muted-foreground truncate mt-0.5">
+                <User className="w-2.5 h-2.5 text-muted-foreground shrink-0" />
+                <span className="truncate">{lead.assignedStaff.name}</span>
+              </p>
+            )}
           </div>
         </div>
 
-        {lead.sourceChannel && (
-          <span className={`p-1 rounded-md bg-muted/60 ${channelColor}`}>
-            <ChannelIcon type={lead.sourceChannel} className="w-3.5 h-3.5" />
-          </span>
-        )}
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {lead.sourceChannel && (
+            <span className={`p-1 rounded-md bg-muted/60 ${channelColor}`}>
+              <ChannelIcon type={lead.sourceChannel} className="w-3.5 h-3.5" />
+            </span>
+          )}
+          {typeof lead.score === "number" && lead.score > 0 && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-bold bg-primary/10 text-primary font-mono tabular-nums">
+              <Sparkles className="w-2.5 h-2.5" />
+              {lead.score}
+            </span>
+          )}
+        </div>
       </div>
 
+      {lead.status === "DEAL_LOST" && lead.lossReason && (
+        <div className="text-[11px] text-rose-600 dark:text-rose-400 bg-rose-50/70 dark:bg-rose-950/20 px-2 py-0.5 rounded-md border border-rose-200 dark:border-rose-900/40 truncate">
+          {t(`leads.loss_reason_${lead.lossReason}` as any)}
+        </div>
+      )}
+
       <div className="flex items-center justify-between pt-2 border-t border-border/40 text-[11px] text-muted-foreground">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 font-mono">
           <Clock className="w-3 h-3 text-muted-foreground" />
           <span>{formattedDate}</span>
         </div>
@@ -67,3 +89,4 @@ export function LeadCard({ lead, onSelect }: LeadCardProps) {
     </InteractiveCard>
   );
 }
+

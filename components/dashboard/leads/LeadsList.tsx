@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { User, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 import { StatusBadge } from "@/components/dashboard/shared/StatusBadge";
@@ -28,18 +29,19 @@ export function LeadsList({ leads, onSelectLead, isLoading }: LeadsListProps) {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-muted/30 text-xs text-muted-foreground">
-              <th className="py-3 px-4 font-semibold">Имя клиента</th>
-              <th className="py-3 px-4 font-semibold">Телефон</th>
+              <th className="py-3 px-4 font-semibold">{t("leads.name_label")}</th>
+              <th className="py-3 px-4 font-semibold">{t("leads.phone_label")}</th>
               <th className="py-3 px-4 font-semibold">Канал</th>
+              <th className="py-3 px-4 font-semibold">{t("leads.assigned_staff")}</th>
               <th className="py-3 px-4 font-semibold">Статус</th>
-              <th className="py-3 px-4 font-semibold">Последняя активность</th>
+              <th className="py-3 px-4 font-semibold">{t("leads.last_activity")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/40">
             {leads.length === 0 && !isLoading && (
               <tr>
-                <td colSpan={5} className="py-12 text-center text-sm text-muted-foreground">
-                  {t("common.empty_data")}
+                <td colSpan={6} className="py-12 text-center text-xs text-muted-foreground">
+                  {t("leads.timeline_empty")}
                 </td>
               </tr>
             )}
@@ -64,9 +66,19 @@ export function LeadsList({ leads, onSelectLead, isLoading }: LeadsListProps) {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
                       <EntityAvatar name={lead.name || "Лид"} size="sm" />
-                      <span className="font-semibold text-foreground text-sm">
-                        {lead.name || "Без имени"}
-                      </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-foreground text-xs truncate">
+                            {lead.name || "Без имени"}
+                          </span>
+                          {typeof lead.score === "number" && lead.score > 0 && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-bold bg-primary/10 text-primary font-mono tabular-nums">
+                              <Sparkles className="w-2.5 h-2.5" />
+                              {lead.score}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="py-3 px-4 font-mono text-xs text-muted-foreground">
@@ -76,14 +88,31 @@ export function LeadsList({ leads, onSelectLead, isLoading }: LeadsListProps) {
                     {lead.sourceChannel && meta && (
                       <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
                         <span className={meta.color}>
-                          <ChannelIcon type={lead.sourceChannel} className="w-4 h-4" />
+                          <ChannelIcon type={lead.sourceChannel} className="w-3.5 h-3.5" />
                         </span>
                         <span>{meta.label}</span>
                       </div>
                     )}
                   </td>
+                  <td className="py-3 px-4 text-xs text-muted-foreground">
+                    {lead.assignedStaff ? (
+                      <span className="flex items-center gap-1 text-foreground font-medium">
+                        <User className="w-3 h-3 text-muted-foreground shrink-0" />
+                        <span className="truncate max-w-[120px]">{lead.assignedStaff.name}</span>
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="py-3 px-4">
-                    <StatusBadge type="lead" status={lead.status} />
+                    <div className="flex flex-col gap-1 items-start">
+                      <StatusBadge type="lead" status={lead.status} />
+                      {lead.status === "DEAL_LOST" && lead.lossReason && (
+                        <span className="text-[10px] text-rose-600 dark:text-rose-400 truncate max-w-[140px]">
+                          {t(`leads.loss_reason_${lead.lossReason}` as any)}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="py-3 px-4 text-xs text-muted-foreground font-mono">
                     {formattedDate}
@@ -97,3 +126,4 @@ export function LeadsList({ leads, onSelectLead, isLoading }: LeadsListProps) {
     </div>
   );
 }
+

@@ -1,6 +1,6 @@
 import { apiClient } from './client';
 
-export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'DECLINED';
+export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'DECLINED' | 'NO_SHOW';
 
 export interface BookingDto {
   id: string;
@@ -100,6 +100,24 @@ export const bookingsApi = {
     return data;
   },
 
+  markNoShow: async (
+    id: string,
+    payload?: { reason?: string; chargeFee?: boolean }
+  ): Promise<{
+    code: string;
+    message: string;
+    booking: { id: string; status: string; startTime: string };
+    lead: { id: string; status: string; lossReason: string; noShowCount?: number };
+  }> => {
+    const { data } = await apiClient.post<{
+      code: string;
+      message: string;
+      booking: { id: string; status: string; startTime: string };
+      lead: { id: string; status: string; lossReason: string; noShowCount?: number };
+    }>(`/bookings/${id}/no-show`, payload);
+    return data;
+  },
+
   reschedule: async (
     id: string,
     payload: RescheduleBookingPayload
@@ -111,3 +129,4 @@ export const bookingsApi = {
     return data;
   },
 };
+
