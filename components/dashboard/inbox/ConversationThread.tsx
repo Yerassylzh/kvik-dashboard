@@ -7,6 +7,7 @@ import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 import { HandoffToggle } from "./HandoffToggle";
 import { MessageBubble } from "./MessageBubble";
 import { ManagerComposer } from "./ManagerComposer";
+import { FollowUpThreadBanner } from "./FollowUpThreadBanner";
 import { useConversationMessages } from "@/hooks/useConversations";
 import type { ConversationDto, ConversationStatus } from "@/lib/api/conversations";
 
@@ -74,6 +75,12 @@ export function ConversationThread({
           onStatusChange={handleStatusToggle}
         />
       </div>
+
+      {/* Pending Follow-up Active Banner */}
+      <FollowUpThreadBanner
+        conversationId={conversation.id}
+        pendingFollowUp={conversation.pendingFollowUp}
+      />
 
       {/* Messages Stream */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-1">

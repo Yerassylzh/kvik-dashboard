@@ -28,6 +28,10 @@ export interface ConversationDto {
     name?: string | null;
     phone?: string | null;
   } | null;
+  pendingFollowUp?: {
+    stepIndex: number;
+    scheduledFor: string;
+  } | null;
 }
 
 export interface ConversationDetailDto extends ConversationDto {
@@ -92,6 +96,13 @@ export const conversationsApi = {
     const { data } = await apiClient.patch<{ code: string; message: string }>(`/conversations/${id}/status`, {
       status,
     });
+    return data;
+  },
+
+  cancelFollowUp: async (id: string): Promise<{ code: string; message: string }> => {
+    const { data } = await apiClient.post<{ code: string; message: string }>(
+      `/conversations/${id}/cancel-followup`
+    );
     return data;
   },
 

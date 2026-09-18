@@ -63,6 +63,11 @@ api.dev_messaging.channels_provisioned
 api.dev_messaging.conversation_reset
 api.dev_messaging.disabled
 api.dev_messaging.inbound_simulated
+api.follow_up.cancelled
+api.follow_up.config_updated
+api.follow_up.not_found
+api.follow_up.preview_failed
+api.follow_up.test_simulated
 api.knowledge.2gis_scraping_started
 api.knowledge.bulk_deleted
 api.knowledge.business_context_regeneration_queued

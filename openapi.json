@@ -3899,6 +3899,262 @@
         ]
       }
     },
+    "/workspaces/{workspaceId}/follow-ups/config": {
+      "get": {
+        "operationId": "FollowUpController_getConfig",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowUpConfigResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get follow-up and appointment reminder configuration",
+        "tags": [
+          "Follow-Up System"
+        ]
+      },
+      "patch": {
+        "operationId": "FollowUpController_updateConfig",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFollowUpConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "code": "follow_up.config_updated",
+                    "message": "Follow-up configuration successfully updated."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update follow-up and appointment reminder configuration",
+        "tags": [
+          "Follow-Up System"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/follow-ups/stats": {
+      "get": {
+        "operationId": "FollowUpController_getStats",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowUpStatsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get follow-up analytics and conversion statistics",
+        "tags": [
+          "Follow-Up System"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/follow-ups/logs": {
+      "get": {
+        "operationId": "FollowUpController_getLogs",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowUpLogsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get paginated follow-up activity logs",
+        "tags": [
+          "Follow-Up System"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/follow-ups/test-preview": {
+      "post": {
+        "operationId": "FollowUpController_testPreview",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestPreviewFollowUpInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestPreviewFollowUpResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Simulate generated follow-up message for a conversation without sending",
+        "tags": [
+          "Follow-Up System"
+        ]
+      }
+    },
+    "/conversations/{id}/cancel-followup": {
+      "post": {
+        "operationId": "FollowUpController_cancelFollowUp",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "code": "follow_up.cancelled",
+                    "message": "Pending follow-up cancelled for this conversation."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Manually abort any pending scheduled follow-up for a dialogue",
+        "tags": [
+          "Follow-Up System"
+        ]
+      }
+    },
     "/conversations": {
       "get": {
         "operationId": "ConversationsController_list",
@@ -6811,6 +7067,507 @@
         "required": [
           "response",
           "toolCallsCount",
+          "latencyMs"
+        ]
+      },
+      "QuietHoursResponseDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "start": {
+            "type": "string",
+            "example": "21:30"
+          },
+          "end": {
+            "type": "string",
+            "example": "09:00"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Almaty"
+          }
+        },
+        "required": [
+          "enabled",
+          "start",
+          "end",
+          "timezone"
+        ]
+      },
+      "AbandonmentStepResponseDto": {
+        "type": "object",
+        "properties": {
+          "stepIndex": {
+            "type": "number",
+            "example": 1
+          },
+          "delayMinutes": {
+            "type": "number",
+            "example": 120
+          },
+          "label": {
+            "type": "string",
+            "example": "2 Hours (Soft Check)"
+          }
+        },
+        "required": [
+          "stepIndex",
+          "delayMinutes",
+          "label"
+        ]
+      },
+      "AbandonmentSequenceResponseDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AbandonmentStepResponseDto"
+            }
+          },
+          "autoDisqualifyAfterHours": {
+            "type": "number",
+            "example": 72
+          }
+        },
+        "required": [
+          "enabled",
+          "steps",
+          "autoDisqualifyAfterHours"
+        ]
+      },
+      "AdaptiveNoticeRulesResponseDto": {
+        "type": "object",
+        "properties": {
+          "minAdvanceHoursFor24hReminder": {
+            "type": "number",
+            "example": 48
+          },
+          "minAdvanceHoursFor2hReminder": {
+            "type": "number",
+            "example": 3
+          }
+        },
+        "required": [
+          "minAdvanceHoursFor24hReminder",
+          "minAdvanceHoursFor2hReminder"
+        ]
+      },
+      "AppointmentRemindersResponseDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "send24hReminder": {
+            "type": "boolean",
+            "example": true
+          },
+          "send2hReminder": {
+            "type": "boolean",
+            "example": true
+          },
+          "adaptiveNoticeRules": {
+            "$ref": "#/components/schemas/AdaptiveNoticeRulesResponseDto"
+          }
+        },
+        "required": [
+          "enabled",
+          "send24hReminder",
+          "send2hReminder",
+          "adaptiveNoticeRules"
+        ]
+      },
+      "PostVisitRetentionResponseDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "send2GisReviewRequest": {
+            "type": "boolean",
+            "example": true
+          },
+          "sendReviewRequestAfterMinutes": {
+            "type": "number",
+            "example": 120
+          },
+          "direct2GisReviewUrl": {
+            "type": "object",
+            "example": "https://2gis.kz/almaty/firm/70000001082563690/tab/reviews/addreview",
+            "nullable": true
+          },
+          "sendRepeatRecallAfterDays": {
+            "type": "number",
+            "example": 30
+          }
+        },
+        "required": [
+          "enabled",
+          "send2GisReviewRequest",
+          "sendReviewRequestAfterMinutes",
+          "direct2GisReviewUrl",
+          "sendRepeatRecallAfterDays"
+        ]
+      },
+      "FollowUpConfigResponseDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "quietHours": {
+            "$ref": "#/components/schemas/QuietHoursResponseDto"
+          },
+          "abandonmentSequence": {
+            "$ref": "#/components/schemas/AbandonmentSequenceResponseDto"
+          },
+          "appointmentReminders": {
+            "$ref": "#/components/schemas/AppointmentRemindersResponseDto"
+          },
+          "postVisitRetention": {
+            "$ref": "#/components/schemas/PostVisitRetentionResponseDto"
+          },
+          "channels": {
+            "type": "object",
+            "example": {
+              "WHATSAPP": {
+                "active": true
+              }
+            }
+          }
+        },
+        "required": [
+          "enabled",
+          "quietHours",
+          "abandonmentSequence",
+          "appointmentReminders",
+          "postVisitRetention",
+          "channels"
+        ]
+      },
+      "UpdateFollowUpConfigDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "FollowUpStatsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "totalFollowUpsDispatched": {
+            "type": "number",
+            "example": 348
+          },
+          "totalReplied": {
+            "type": "number",
+            "example": 142
+          },
+          "replyRate": {
+            "type": "number",
+            "example": 40.8
+          },
+          "bookingsGenerated": {
+            "type": "number",
+            "example": 68
+          },
+          "conversionToBookingRate": {
+            "type": "number",
+            "example": 19.54
+          },
+          "autoDisqualifiedLeads": {
+            "type": "number",
+            "example": 45
+          },
+          "reviewsRequested": {
+            "type": "number",
+            "example": 52
+          },
+          "estimatedReviewsSubmitted": {
+            "type": "number",
+            "example": 18
+          }
+        },
+        "required": [
+          "totalFollowUpsDispatched",
+          "totalReplied",
+          "replyRate",
+          "bookingsGenerated",
+          "conversionToBookingRate",
+          "autoDisqualifiedLeads",
+          "reviewsRequested",
+          "estimatedReviewsSubmitted"
+        ]
+      },
+      "StepStatItemDto": {
+        "type": "object",
+        "properties": {
+          "stepIndex": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Step 1 (+2h)"
+          },
+          "dispatched": {
+            "type": "number",
+            "example": 210
+          },
+          "replied": {
+            "type": "number",
+            "example": 98
+          },
+          "replyRate": {
+            "type": "number",
+            "example": 46.67
+          },
+          "bookingsCreated": {
+            "type": "number",
+            "example": 48
+          }
+        },
+        "required": [
+          "stepIndex",
+          "name",
+          "dispatched",
+          "replied",
+          "replyRate",
+          "bookingsCreated"
+        ]
+      },
+      "FollowUpStatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "example": {
+              "from": "2026-08-18",
+              "to": "2026-09-17"
+            }
+          },
+          "summary": {
+            "$ref": "#/components/schemas/FollowUpStatsSummaryDto"
+          },
+          "stepBreakdown": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepStatItemDto"
+            }
+          },
+          "channelBreakdown": {
+            "type": "object",
+            "example": {
+              "WHATSAPP": {
+                "dispatched": 240,
+                "replied": 110,
+                "replyRate": 45.83
+              },
+              "INSTAGRAM": {
+                "dispatched": 80,
+                "replied": 24,
+                "replyRate": 30
+              },
+              "TELEGRAM": {
+                "dispatched": 28,
+                "replied": 8,
+                "replyRate": 28.57
+              }
+            }
+          }
+        },
+        "required": [
+          "period",
+          "summary",
+          "stepBreakdown",
+          "channelBreakdown"
+        ]
+      },
+      "FollowUpLogLeadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "lead-uuid-1"
+          },
+          "name": {
+            "type": "object",
+            "example": "Айдос Нурланов",
+            "nullable": true
+          },
+          "phone": {
+            "type": "object",
+            "example": "+77015551234",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone"
+        ]
+      },
+      "FollowUpLogItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "flog-1"
+          },
+          "conversationId": {
+            "type": "string",
+            "example": "conv-uuid-1"
+          },
+          "lead": {
+            "$ref": "#/components/schemas/FollowUpLogLeadDto"
+          },
+          "channelType": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ],
+            "example": "WHATSAPP"
+          },
+          "stepIndex": {
+            "type": "number",
+            "example": 1
+          },
+          "scheduledFor": {
+            "type": "string",
+            "example": "2026-09-17T16:30:00.000Z"
+          },
+          "executedAt": {
+            "type": "object",
+            "example": "2026-09-17T16:30:04.000Z",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "example": "SENT",
+            "enum": [
+              "PENDING",
+              "SENT",
+              "REPLIED",
+              "SKIPPED",
+              "CANCELLED"
+            ]
+          },
+          "messageText": {
+            "type": "object",
+            "example": "Айдос, подскажите, вам удобнее подойти в первой половине дня или ближе к вечеру?",
+            "nullable": true
+          },
+          "repliedAt": {
+            "type": "object",
+            "example": "2026-09-17T16:42:15.000Z",
+            "nullable": true
+          },
+          "convertedToBooking": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "conversationId",
+          "lead",
+          "channelType",
+          "stepIndex",
+          "scheduledFor",
+          "executedAt",
+          "status",
+          "messageText",
+          "repliedAt",
+          "convertedToBooking"
+        ]
+      },
+      "FollowUpLogsResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FollowUpLogItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 348
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 20
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit"
+        ]
+      },
+      "TestPreviewFollowUpInputDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TestPreviewFollowUpResponseDto": {
+        "type": "object",
+        "properties": {
+          "generatedMessage": {
+            "type": "string",
+            "example": "Айдос, добрый день! Подскажите, удалось ли определиться со временем для стрижки у мастера Данияра?"
+          },
+          "channelType": {
+            "type": "string",
+            "enum": [
+              "WHATSAPP",
+              "INSTAGRAM",
+              "TELEGRAM"
+            ],
+            "example": "WHATSAPP"
+          },
+          "withinMeta24hWindow": {
+            "type": "boolean",
+            "example": true
+          },
+          "dispatchMode": {
+            "type": "string",
+            "example": "AI_FREEFORM"
+          },
+          "quietHoursActiveNow": {
+            "type": "boolean",
+            "example": false
+          },
+          "tokensUsed": {
+            "type": "number",
+            "example": 118
+          },
+          "latencyMs": {
+            "type": "number",
+            "example": 285
+          }
+        },
+        "required": [
+          "generatedMessage",
+          "channelType",
+          "withinMeta24hWindow",
+          "dispatchMode",
+          "quietHoursActiveNow",
+          "tokensUsed",
           "latencyMs"
         ]
       },
