@@ -29,6 +29,66 @@
         ]
       }
     },
+    "/workspaces/settings/round-robin": {
+      "get": {
+        "operationId": "WorkspacesController_getRoundRobinSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Workspace round robin settings"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workspace round robin booking distribution settings",
+        "tags": [
+          "Workspaces"
+        ]
+      },
+      "put": {
+        "operationId": "WorkspacesController_updateRoundRobinSettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorkspaceRoundRobinSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update workspace round robin booking distribution settings",
+        "tags": [
+          "Workspaces"
+        ]
+      }
+    },
     "/workspaces/schedule": {
       "get": {
         "operationId": "WorkspacesController_getSchedule",
@@ -1249,6 +1309,54 @@
           }
         ],
         "summary": "Revoke pending invitation for staff member",
+        "tags": [
+          "Staff"
+        ]
+      }
+    },
+    "/staff/{id}/round-robin": {
+      "patch": {
+        "operationId": "StaffController_updateRoundRobin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffRoundRobinDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Staff round robin parameters updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Staff not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update staff member round-robin load balancing configuration",
         "tags": [
           "Staff"
         ]
@@ -4743,10 +4851,13 @@
             "description": "Message sent and persisted"
           },
           "400": {
-            "description": "Channel disconnected"
+            "description": "Channel disconnected or invalid payload"
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Conversation taken over by another specialist"
           },
           "404": {
             "description": "Conversation not found"
@@ -4760,7 +4871,142 @@
             "bearer": []
           }
         ],
-        "summary": "Send outbound message to client via channel adapter",
+        "summary": "Send outbound message (text and/or media) to client via channel adapter",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/media/upload": {
+      "post": {
+        "operationId": "ConversationsController_uploadMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image, audio, video, or document file (max 50MB)"
+                  },
+                  "mediaType": {
+                    "type": "string",
+                    "enum": [
+                      "IMAGE",
+                      "AUDIO",
+                      "VIDEO",
+                      "DOCUMENT"
+                    ],
+                    "description": "Optional media type override (auto-detected by default)"
+                  },
+                  "durationSeconds": {
+                    "type": "number",
+                    "description": "Optional duration in seconds for audio/video recordings"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media uploaded and public URL returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadMediaResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file or file missing"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Conversation taken over by another specialist"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload media asset (photo, voice, video, document) prior to sending",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/media": {
+      "get": {
+        "operationId": "ConversationsController_getMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "IMAGE",
+                "AUDIO",
+                "VIDEO",
+                "DOCUMENT"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated media gallery",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationMediaListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all shared media files in conversation",
         "tags": [
           "Conversations"
         ]
@@ -4846,6 +5092,381 @@
         "summary": "Mark conversation as read",
         "tags": [
           "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/escalations": {
+      "get": {
+        "operationId": "ConversationsController_getEscalations",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of escalation events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConversationEscalationResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get escalation history for a conversation",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/takeover": {
+      "post": {
+        "operationId": "ConversationsController_takeover",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Takeover successful"
+          },
+          "400": {
+            "description": "Conversation not in MANAGER_INTERCEPTED status"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Already taken over by another specialist"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Take over an escalated conversation",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/conversations/{id}/release-takeover": {
+      "post": {
+        "operationId": "ConversationsController_releaseTakeover",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Takeover released"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Cannot release another specialist's takeover"
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Release takeover lock from a conversation",
+        "tags": [
+          "Conversations"
+        ]
+      }
+    },
+    "/notifications/recipients": {
+      "get": {
+        "operationId": "NotificationsController_listRecipients",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Array of notification recipients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationRecipientResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List Telegram notification recipients for workspace",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/recipients/telegram/generate-code": {
+      "post": {
+        "operationId": "NotificationsController_generateCode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Connection deep link and code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateTelegramCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Telegram connection deep link and one-time code",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/recipients/{id}": {
+      "patch": {
+        "operationId": "NotificationsController_updateRecipient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationRecipientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification recipient updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          },
+          "404": {
+            "description": "Recipient not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update notification recipient preferences",
+        "tags": [
+          "Notifications"
+        ]
+      },
+      "delete": {
+        "operationId": "NotificationsController_removeRecipient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipient removed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          },
+          "404": {
+            "description": "Recipient not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a notification recipient",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_listNotifications",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated notifications with unread count"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List in-app notifications for workspace",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/read-all": {
+      "patch": {
+        "operationId": "NotificationsController_markAllRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All notifications marked as read"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark all notifications as read",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked as read"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Notification not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a notification as read",
+        "tags": [
+          "Notifications"
         ]
       }
     },
@@ -4947,6 +5568,39 @@
           }
         ],
         "summary": "Get available time slots for a staff member on a given date",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/preview-assignment": {
+      "post": {
+        "operationId": "BookingsController_previewAssignment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewAssignmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preview assignment details"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preview Round Robin specialist auto-assignment for a slot",
         "tags": [
           "Bookings"
         ]
@@ -6005,6 +6659,19 @@
       }
     },
     "schemas": {
+      "UpdateWorkspaceRoundRobinSettingsDto": {
+        "type": "object",
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "enum": [
+              "LEAST_LOADED",
+              "CIRCULAR",
+              "WEIGHTED"
+            ]
+          }
+        }
+      },
       "SetWorkspaceScheduleDto": {
         "type": "object",
         "properties": {}
@@ -6613,6 +7280,10 @@
             "description": "System role determining dashboard permissions"
           }
         }
+      },
+      "UpdateStaffRoundRobinDto": {
+        "type": "object",
+        "properties": {}
       },
       "UpdateStaffDto": {
         "type": "object",
@@ -8532,9 +9203,173 @@
           "latencyMs"
         ]
       },
+      "UploadMediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "mediaUrl": {
+            "type": "string",
+            "example": "https://storage.kvik.kz/workspaces/.../photo.jpg"
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "AUDIO",
+              "VIDEO",
+              "DOCUMENT"
+            ],
+            "example": "IMAGE"
+          },
+          "mimeType": {
+            "type": "string",
+            "example": "image/jpeg"
+          },
+          "fileKey": {
+            "type": "string",
+            "example": "workspaces/ws-id/conversations/conv-id/photo.jpg"
+          },
+          "fileName": {
+            "type": "string",
+            "example": "photo.jpg"
+          },
+          "fileSize": {
+            "type": "number",
+            "example": 1048576
+          },
+          "durationSeconds": {
+            "type": "number",
+            "example": 14.5,
+            "nullable": true
+          }
+        },
+        "required": [
+          "mediaUrl",
+          "mediaType",
+          "mimeType",
+          "fileKey",
+          "fileName",
+          "fileSize"
+        ]
+      },
+      "ConversationMediaItemResponseDto": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "example": "msg-uuid-1"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "BOT",
+              "MANAGER"
+            ],
+            "example": "USER"
+          },
+          "senderName": {
+            "type": "string",
+            "example": "Айгерим"
+          },
+          "mediaType": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "AUDIO",
+              "VIDEO",
+              "DOCUMENT"
+            ],
+            "example": "IMAGE"
+          },
+          "mediaUrl": {
+            "type": "string",
+            "example": "https://storage.kvik.kz/workspaces/.../photo.jpg"
+          },
+          "fileName": {
+            "type": "string",
+            "example": "photo.jpg"
+          },
+          "mimeType": {
+            "type": "string",
+            "example": "image/jpeg"
+          },
+          "fileSize": {
+            "type": "number",
+            "example": 1048576
+          },
+          "durationSeconds": {
+            "type": "number",
+            "example": 15,
+            "nullable": true
+          },
+          "transcription": {
+            "type": "string",
+            "example": "Здравствуйте! Подскажите прайс"
+          },
+          "detectedLanguage": {
+            "type": "string",
+            "example": "ru"
+          },
+          "caption": {
+            "type": "string",
+            "example": "Фотография стрижки"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-20T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "messageId",
+          "role",
+          "mediaType",
+          "mediaUrl",
+          "createdAt"
+        ]
+      },
+      "ConversationMediaListResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationMediaItemResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 15
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 30
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit"
+        ]
+      },
       "SendManagerMessageDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "mediaType": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "AUDIO",
+              "VIDEO",
+              "DOCUMENT"
+            ]
+          }
+        }
       },
       "UpdateConversationStatusDto": {
         "type": "object",
@@ -8551,6 +9386,155 @@
         "required": [
           "status"
         ]
+      },
+      "ConversationEscalationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "description": "Unique escalation ID"
+          },
+          "conversationId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174001",
+            "description": "Conversation ID"
+          },
+          "triggerType": {
+            "type": "string",
+            "enum": [
+              "MEDIA_ATTACHMENT",
+              "EXPLICIT_HUMAN_REQUEST",
+              "KNOWLEDGE_GAP",
+              "COMPLAINT",
+              "POLICY_EDGE_CASE",
+              "SPECIALIST_REQUIRED",
+              "AI_RESPONSE_FAILURE",
+              "CONSECUTIVE_UNRESOLVED"
+            ],
+            "example": "MEDIA_ATTACHMENT",
+            "description": "Trigger rule that caused the escalation"
+          },
+          "reason": {
+            "type": "object",
+            "example": "Client sent an image attachment",
+            "description": "Detailed reason for manager escalation",
+            "nullable": true
+          },
+          "triggeredAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T14:32:00.000Z",
+            "description": "When the escalation occurred"
+          },
+          "resolvedAt": {
+            "type": "object",
+            "example": "2026-09-19T14:45:00.000Z",
+            "description": "When the escalation was resolved",
+            "nullable": true
+          },
+          "resolvedByStaffId": {
+            "type": "object",
+            "example": "123e4567-e89b-12d3-a456-426614174002",
+            "description": "Staff member ID who resolved the escalation",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "conversationId",
+          "triggerType",
+          "reason",
+          "triggeredAt",
+          "resolvedAt",
+          "resolvedByStaffId"
+        ]
+      },
+      "NotificationRecipientResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "description": "Unique recipient ID"
+          },
+          "telegramChatId": {
+            "type": "string",
+            "example": "123456789",
+            "description": "Telegram chat ID"
+          },
+          "displayName": {
+            "type": "object",
+            "example": "Асем (владелец)",
+            "description": "Display name for the recipient in the dashboard",
+            "nullable": true
+          },
+          "notificationTypes": {
+            "example": [
+              "escalation",
+              "new_booking",
+              "booking_cancelled"
+            ],
+            "description": "Event types this recipient is subscribed to",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether this recipient is active"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T14:00:00.000Z",
+            "description": "When the recipient was added"
+          }
+        },
+        "required": [
+          "id",
+          "telegramChatId",
+          "displayName",
+          "notificationTypes",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "GenerateTelegramCodeResponseDto": {
+        "type": "object",
+        "properties": {
+          "deepLink": {
+            "type": "string",
+            "example": "https://t.me/kvik_notify_bot?start=KVIK-8F3A2",
+            "description": "Direct Telegram deep link with pre-filled code. Opens Telegram with a big START button."
+          },
+          "code": {
+            "type": "string",
+            "example": "KVIK-8F3A2",
+            "description": "One-time connection code (valid for 15 minutes)"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T14:15:00.000Z",
+            "description": "Expiration ISO timestamp of the code"
+          }
+        },
+        "required": [
+          "deepLink",
+          "code",
+          "expiresAt"
+        ]
+      },
+      "UpdateNotificationRecipientDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PreviewAssignmentDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateBookingDto": {
         "type": "object",

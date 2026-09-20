@@ -137,9 +137,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       clusterKey: 'nav.group_ai_growth',
       items: [
         {
-          href: '/ai-studio',
-          label: t('nav.ai_studio'),
-          Icon: Bot,
+          href: '/insights',
+          label: t('nav.insights'),
+          Icon: BarChart3,
           roles: ['OWNER', 'ADMIN_MANAGER'],
         },
         {
@@ -149,9 +149,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           roles: ['OWNER', 'ADMIN_MANAGER'],
         },
         {
-          href: '/insights',
-          label: t('nav.insights'),
-          Icon: BarChart3,
+          href: '/ai-studio',
+          label: t('nav.ai_studio'),
+          Icon: Bot,
           roles: ['OWNER', 'ADMIN_MANAGER'],
         },
       ],

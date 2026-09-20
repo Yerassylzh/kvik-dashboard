@@ -1,14 +1,1 @@
-{
-  "follow_up.preview_failed": "Не удалось сгенерировать превью сообщения",
-  "follow_up.test_simulated": "Тестовая генерация напоминания успешно выполнена",
-  "follow_up.not_found": "Запись напоминания не найдена",
-  "insights.recommendation_applied": "Рекомендация успешно применена, изменения сохранены",
-  "insights.recommendation_dismissed": "Рекомендация отклонена, отзыв сохранен",
-  "insights.recommendation_not_found": "Рекомендация не найдена",
-  "insights.already_implemented": "Рекомендация уже была применена ранее",
-  "insights.already_dismissed": "Рекомендация уже была отклонена",
-  "insights.report_not_found": "Еженедельный отчет не найден",
-  "insights.weekly_report_generated": "Еженедельный отчет успешно сформирован",
-  "insights.weekly_report_email_sent": "Еженедельный отчет отправлен по email",
-  "insights.analysis_triggered": "Анализ диалогов запущен"
-}
+{}
