@@ -29,8 +29,6 @@ export function useAuth() {
     isLoading,
     pendingVerificationEmail,
     setAuth,
-    setAccessToken,
-    setUser,
     clearAuth,
     setLoading,
     setPendingVerificationEmail,
@@ -99,9 +97,14 @@ export function useAuth() {
       setLoading(true);
       try {
         const res = await switchWorkspaceApi(dto);
-        setAuth(res.user, res.access_token);
+        useAuthStore.getState().updateWorkspaceContext({
+          workspace: res.workspace,
+          role: res.role,
+          staffProfile: res.staffProfile,
+          accessToken: res.access_token,
+        });
         if (typeof window !== 'undefined') {
-          // Trigger a hard reload or navigation to ensure all SWR caches and state re-sync with new workspace
+          // Trigger a hard reload to ensure all SWR caches and state re-sync with new workspace
           window.location.reload();
         }
         return res;
@@ -111,7 +114,7 @@ export function useAuth() {
         setLoading(false);
       }
     },
-    [setAuth, setLoading],
+    [setLoading],
   );
 
   const logout = useCallback(async () => {

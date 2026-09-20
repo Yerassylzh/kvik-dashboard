@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import {
+  AccessibleWorkspaceDto,
   AuthResponse,
   ChangePasswordDto,
   ForgotPasswordDto,
@@ -9,6 +10,7 @@ import {
   ResendVerificationDto,
   ResetPasswordDto,
   SwitchWorkspaceDto,
+  SwitchWorkspaceResponseDto,
   User,
   ValidateStaffInviteResponse,
   VerifyEmailDto,
@@ -50,8 +52,13 @@ export async function registerStaffApi(dto: RegisterStaffDto): Promise<AuthRespo
   return data;
 }
 
-export async function switchWorkspaceApi(dto: SwitchWorkspaceDto): Promise<AuthResponse> {
-  const { data } = await apiClient.post<AuthResponse>('/auth/switch-workspace', dto);
+export async function getAccessibleWorkspacesApi(): Promise<AccessibleWorkspaceDto[]> {
+  const { data } = await apiClient.get<AccessibleWorkspaceDto[]>('/auth/workspaces');
+  return data;
+}
+
+export async function switchWorkspaceApi(dto: SwitchWorkspaceDto): Promise<SwitchWorkspaceResponseDto> {
+  const { data } = await apiClient.post<SwitchWorkspaceResponseDto>('/auth/switch-workspace', dto);
   return data;
 }
 

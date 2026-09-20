@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User, SystemRole } from '@/types/auth';
+import { User, SystemRole, StaffProfileSummary } from '@/types/auth';
 
 const SESSION_KEY = 'kvik_pending_verification_email';
 const ROLE_COOKIE_KEY = 'kvik_role';
@@ -47,6 +47,12 @@ interface AuthState {
   setAccessToken: (token: string | null) => void;
   setUser: (user: User | null) => void;
   setAuth: (user: User, accessToken: string) => void;
+  updateWorkspaceContext: (params: {
+    workspace: { id: string; name: string };
+    role: SystemRole;
+    staffProfile?: StaffProfileSummary | null;
+    accessToken: string;
+  }) => void;
   clearAuth: () => void;
   setLoading: (isLoading: boolean) => void;
   setPendingVerificationEmail: (email: string | null) => void;
@@ -104,6 +110,37 @@ export const useAuthStore = create<AuthState>((set) => ({
       accessToken,
       isAuthenticated: true,
       isLoading: false,
+    });
+  },
+
+  updateWorkspaceContext: ({ workspace, role, staffProfile, accessToken }) => {
+    saveCachedSystemRole(role);
+    set((state) => {
+      const updatedUser: User | null = state.user
+        ? {
+            ...state.user,
+            role,
+            staffProfile: staffProfile ?? state.user.staffProfile,
+            workspace: {
+              ...(state.user.workspace || {
+                knowledgeConfirmed: true,
+                qualificationRulesSet: true,
+                isActive: true,
+                vipRequested: false,
+                plan: 'PRO',
+              }),
+              id: workspace.id,
+              name: workspace.name,
+            },
+          }
+        : null;
+
+      return {
+        user: updatedUser,
+        accessToken,
+        isAuthenticated: true,
+        isLoading: false,
+      };
     });
   },
 

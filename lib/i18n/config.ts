@@ -46,7 +46,8 @@ export function translateKey(
   if (!code || code === 'raw') return null;
 
   const dict = API_DICTIONARIES[locale] || API_DICTIONARIES[DEFAULT_LOCALE];
-  const keys = code.split('.');
+  const cleanCode = code.startsWith('api.') ? code.slice(4) : code;
+  const keys = cleanCode.split('.');
   
   let current: unknown = dict;
   for (const k of keys) {

@@ -3,9 +3,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Building2, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import useSWR from 'swr';
 import clsx from 'clsx';
 import { useAuth } from '@/hooks/useAuth';
-import type { AvailableWorkspace } from '@/types/auth';
+import { getAccessibleWorkspacesApi } from '@/lib/api/auth';
+import type { AccessibleWorkspaceDto } from '@/types/auth';
 
 export function WorkspaceSwitcher() {
   const t = useTranslations('dashboard');
@@ -20,7 +22,25 @@ export function WorkspaceSwitcher() {
     SPECIALIST: t('staff.role_specialist'),
   };
 
-  const workspaces = user?.availableWorkspaces || [];
+  const { data: fetchedWorkspaces } = useSWR<AccessibleWorkspaceDto[]>(
+    user ? '/auth/workspaces' : null,
+    getAccessibleWorkspacesApi,
+    { revalidateOnFocus: true }
+  );
+
+  const workspaces: AccessibleWorkspaceDto[] =
+    fetchedWorkspaces && fetchedWorkspaces.length > 0
+      ? fetchedWorkspaces
+      : (user?.availableWorkspaces?.map((w) => ({
+          id: w.workspaceId || w.id || '',
+          name: w.workspaceName || w.name || w.businessName || '',
+          businessName: w.businessName || w.workspaceName || '',
+          role: w.role,
+          isOwner: w.role === 'OWNER',
+          plan: w.plan || 'PRO',
+          isActive: w.isActive ?? true,
+        })) || []);
+
   const activeWorkspaceId = user?.workspace?.id;
 
   useEffect(() => {
@@ -52,16 +72,16 @@ export function WorkspaceSwitcher() {
     );
   }
 
-  const activeWs = workspaces.find((w) => w.workspaceId === activeWorkspaceId);
+  const activeWs = workspaces.find((w) => w.id === activeWorkspaceId);
 
-  const handleSwitch = async (ws: AvailableWorkspace) => {
-    if (ws.workspaceId === activeWorkspaceId) {
+  const handleSwitch = async (ws: AccessibleWorkspaceDto) => {
+    if (ws.id === activeWorkspaceId) {
       setOpen(false);
       return;
     }
-    setSwitching(ws.workspaceId);
+    setSwitching(ws.id);
     try {
-      await switchWorkspace({ workspaceId: ws.workspaceId });
+      await switchWorkspace({ workspaceId: ws.id });
     } catch {
       // Error handled upstream
     } finally {
@@ -80,7 +100,7 @@ export function WorkspaceSwitcher() {
         <div className="flex items-center gap-2 min-w-0">
           <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />
           <span className="text-foreground font-medium truncate">
-            {activeWs?.workspaceName || user?.workspace?.name || t('workspace_switcher.no_workspace')}
+            {activeWs?.name || activeWs?.businessName || user?.workspace?.name || t('workspace_switcher.no_workspace')}
           </span>
         </div>
         <ChevronDown
@@ -98,12 +118,12 @@ export function WorkspaceSwitcher() {
           </p>
 
           {workspaces.map((ws) => {
-            const isActive = ws.workspaceId === activeWorkspaceId;
-            const isLoading = switching === ws.workspaceId;
+            const isActive = ws.id === activeWorkspaceId;
+            const isLoading = switching === ws.id;
 
             return (
               <button
-                key={ws.workspaceId}
+                key={ws.id}
                 type="button"
                 disabled={isLoading}
                 onClick={() => handleSwitch(ws)}
@@ -116,7 +136,7 @@ export function WorkspaceSwitcher() {
               >
                 <div className="min-w-0">
                   <p className={clsx('font-medium truncate', isActive && 'text-primary font-semibold')}>
-                    {ws.workspaceName}
+                    {ws.name || ws.businessName}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
                     {roleLabels[ws.role] || ws.role}

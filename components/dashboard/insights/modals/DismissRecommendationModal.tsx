@@ -26,7 +26,7 @@ interface DismissRecommendationModalProps {
       feedbackNotes?: string;
       suppressPermanently?: boolean;
     }
-  ) => Promise<any>;
+  ) => Promise<unknown>;
   isDismissing?: boolean;
 }
 
@@ -78,12 +78,17 @@ export function DismissRecommendationModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onConfirmDismiss(recommendation.id, {
-      reasonCode: selectedReason,
-      feedbackNotes: feedbackNotes.trim() || undefined,
-      suppressPermanently,
-    });
-    onClose();
+    if (isDismissing) return;
+    try {
+      await onConfirmDismiss(recommendation.id, {
+        reasonCode: selectedReason,
+        feedbackNotes: feedbackNotes.trim() || undefined,
+        suppressPermanently,
+      });
+      onClose();
+    } catch {
+      // Error handled with toast upstream
+    }
   };
 
   return (

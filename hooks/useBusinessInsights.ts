@@ -88,9 +88,16 @@ export function useBusinessRecommendations(
         ]);
         return res;
       } catch (err: unknown) {
-        const error = err as { response?: { data?: { message?: string } }; message?: string };
+        const error = err as { response?: { data?: { code?: string; message?: string } }; message?: string };
+        const errorCode = error?.response?.data?.code;
         const msg = error?.response?.data?.message || error?.message || t('toasts.apply_error');
         toast.error(msg);
+        if (errorCode === 'insights.already_implemented' || errorCode === 'insights.already_dismissed') {
+          await Promise.all([
+            mutate(),
+            globalMutate(['insights/summary', workspaceId]),
+          ]);
+        }
         throw err;
       } finally {
         setIsMutating(false);
@@ -112,9 +119,16 @@ export function useBusinessRecommendations(
         ]);
         return res;
       } catch (err: unknown) {
-        const error = err as { response?: { data?: { message?: string } }; message?: string };
+        const error = err as { response?: { data?: { code?: string; message?: string } }; message?: string };
+        const errorCode = error?.response?.data?.code;
         const msg = error?.response?.data?.message || error?.message || t('toasts.dismiss_error');
         toast.error(msg);
+        if (errorCode === 'insights.already_implemented' || errorCode === 'insights.already_dismissed') {
+          await Promise.all([
+            mutate(),
+            globalMutate(['insights/summary', workspaceId]),
+          ]);
+        }
         throw err;
       } finally {
         setIsMutating(false);
@@ -219,8 +233,9 @@ export function useInsightsRealtime(explicitWorkspaceId?: string) {
     if (!accessToken || !workspaceId || typeof window === 'undefined') return;
 
     const socketUrl = getSocketBaseUrl();
+    const bearerToken = accessToken.startsWith('Bearer ') ? accessToken : `Bearer ${accessToken}`;
     const socket = io(`${socketUrl}/insights`, {
-      auth: { token: accessToken },
+      auth: { token: bearerToken },
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 5,
     });
@@ -232,6 +247,11 @@ export function useInsightsRealtime(explicitWorkspaceId?: string) {
     });
 
     socket.on('insights.recommendation_created', () => {
+      mutate((key) => Array.isArray(key) && key[0] === 'insights/recommendations');
+      mutate(['insights/summary', workspaceId]);
+    });
+
+    socket.on('insights.recommendation_applied', () => {
       mutate((key) => Array.isArray(key) && key[0] === 'insights/recommendations');
       mutate(['insights/summary', workspaceId]);
     });

@@ -1,5 +1,10 @@
-import { redirect } from "next/navigation";
+import { SettingsPageWrapper } from '@/components/dashboard/settings/SettingsPageWrapper';
+import { StaffSettingsPage } from '@/components/dashboard/settings/staff/StaffSettingsPage';
 
-export default function StaffSettingsPage() {
-  redirect("/calendar");
+export default function StaffSettingsRoute() {
+  return (
+    <SettingsPageWrapper>
+      <StaffSettingsPage />
+    </SettingsPageWrapper>
+  );
 }

@@ -18,6 +18,10 @@ export interface StaffDto {
   hasDashboardAccess: boolean;
   inviteStatus: InviteStatus;
   createdAt: string;
+  // Round Robin fields
+  roundRobinEnabled?: boolean;
+  roundRobinWeight?: number;
+  lastAssignedAt?: string | null;
 }
 
 export interface AvailabilityTemplateDto {
@@ -63,6 +67,11 @@ export interface UpdateStaffPayload {
   email?: string;
   avatarUrl?: string;
   isActive?: boolean;
+}
+
+export interface UpdateStaffRoundRobinPayload {
+  roundRobinEnabled?: boolean;
+  roundRobinWeight?: number;
 }
 
 export interface InviteStaffPayload {
@@ -129,6 +138,14 @@ export const staffApi = {
 
   revokeInvite: async (id: string): Promise<{ code: string; message: string }> => {
     const { data } = await apiClient.delete<{ code: string; message: string }>(`/staff/${id}/invite`);
+    return data;
+  },
+
+  updateRoundRobin: async (
+    id: string,
+    payload: UpdateStaffRoundRobinPayload
+  ): Promise<{ code: string; message: string; staffId: string; roundRobinEnabled: boolean; roundRobinWeight: number }> => {
+    const { data } = await apiClient.patch(`/staff/${id}/round-robin`, payload);
     return data;
   },
 

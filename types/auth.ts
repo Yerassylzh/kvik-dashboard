@@ -24,10 +24,37 @@ export interface StaffProfileSummary {
   specializations?: string[];
 }
 
+export interface AccessibleWorkspaceDto {
+  id: string;
+  name: string;
+  businessName: string;
+  role: SystemRole;
+  isOwner: boolean;
+  plan: Plan | string;
+  isActive: boolean;
+}
+
 export interface AvailableWorkspace {
   workspaceId: string;
   workspaceName: string;
   role: SystemRole;
+  id?: string;
+  name?: string;
+  businessName?: string;
+  isOwner?: boolean;
+  plan?: Plan | string;
+  isActive?: boolean;
+}
+
+export interface SwitchWorkspaceResponseDto {
+  workspace: {
+    id: string;
+    name: string;
+  };
+  role: SystemRole;
+  staffProfile?: StaffProfileSummary | null;
+  access_token: string;
+  expires_in: number;
 }
 
 export interface User {

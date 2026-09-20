@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { StructuredMarkdownView } from "@/components/onboarding/knowledge/StructuredMarkdownView";
 
 interface WeeklyReportDetailModalProps {
   isOpen: boolean;
@@ -91,8 +92,8 @@ export function WeeklyReportDetailModal({
               <h4 className="text-xs font-bold text-foreground uppercase tracking-wider text-muted-foreground">
                 {t("report_detail.ai_briefing_title")}
               </h4>
-              <div className="text-xs text-foreground/90 whitespace-pre-wrap leading-relaxed font-sans">
-                {report.markdownContent}
+              <div className="text-xs text-foreground/90 leading-relaxed font-sans">
+                <StructuredMarkdownView content={report.markdownContent || ""} />
               </div>
             </div>
 
