@@ -34,9 +34,6 @@ export function StepBusinessProfile({
   const [businessPhone, setBusinessPhone] = useState(
     initialValues.businessPhone || ""
   );
-  const [workingHours, setWorkingHours] = useState(
-    initialValues.workingHours || ""
-  );
   const [businessDescription, setBusinessDescription] = useState(
     initialValues.businessDescription || ""
   );
@@ -53,7 +50,6 @@ export function StepBusinessProfile({
       city,
       businessPhone,
       businessAddress,
-      workingHours,
       businessDescription,
       websiteUrl,
       instagramUrl,
@@ -117,22 +113,13 @@ export function StepBusinessProfile({
 
       {/* Section 2: Contact & Operations */}
       <FadeIn delay={0.1} className="space-y-4 pt-2 border-t border-border/60">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label={t("profile.phone_label")}
-            type="tel"
-            value={businessPhone}
-            onChange={(e) => setBusinessPhone(e.target.value)}
-            placeholder={t("profile.phone_placeholder")}
-          />
-
-          <Input
-            label={t("profile.working_hours_label")}
-            value={workingHours}
-            onChange={(e) => setWorkingHours(e.target.value)}
-            placeholder={t("profile.working_hours_placeholder")}
-          />
-        </div>
+        <Input
+          label={t("profile.phone_label")}
+          type="tel"
+          value={businessPhone}
+          onChange={(e) => setBusinessPhone(e.target.value)}
+          placeholder={t("profile.phone_placeholder")}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input

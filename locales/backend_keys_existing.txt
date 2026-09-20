@@ -68,6 +68,15 @@ api.follow_up.config_updated
 api.follow_up.not_found
 api.follow_up.preview_failed
 api.follow_up.test_simulated
+api.insights.already_dismissed
+api.insights.already_implemented
+api.insights.analysis_triggered
+api.insights.recommendation_applied
+api.insights.recommendation_dismissed
+api.insights.recommendation_not_found
+api.insights.report_not_found
+api.insights.weekly_report_email_sent
+api.insights.weekly_report_generated
 api.knowledge.2gis_scraping_started
 api.knowledge.bulk_deleted
 api.knowledge.business_context_regeneration_queued

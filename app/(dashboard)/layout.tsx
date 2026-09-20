@@ -10,22 +10,24 @@ import {
   CalendarCheck,
   Settings2,
   Settings,
-  Bell,
   Bot,
   Terminal,
-  LayoutDashboard,
+  Zap,
+  BarChart3,
+  UserCheck,
+  Share2,
   Search,
   HelpCircle,
   MessageCircle,
   BookOpen,
   Mail,
   ExternalLink,
+  LayoutDashboard,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRBAC } from '@/hooks/useRBAC';
 import { useDevMode } from '@/hooks/useDevMode';
 import { getOnboardingState } from '@/lib/api/onboarding';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -38,6 +40,7 @@ import {
 import { useInboxStore } from '@/store/inbox.store';
 import { useInboxRealtime } from '@/hooks/useInboxRealtime';
 import { WorkspaceSwitcher } from '@/components/dashboard/shared/WorkspaceSwitcher';
+import { NotificationPopover } from '@/components/dashboard/notifications/NotificationPopover';
 import { Toaster } from '@/components/ui/sonner';
 import clsx from 'clsx';
 
@@ -104,62 +107,92 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  // Streamlined 6 Core Navigation Items (MoonAI Standard)
-  const primaryNavItems = [
+  // Structured 3-Cluster Enterprise Navigation
+  const navClusters = [
     {
-      href: '/overview',
-      label: t('nav.overview'),
-      Icon: LayoutDashboard,
-      roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+      clusterKey: 'nav.group_operations',
+      items: [
+        {
+          href: '/inbox',
+          label: t('nav.inbox'),
+          Icon: MessageSquare,
+          badge: getTotalUnread(),
+          roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+        },
+        {
+          href: '/calendar',
+          label: t('nav.calendar'),
+          Icon: CalendarCheck,
+          roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+        },
+        {
+          href: '/clients',
+          label: t('nav.clients'),
+          Icon: Users,
+          roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+        },
+      ],
     },
     {
-      href: '/inbox',
-      label: t('nav.inbox'),
-      Icon: MessageSquare,
-      badge: getTotalUnread(),
-      roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+      clusterKey: 'nav.group_ai_growth',
+      items: [
+        {
+          href: '/ai-studio',
+          label: t('nav.ai_studio'),
+          Icon: Bot,
+          roles: ['OWNER', 'ADMIN_MANAGER'],
+        },
+        {
+          href: '/automations',
+          label: t('nav.automations'),
+          Icon: Zap,
+          roles: ['OWNER', 'ADMIN_MANAGER'],
+        },
+        {
+          href: '/insights',
+          label: t('nav.insights'),
+          Icon: BarChart3,
+          roles: ['OWNER', 'ADMIN_MANAGER'],
+        },
+      ],
     },
     {
-      href: '/calendar',
-      label: t('nav.calendar'),
-      Icon: CalendarCheck,
-      roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+      clusterKey: 'nav.group_governance',
+      items: [
+        {
+          href: '/team',
+          label: t('nav.team'),
+          Icon: UserCheck,
+          roles: ['OWNER', 'ADMIN_MANAGER'],
+        },
+        {
+          href: '/integrations',
+          label: t('nav.integrations'),
+          Icon: Share2,
+          roles: ['OWNER', 'ADMIN_MANAGER'],
+        },
+        {
+          href: '/settings',
+          label: t('nav.settings'),
+          Icon: Settings2,
+          roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
+        },
+        ...(isDevMode
+          ? [
+              {
+                href: '/dev-messaging',
+                label: t('dev_messaging.nav_label'),
+                Icon: Terminal,
+                roles: ['OWNER', 'ADMIN_MANAGER'],
+              },
+            ]
+          : []),
+      ],
     },
-    {
-      href: '/clients',
-      label: t('nav.clients'),
-      Icon: Users,
-      roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
-    },
-    {
-      href: '/ai-studio',
-      label: t('nav.ai_studio'),
-      Icon: Bot,
-      roles: ['OWNER', 'ADMIN_MANAGER'],
-    },
-    {
-      href: '/settings',
-      label: t('nav.settings'),
-      Icon: Settings2,
-      roles: ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'],
-    },
-    ...(isDevMode
-      ? [
-          {
-            href: '/dev-messaging',
-            label: t('dev_messaging.nav_label'),
-            Icon: Terminal,
-            roles: ['OWNER', 'ADMIN_MANAGER'],
-          },
-        ]
-      : []),
   ];
 
-  const visibleNavItems = primaryNavItems.filter((item) =>
-    item.roles.includes(systemRole)
-  );
-
-  const currentNavItem = primaryNavItems.find(
+  const allNavItems = navClusters.flatMap((c) => c.items);
+  const currentNavItem = allNavItems.find(
     (item) => pathname === item.href || (item.href !== '/overview' && pathname.startsWith(item.href))
   );
 
@@ -189,7 +222,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Sleek MoonAI-Style Sidebar (210px) */}
         <aside className="w-[210px] h-full border-r border-border/70 bg-[#F8F9FA] p-3 flex flex-col justify-between hidden md:flex shrink-0 overflow-y-auto themed-scroll select-none">
-          <div className="space-y-3.5">
+          <div className="space-y-4">
             {/* Logo */}
             <div className="px-2 py-1 flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -202,49 +235,87 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Workspace Switcher */}
             <WorkspaceSwitcher />
 
-            {/* Primary Navigation */}
-            <nav className="space-y-0.5 pt-1">
+            {/* Categorized Navigation Clusters */}
+            <nav className="space-y-3 pt-1">
+              {/* Standalone Overview Link */}
+              {mounted && (() => {
+                const isOverviewActive = pathname === '/overview';
+                return (
+                  <Link
+                    href="/overview"
+                    className={clsx(
+                      'flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-all whitespace-nowrap',
+                      isOverviewActive
+                        ? 'bg-primary/10 text-primary font-semibold'
+                        : 'text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 font-medium'
+                    )}
+                  >
+                    <LayoutDashboard
+                      className={clsx(
+                        'w-4 h-4 shrink-0 transition-colors',
+                        isOverviewActive ? 'text-primary' : 'text-zinc-500'
+                      )}
+                    />
+                    <span className="truncate">{t('nav.overview')}</span>
+                  </Link>
+                );
+              })()}
               {mounted &&
-                visibleNavItems.map((item) => {
-                  const isActive =
-                    pathname === item.href ||
-                    (item.href !== '/overview' && pathname.startsWith(item.href));
-                  const Icon = item.Icon;
+                navClusters.map((cluster) => {
+                  const visibleItems = cluster.items.filter((item) =>
+                    item.roles.includes(systemRole)
+                  );
+                  if (visibleItems.length === 0) return null;
 
                   return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={clsx(
-                        'flex items-center justify-between px-2.5 py-2 rounded-lg text-xs transition-all whitespace-nowrap',
-                        isActive
-                          ? 'bg-primary/10 text-primary font-semibold'
-                          : 'text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 font-medium'
-                      )}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Icon
-                          className={clsx(
-                            'w-4 h-4 shrink-0 transition-colors',
-                            isActive ? 'text-primary' : 'text-zinc-500'
-                          )}
-                        />
-                        <span>{item.label}</span>
+                    <div key={cluster.clusterKey} className="space-y-0.5">
+                      <div className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                        {t(cluster.clusterKey as any)}
                       </div>
 
-                      {item.badge !== undefined && item.badge > 0 && (
-                        <span
-                          className={clsx(
-                            'h-4 min-w-4 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center font-mono',
-                            isActive
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-zinc-200 text-zinc-700'
-                          )}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
+                      {visibleItems.map((item) => {
+                        const isActive =
+                          pathname === item.href ||
+                          (item.href !== '/overview' && pathname.startsWith(item.href));
+                        const Icon = item.Icon;
+
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={clsx(
+                              'flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all whitespace-nowrap',
+                              isActive
+                                ? 'bg-primary/10 text-primary font-semibold'
+                                : 'text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 font-medium'
+                            )}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <Icon
+                                className={clsx(
+                                  'w-4 h-4 shrink-0 transition-colors',
+                                  isActive ? 'text-primary' : 'text-zinc-500'
+                                )}
+                              />
+                              <span className="truncate">{item.label}</span>
+                            </div>
+
+                            {item.badge !== undefined && item.badge > 0 && (
+                              <span
+                                className={clsx(
+                                  'h-4 min-w-4 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center font-mono',
+                                  isActive
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-zinc-200 text-zinc-700'
+                                )}
+                              >
+                                {item.badge}
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
                   );
                 })}
             </nav>
@@ -284,17 +355,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               />
             </div>
 
-            {/* Topbar Right Utilities: Notifications, Settings, User Profile */}
+            {/* Topbar Right Utilities: Notifications Popover, Settings, User Profile */}
             <div className="flex items-center gap-1.5 shrink-0">
-              {/* Notification Bell */}
-              <Link
-                href="/notifications"
-                title={t('header.notifications_tooltip')}
-                className="relative p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                <Bell className="w-4 h-4" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-card" />
-              </Link>
+              {/* Notification Bell Popover */}
+              <NotificationPopover />
 
               {/* Settings Gear */}
               <Link

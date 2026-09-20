@@ -165,5 +165,16 @@
     "test_simulated": "Тестовая генерация сообщения успешно выполнена",
     "not_found": "Настройки авто-дожима не найдены",
     "preview_failed": "Не удалось сгенерировать превью сообщения"
+  },
+  "insights": {
+    "recommendation_applied": "Рекомендация успешно применена, изменения сохранены",
+    "recommendation_dismissed": "Рекомендация отклонена, отзыв сохранен",
+    "recommendation_not_found": "Рекомендация не найдена",
+    "already_implemented": "Рекомендация уже была применена ранее",
+    "already_dismissed": "Рекомендация уже была отклонена",
+    "report_not_found": "Еженедельный отчет не найден",
+    "weekly_report_generated": "Еженедельный отчет успешно сформирован",
+    "weekly_report_email_sent": "Еженедельный отчет отправлен по email",
+    "analysis_triggered": "Анализ диалогов запущен"
   }
 }

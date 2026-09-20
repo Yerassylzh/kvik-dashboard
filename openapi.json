@@ -185,6 +185,409 @@
         ]
       }
     },
+    "/workspaces/{workspaceId}/recommendations": {
+      "get": {
+        "operationId": "BusinessInsightsController_getRecommendations",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "NEW",
+              "type": "string",
+              "enum": [
+                "NEW",
+                "ACCEPTED",
+                "DISMISSED",
+                "IMPLEMENTED",
+                "ALL"
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SERVICE_EXPANSION",
+                "SCHEDULE_OPTIMIZATION",
+                "PRICING_AND_PACKAGING",
+                "KNOWLEDGE_GAP",
+                "STAFF_BALANCING",
+                "MARKETING_INSIGHT"
+              ]
+            }
+          },
+          {
+            "name": "impact",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "HIGH",
+                "MEDIUM",
+                "LOW"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsListResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter parameters"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List business recommendations with filtering and pagination",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/recommendations/summary": {
+      "get": {
+        "operationId": "BusinessInsightsController_getSummary",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationsSummaryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get summary KPIs and category breakdown for recommendation badges",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/recommendations/{id}/apply": {
+      "post": {
+        "operationId": "BusinessInsightsController_applyRecommendation",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyRecommendationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recommendation successfully applied"
+          },
+          "400": {
+            "description": "Execution failed or recommendation already implemented"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Recommendation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Apply 1-click execution action for a recommendation",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/recommendations/{id}/dismiss": {
+      "post": {
+        "operationId": "BusinessInsightsController_dismissRecommendation",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DismissRecommendationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recommendation dismissed"
+          },
+          "400": {
+            "description": "Invalid dismissal data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Recommendation not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dismiss a recommendation with structured owner feedback",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/recommendations/demand-trends": {
+      "get": {
+        "operationId": "BusinessInsightsController_getDemandTrends",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandTrendsResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get demand trend metrics (unmet services, hourly distribution, objections)",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/reports": {
+      "get": {
+        "operationId": "BusinessInsightsController_getReports",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportsListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List historical weekly insight reports",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
+    "/workspaces/{workspaceId}/reports/{reportId}": {
+      "get": {
+        "operationId": "BusinessInsightsController_getReportById",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleWeeklyReportResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Report not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get single weekly insight report with full markdown content",
+        "tags": [
+          "Business Insights & Recommendations"
+        ]
+      }
+    },
     "/auth/register": {
       "post": {
         "operationId": "AuthController_register",
@@ -324,6 +727,29 @@
           }
         ],
         "summary": "Switch active workspace context",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/workspaces": {
+      "get": {
+        "operationId": "AuthController_getMyWorkspaces",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of accessible workspaces (owned + staff roles)"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all workspaces accessible by the current user",
         "tags": [
           "Auth"
         ]
@@ -1057,121 +1483,9 @@
         ]
       }
     },
-    "/knowledge-base/profile": {
-      "get": {
-        "operationId": "KnowledgeBaseController_getBusinessProfile",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BusinessProfileResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get workspace business profile and contact information",
-        "tags": [
-          "Knowledge Base"
-        ]
-      },
-      "put": {
-        "operationId": "KnowledgeBaseController_updateBusinessProfile",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateBusinessProfileDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateBusinessProfileResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update workspace business profile",
-        "tags": [
-          "Knowledge Base"
-        ]
-      },
-      "patch": {
-        "operationId": "KnowledgeBaseController_patchBusinessProfile",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateBusinessProfileDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateBusinessProfileResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update workspace business profile (PATCH)",
-        "tags": [
-          "Knowledge Base"
-        ]
-      }
-    },
     "/knowledge-base/documents": {
       "post": {
-        "operationId": "KnowledgeBaseController_uploadDocument",
+        "operationId": "KnowledgeBaseEntriesController_uploadDocument",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1215,7 +1529,7 @@
         ]
       },
       "get": {
-        "operationId": "KnowledgeBaseController_listDocuments",
+        "operationId": "KnowledgeBaseEntriesController_listDocuments",
         "parameters": [],
         "responses": {
           "200": {
@@ -1238,7 +1552,7 @@
     },
     "/knowledge-base/notes": {
       "post": {
-        "operationId": "KnowledgeBaseController_addNotes",
+        "operationId": "KnowledgeBaseEntriesController_addNotes",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1272,7 +1586,7 @@
         ]
       },
       "get": {
-        "operationId": "KnowledgeBaseController_listNotes",
+        "operationId": "KnowledgeBaseEntriesController_listNotes",
         "parameters": [],
         "responses": {
           "200": {
@@ -1295,7 +1609,7 @@
     },
     "/knowledge-base/notes/{id}": {
       "get": {
-        "operationId": "KnowledgeBaseController_getNoteById",
+        "operationId": "KnowledgeBaseEntriesController_getNoteById",
         "parameters": [
           {
             "name": "id",
@@ -1335,7 +1649,7 @@
         ]
       },
       "put": {
-        "operationId": "KnowledgeBaseController_updateNote",
+        "operationId": "KnowledgeBaseEntriesController_updateNote",
         "parameters": [
           {
             "name": "id",
@@ -1388,7 +1702,7 @@
         ]
       },
       "patch": {
-        "operationId": "KnowledgeBaseController_patchNote",
+        "operationId": "KnowledgeBaseEntriesController_patchNote",
         "parameters": [
           {
             "name": "id",
@@ -1441,7 +1755,7 @@
         ]
       },
       "delete": {
-        "operationId": "KnowledgeBaseController_deleteNote",
+        "operationId": "KnowledgeBaseEntriesController_deleteNote",
         "parameters": [
           {
             "name": "id",
@@ -1474,146 +1788,9 @@
         ]
       }
     },
-    "/knowledge-base/scrapers/website": {
-      "post": {
-        "operationId": "KnowledgeBaseController_startWebsiteScraping",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TriggerWebsiteScrapeDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Website crawling initiated"
-          },
-          "400": {
-            "description": "Validation failed"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Trigger website crawling (async)",
-        "tags": [
-          "Knowledge Base"
-        ]
-      }
-    },
-    "/knowledge-base/scrapers/2gis": {
-      "post": {
-        "operationId": "KnowledgeBaseController_start2GisScraping",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TriggerTwoGisScrapeDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "2GIS catalog scraping initiated"
-          },
-          "400": {
-            "description": "Validation failed or unsupported niche"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Trigger 2GIS catalog scraping (async)",
-        "tags": [
-          "Knowledge Base"
-        ]
-      }
-    },
-    "/knowledge-base/scrapers/status": {
-      "get": {
-        "operationId": "KnowledgeBaseController_getUnifiedScrapersStatus",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ScrapersStatusResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get unified status of all knowledge scrapers (website & 2GIS)",
-        "tags": [
-          "Knowledge Base"
-        ]
-      }
-    },
-    "/knowledge-base/scrapers/{type}": {
-      "delete": {
-        "operationId": "KnowledgeBaseController_clearScrapedData",
-        "parameters": [
-          {
-            "name": "type",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Scraped data cleared"
-          },
-          "400": {
-            "description": "Unsupported scraping type"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Bulk clear all scraped entries for website or 2gis",
-        "tags": [
-          "Knowledge Base"
-        ]
-      }
-    },
     "/knowledge-base/entries": {
       "get": {
-        "operationId": "KnowledgeBaseController_listEntries",
+        "operationId": "KnowledgeBaseEntriesController_listEntries",
         "parameters": [
           {
             "name": "type",
@@ -1660,7 +1837,7 @@
     },
     "/knowledge-base/entries/{id}": {
       "get": {
-        "operationId": "KnowledgeBaseController_getEntryById",
+        "operationId": "KnowledgeBaseEntriesController_getEntryById",
         "parameters": [
           {
             "name": "id",
@@ -1700,7 +1877,7 @@
         ]
       },
       "patch": {
-        "operationId": "KnowledgeBaseController_updateEntry",
+        "operationId": "KnowledgeBaseEntriesController_updateEntry",
         "parameters": [
           {
             "name": "id",
@@ -1743,7 +1920,7 @@
         ]
       },
       "delete": {
-        "operationId": "KnowledgeBaseController_deleteEntry",
+        "operationId": "KnowledgeBaseEntriesController_deleteEntry",
         "parameters": [
           {
             "name": "id",
@@ -1778,7 +1955,7 @@
     },
     "/knowledge-base/entries/bulk-delete": {
       "post": {
-        "operationId": "KnowledgeBaseController_bulkDeleteEntries",
+        "operationId": "KnowledgeBaseEntriesController_bulkDeleteEntries",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1814,7 +1991,7 @@
     },
     "/knowledge-base/entries/{id}/reindex": {
       "post": {
-        "operationId": "KnowledgeBaseController_reindexEntry",
+        "operationId": "KnowledgeBaseEntriesController_reindexEntry",
         "parameters": [
           {
             "name": "id",
@@ -1847,9 +2024,258 @@
         ]
       }
     },
+    "/knowledge-base/profile": {
+      "get": {
+        "operationId": "KnowledgeBaseProfileController_getBusinessProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessProfileResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workspace business profile and contact information",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "put": {
+        "operationId": "KnowledgeBaseProfileController_updateBusinessProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusinessProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateBusinessProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update workspace business profile",
+        "tags": [
+          "Knowledge Base"
+        ]
+      },
+      "patch": {
+        "operationId": "KnowledgeBaseProfileController_patchBusinessProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBusinessProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateBusinessProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update workspace business profile (PATCH)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/website": {
+      "post": {
+        "operationId": "KnowledgeBaseProfileController_startWebsiteScraping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerWebsiteScrapeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Website crawling initiated"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trigger website crawling (async)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/2gis": {
+      "post": {
+        "operationId": "KnowledgeBaseProfileController_start2GisScraping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerTwoGisScrapeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "2GIS catalog scraping initiated"
+          },
+          "400": {
+            "description": "Validation failed or unsupported niche"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trigger 2GIS catalog scraping (async)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/status": {
+      "get": {
+        "operationId": "KnowledgeBaseProfileController_getUnifiedScrapersStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScrapersStatusResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get unified status of all knowledge scrapers (website & 2GIS)",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
+    "/knowledge-base/scrapers/{type}": {
+      "delete": {
+        "operationId": "KnowledgeBaseProfileController_clearScrapedData",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scraped data cleared"
+          },
+          "400": {
+            "description": "Unsupported scraping type"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk clear all scraped entries for website or 2gis",
+        "tags": [
+          "Knowledge Base"
+        ]
+      }
+    },
     "/knowledge-base/qualification": {
       "get": {
-        "operationId": "KnowledgeBaseController_getQualification",
+        "operationId": "KnowledgeBaseProfileController_getQualification",
         "parameters": [],
         "responses": {
           "200": {
@@ -1877,7 +2303,7 @@
         ]
       },
       "put": {
-        "operationId": "KnowledgeBaseController_updateQualification",
+        "operationId": "KnowledgeBaseProfileController_updateQualification",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1920,7 +2346,7 @@
     },
     "/knowledge-base/business-context": {
       "get": {
-        "operationId": "KnowledgeBaseController_getBusinessContext",
+        "operationId": "KnowledgeBaseProfileController_getBusinessContext",
         "parameters": [],
         "responses": {
           "200": {
@@ -1948,7 +2374,7 @@
         ]
       },
       "put": {
-        "operationId": "KnowledgeBaseController_updateBusinessContext",
+        "operationId": "KnowledgeBaseProfileController_updateBusinessContext",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1991,7 +2417,7 @@
     },
     "/knowledge-base/business-context/regenerate": {
       "post": {
-        "operationId": "KnowledgeBaseController_regenerateBusinessContext",
+        "operationId": "KnowledgeBaseProfileController_regenerateBusinessContext",
         "parameters": [],
         "responses": {
           "200": {
@@ -2014,7 +2440,7 @@
     },
     "/knowledge-base/search": {
       "get": {
-        "operationId": "KnowledgeBaseController_searchKnowledge",
+        "operationId": "KnowledgeBaseProfileController_searchKnowledge",
         "parameters": [
           {
             "name": "q",
@@ -2059,7 +2485,7 @@
     },
     "/knowledge-base/status/{type}": {
       "get": {
-        "operationId": "KnowledgeBaseController_getScrapingStatus",
+        "operationId": "KnowledgeBaseProfileController_getScrapingStatus",
         "parameters": [
           {
             "name": "type",
@@ -2094,7 +2520,7 @@
     },
     "/knowledge-base/stats": {
       "get": {
-        "operationId": "KnowledgeBaseController_getStats",
+        "operationId": "KnowledgeBaseProfileController_getStats",
         "parameters": [],
         "responses": {
           "200": {
@@ -2124,7 +2550,7 @@
     },
     "/onboarding/state": {
       "get": {
-        "operationId": "OnboardingController_getState",
+        "operationId": "OnboardingWizardController_getState",
         "parameters": [],
         "responses": {
           "200": {
@@ -2154,7 +2580,7 @@
     },
     "/onboarding/step/niche": {
       "post": {
-        "operationId": "OnboardingController_selectNiche",
+        "operationId": "OnboardingWizardController_selectNiche",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2194,7 +2620,7 @@
     },
     "/onboarding/step/business-profile": {
       "post": {
-        "operationId": "OnboardingController_saveBusinessProfile",
+        "operationId": "OnboardingWizardController_saveBusinessProfile",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2235,7 +2661,7 @@
         ]
       },
       "put": {
-        "operationId": "OnboardingController_updateBusinessProfile",
+        "operationId": "OnboardingWizardController_updateBusinessProfile",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2278,7 +2704,7 @@
     },
     "/onboarding/step/data-source": {
       "post": {
-        "operationId": "OnboardingController_submitDataSource",
+        "operationId": "OnboardingWizardController_submitDataSource",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2318,7 +2744,7 @@
     },
     "/onboarding/step/data-source-confirm": {
       "post": {
-        "operationId": "OnboardingController_confirmDataSource",
+        "operationId": "OnboardingWizardController_confirmDataSource",
         "parameters": [],
         "responses": {
           "200": {
@@ -2348,7 +2774,7 @@
     },
     "/onboarding/step/data-source/confirm": {
       "post": {
-        "operationId": "OnboardingController_confirmDataSourceAlias",
+        "operationId": "OnboardingWizardController_confirmDataSourceAlias",
         "parameters": [],
         "responses": {
           "200": {
@@ -2378,7 +2804,7 @@
     },
     "/onboarding/step/data-preview": {
       "get": {
-        "operationId": "OnboardingController_getDataPreview",
+        "operationId": "OnboardingWizardController_getDataPreview",
         "parameters": [],
         "responses": {
           "200": {
@@ -2408,7 +2834,7 @@
     },
     "/onboarding/step/data-confirm": {
       "post": {
-        "operationId": "OnboardingController_confirmData",
+        "operationId": "OnboardingWizardController_confirmData",
         "parameters": [],
         "responses": {
           "200": {
@@ -2438,7 +2864,7 @@
     },
     "/onboarding/step/channel": {
       "post": {
-        "operationId": "OnboardingController_connectChannel",
+        "operationId": "OnboardingWizardController_connectChannel",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2481,7 +2907,7 @@
     },
     "/onboarding/step/channel-confirm": {
       "post": {
-        "operationId": "OnboardingController_confirmChannel",
+        "operationId": "OnboardingWizardController_confirmChannel",
         "parameters": [],
         "responses": {
           "200": {
@@ -2511,7 +2937,7 @@
     },
     "/onboarding/step/channel/confirm": {
       "post": {
-        "operationId": "OnboardingController_confirmChannelAlias",
+        "operationId": "OnboardingWizardController_confirmChannelAlias",
         "parameters": [],
         "responses": {
           "200": {
@@ -2541,7 +2967,7 @@
     },
     "/onboarding/step/channel-skip": {
       "post": {
-        "operationId": "OnboardingController_skipChannel",
+        "operationId": "OnboardingWizardController_skipChannel",
         "parameters": [],
         "responses": {
           "200": {
@@ -2571,7 +2997,7 @@
     },
     "/onboarding/step/channel/skip": {
       "post": {
-        "operationId": "OnboardingController_skipChannelAlias",
+        "operationId": "OnboardingWizardController_skipChannelAlias",
         "parameters": [],
         "responses": {
           "200": {
@@ -2601,7 +3027,7 @@
     },
     "/onboarding/step/qualification": {
       "post": {
-        "operationId": "OnboardingController_saveQualification",
+        "operationId": "OnboardingWizardController_saveQualification",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2644,7 +3070,7 @@
     },
     "/onboarding/step/qualification-rules": {
       "post": {
-        "operationId": "OnboardingController_saveQualificationRules",
+        "operationId": "OnboardingWizardController_saveQualificationRules",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2685,7 +3111,7 @@
         ]
       },
       "get": {
-        "operationId": "OnboardingController_getQualificationRules",
+        "operationId": "OnboardingWizardController_getQualificationRules",
         "parameters": [],
         "responses": {
           "401": {
@@ -2705,7 +3131,7 @@
     },
     "/onboarding/step/complete": {
       "post": {
-        "operationId": "OnboardingController_complete",
+        "operationId": "OnboardingWizardController_complete",
         "parameters": [],
         "responses": {
           "200": {
@@ -2735,7 +3161,7 @@
     },
     "/onboarding/step/website-scraping": {
       "post": {
-        "operationId": "OnboardingController_startWebsiteScraping",
+        "operationId": "OnboardingSourcesController_startWebsiteScraping",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2771,7 +3197,7 @@
     },
     "/onboarding/step/2gis-scraping": {
       "post": {
-        "operationId": "OnboardingController_start2GisScraping",
+        "operationId": "OnboardingSourcesController_start2GisScraping",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2807,7 +3233,7 @@
     },
     "/onboarding/scraping/status": {
       "get": {
-        "operationId": "OnboardingController_getScrapingStatus",
+        "operationId": "OnboardingSourcesController_getScrapingStatus",
         "parameters": [
           {
             "name": "type",
@@ -2843,7 +3269,7 @@
     },
     "/onboarding/step/knowledge-notes": {
       "post": {
-        "operationId": "OnboardingController_addKnowledgeNotes",
+        "operationId": "OnboardingSourcesController_addKnowledgeNotes",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2876,7 +3302,7 @@
     },
     "/onboarding/step/notes": {
       "post": {
-        "operationId": "OnboardingController_addNotes",
+        "operationId": "OnboardingSourcesController_addNotes",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2907,7 +3333,7 @@
         ]
       },
       "get": {
-        "operationId": "OnboardingController_listNotes",
+        "operationId": "OnboardingSourcesController_listNotes",
         "parameters": [],
         "responses": {
           "401": {
@@ -2927,7 +3353,7 @@
     },
     "/onboarding/knowledge-notes": {
       "get": {
-        "operationId": "OnboardingController_listKnowledgeNotes",
+        "operationId": "OnboardingSourcesController_listKnowledgeNotes",
         "parameters": [],
         "responses": {
           "401": {
@@ -2947,7 +3373,7 @@
     },
     "/onboarding/step/notes/{id}": {
       "delete": {
-        "operationId": "OnboardingController_deleteNote",
+        "operationId": "OnboardingSourcesController_deleteNote",
         "parameters": [
           {
             "name": "id",
@@ -2979,7 +3405,7 @@
     },
     "/onboarding/step/knowledge-documents": {
       "post": {
-        "operationId": "OnboardingController_uploadDocument",
+        "operationId": "OnboardingSourcesController_uploadDocument",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3018,7 +3444,7 @@
     },
     "/onboarding/step/knowledge-files": {
       "post": {
-        "operationId": "OnboardingController_uploadKnowledgeFile",
+        "operationId": "OnboardingSourcesController_uploadKnowledgeFile",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3055,7 +3481,7 @@
         ]
       },
       "get": {
-        "operationId": "OnboardingController_listKnowledgeFiles",
+        "operationId": "OnboardingSourcesController_listKnowledgeFiles",
         "parameters": [],
         "responses": {
           "401": {
@@ -3075,7 +3501,7 @@
     },
     "/onboarding/knowledge-documents": {
       "get": {
-        "operationId": "OnboardingController_listDocuments",
+        "operationId": "OnboardingSourcesController_listDocuments",
         "parameters": [],
         "responses": {
           "401": {
@@ -3095,7 +3521,7 @@
     },
     "/onboarding/step/knowledge-files/{id}": {
       "delete": {
-        "operationId": "OnboardingController_deleteKnowledgeFile",
+        "operationId": "OnboardingSourcesController_deleteKnowledgeFile",
         "parameters": [
           {
             "name": "id",
@@ -3127,7 +3553,7 @@
     },
     "/onboarding/knowledge/{id}": {
       "delete": {
-        "operationId": "OnboardingController_deleteKnowledgeEntry",
+        "operationId": "OnboardingSourcesController_deleteKnowledgeEntry",
         "parameters": [
           {
             "name": "id",
@@ -3159,7 +3585,7 @@
     },
     "/onboarding/knowledge/search": {
       "get": {
-        "operationId": "OnboardingController_searchKnowledge",
+        "operationId": "OnboardingSourcesController_searchKnowledge",
         "parameters": [
           {
             "name": "q",
@@ -3197,7 +3623,7 @@
     },
     "/onboarding/knowledge-entries": {
       "get": {
-        "operationId": "OnboardingController_listKnowledgeEntries",
+        "operationId": "OnboardingSourcesController_listKnowledgeEntries",
         "parameters": [
           {
             "name": "type",
@@ -3247,7 +3673,7 @@
     },
     "/onboarding/knowledge-entries/{id}": {
       "get": {
-        "operationId": "OnboardingController_getKnowledgeEntryById",
+        "operationId": "OnboardingSourcesController_getKnowledgeEntryById",
         "parameters": [
           {
             "name": "id",
@@ -3289,7 +3715,7 @@
     },
     "/onboarding/business-context": {
       "get": {
-        "operationId": "OnboardingController_getBusinessContext",
+        "operationId": "OnboardingSourcesController_getBusinessContext",
         "parameters": [],
         "responses": {
           "200": {
@@ -5587,6 +6013,541 @@
         "type": "object",
         "properties": {}
       },
+      "SampleQuoteDto": {
+        "type": "object",
+        "properties": {
+          "quote": {
+            "type": "string",
+            "example": "Здравствуйте, а ламинирование бровей у вас делают?"
+          },
+          "channel": {
+            "type": "string",
+            "example": "WHATSAPP"
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-09-17T14:22:00.000Z"
+          }
+        },
+        "required": [
+          "quote",
+          "channel",
+          "date"
+        ]
+      },
+      "RecommendationItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "rec-uuid-1"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "SERVICE_EXPANSION",
+              "SCHEDULE_OPTIMIZATION",
+              "PRICING_AND_PACKAGING",
+              "KNOWLEDGE_GAP",
+              "STAFF_BALANCING",
+              "MARKETING_INSIGHT"
+            ],
+            "example": "SERVICE_EXPANSION"
+          },
+          "impact": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ],
+            "example": "HIGH"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "ACCEPTED",
+              "DISMISSED",
+              "IMPLEMENTED"
+            ],
+            "example": "NEW"
+          },
+          "title": {
+            "type": "string",
+            "example": "Высокий спрос на новую услугу: Ламинирование бровей и ресниц"
+          },
+          "executiveSummary": {
+            "type": "string",
+            "example": "19 клиентов искали эту услугу в переписке WhatsApp и Instagram (13% от всех отказов)."
+          },
+          "problemDiagnosis": {
+            "type": "string",
+            "example": "Клиенты активно интересуются комплексным ламинированием ресниц. Бот сообщает об отсутствии услуги."
+          },
+          "uniqueClientsCount": {
+            "type": "number",
+            "example": 19
+          },
+          "lostLeadsCount": {
+            "type": "number",
+            "example": 19
+          },
+          "lostRevenueScore": {
+            "type": "number",
+            "example": 85
+          },
+          "sampleQuotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SampleQuoteDto"
+            }
+          },
+          "actionType": {
+            "type": "string",
+            "enum": [
+              "ADD_SERVICE_OFFERING",
+              "UPDATE_SCHEDULE_HOURS",
+              "ADD_KNOWLEDGE_NOTE",
+              "UPDATE_PROMPT_RULE",
+              "MANUAL_ACTION_REQUIRED"
+            ],
+            "example": "ADD_SERVICE_OFFERING"
+          },
+          "actionPayload": {
+            "type": "object",
+            "example": {
+              "serviceName": "Ламинирование бровей и ресниц",
+              "suggestedPrice": 12000
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-18T02:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "impact",
+          "status",
+          "title",
+          "executiveSummary",
+          "problemDiagnosis",
+          "uniqueClientsCount",
+          "lostLeadsCount",
+          "lostRevenueScore",
+          "sampleQuotes",
+          "actionType",
+          "actionPayload",
+          "createdAt"
+        ]
+      },
+      "RecommendationsListResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecommendationItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 6
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit"
+        ]
+      },
+      "RecommendationsSummaryResponseDto": {
+        "type": "object",
+        "properties": {
+          "totalActive": {
+            "type": "number",
+            "example": 6
+          },
+          "highImpactCount": {
+            "type": "number",
+            "example": 3
+          },
+          "mediumImpactCount": {
+            "type": "number",
+            "example": 2
+          },
+          "lowImpactCount": {
+            "type": "number",
+            "example": 1
+          },
+          "estimatedLostLeadsTotal": {
+            "type": "number",
+            "example": 68
+          },
+          "categoryBreakdown": {
+            "type": "object",
+            "example": {
+              "SERVICE_EXPANSION": 2,
+              "SCHEDULE_OPTIMIZATION": 1,
+              "PRICING_AND_PACKAGING": 1,
+              "KNOWLEDGE_GAP": 1,
+              "STAFF_BALANCING": 1
+            }
+          }
+        },
+        "required": [
+          "totalActive",
+          "highImpactCount",
+          "mediumImpactCount",
+          "lowImpactCount",
+          "estimatedLostLeadsTotal",
+          "categoryBreakdown"
+        ]
+      },
+      "ApplyRecommendationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DismissRecommendationDto": {
+        "type": "object",
+        "properties": {
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "NOT_APPLICABLE_TO_NICHE",
+              "BUSINESS_DECISION_NO",
+              "ALREADY_RESOLVED_OFFLINE",
+              "INCORRECT_EXTRACTION",
+              "OTHER"
+            ]
+          }
+        },
+        "required": [
+          "reasonCode"
+        ]
+      },
+      "DemandTrendsPeriodDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "2026-08-18"
+          },
+          "to": {
+            "type": "string",
+            "example": "2026-09-17"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "UnmetServiceItemDto": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "example": "Ламинирование бровей/ресниц"
+          },
+          "inquiries": {
+            "type": "number",
+            "example": 19
+          },
+          "lostLeads": {
+            "type": "number",
+            "example": 19
+          }
+        },
+        "required": [
+          "service",
+          "inquiries",
+          "lostLeads"
+        ]
+      },
+      "HourlyDistributionItemDto": {
+        "type": "object",
+        "properties": {
+          "hour": {
+            "type": "number",
+            "example": 19
+          },
+          "inquiries": {
+            "type": "number",
+            "example": 38
+          },
+          "isWorkingHour": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "hour",
+          "inquiries",
+          "isWorkingHour"
+        ]
+      },
+      "TopObjectionItemDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "example": "PRICE_TOO_HIGH"
+          },
+          "count": {
+            "type": "number",
+            "example": 26
+          },
+          "percentage": {
+            "type": "number",
+            "example": 38.2
+          }
+        },
+        "required": [
+          "reason",
+          "count",
+          "percentage"
+        ]
+      },
+      "DemandTrendsResponseDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "$ref": "#/components/schemas/DemandTrendsPeriodDto"
+          },
+          "unmetServices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnmetServiceItemDto"
+            }
+          },
+          "hourlyInquiryDistribution": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HourlyDistributionItemDto"
+            }
+          },
+          "topObjections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopObjectionItemDto"
+            }
+          }
+        },
+        "required": [
+          "period",
+          "unmetServices",
+          "hourlyInquiryDistribution",
+          "topObjections"
+        ]
+      },
+      "ReportRecommendationSnippetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "rec-uuid-1"
+          },
+          "category": {
+            "type": "string",
+            "example": "SERVICE_EXPANSION"
+          },
+          "impact": {
+            "type": "string",
+            "example": "HIGH"
+          },
+          "status": {
+            "type": "string",
+            "example": "NEW"
+          },
+          "title": {
+            "type": "string",
+            "example": "Высокий спрос на новую услугу: Ламинирование бровей и ресниц"
+          },
+          "uniqueClientsCount": {
+            "type": "number",
+            "example": 19
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "impact",
+          "status",
+          "title",
+          "uniqueClientsCount"
+        ]
+      },
+      "WeeklyReportItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "rep-uuid-1"
+          },
+          "periodStart": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-15T00:00:00.000Z"
+          },
+          "periodEnd": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-21T23:59:59.999Z"
+          },
+          "weekLabel": {
+            "type": "string",
+            "example": "Неделя 38 (15–21 Сентября 2026)"
+          },
+          "totalLeadsAnalyzed": {
+            "type": "number",
+            "example": 142
+          },
+          "totalInsightsFound": {
+            "type": "number",
+            "example": 7
+          },
+          "highImpactCount": {
+            "type": "number",
+            "example": 3
+          },
+          "totalLostLeads": {
+            "type": "number",
+            "example": 68
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportRecommendationSnippetDto"
+            }
+          },
+          "generatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-22T01:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "periodStart",
+          "periodEnd",
+          "weekLabel",
+          "totalLeadsAnalyzed",
+          "totalInsightsFound",
+          "highImpactCount",
+          "totalLostLeads",
+          "recommendations",
+          "generatedAt"
+        ]
+      },
+      "ReportsListResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WeeklyReportItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 5
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 10
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit"
+        ]
+      },
+      "SingleWeeklyReportResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "rep-uuid-1"
+          },
+          "periodStart": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-15T00:00:00.000Z"
+          },
+          "periodEnd": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-21T23:59:59.999Z"
+          },
+          "weekLabel": {
+            "type": "string",
+            "example": "Неделя 38 (15–21 Сентября 2026)"
+          },
+          "totalLeadsAnalyzed": {
+            "type": "number",
+            "example": 142
+          },
+          "totalInsightsFound": {
+            "type": "number",
+            "example": 7
+          },
+          "highImpactCount": {
+            "type": "number",
+            "example": 3
+          },
+          "totalLostLeads": {
+            "type": "number",
+            "example": 68
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportRecommendationSnippetDto"
+            }
+          },
+          "generatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-22T01:00:00.000Z"
+          },
+          "markdownContent": {
+            "type": "string",
+            "example": "# 📊 Еженедельный бизнес-отчёт..."
+          }
+        },
+        "required": [
+          "id",
+          "periodStart",
+          "periodEnd",
+          "weekLabel",
+          "totalLeadsAnalyzed",
+          "totalInsightsFound",
+          "highImpactCount",
+          "totalLostLeads",
+          "recommendations",
+          "generatedAt",
+          "markdownContent"
+        ]
+      },
       "RegisterDto": {
         "type": "object",
         "properties": {}
@@ -5674,122 +6635,6 @@
       "AddOverrideDto": {
         "type": "object",
         "properties": {}
-      },
-      "BusinessProfileDataDto": {
-        "type": "object",
-        "properties": {
-          "businessName": {
-            "type": "string",
-            "example": "Barber Pro Almaty"
-          },
-          "nicheProfile": {
-            "type": "string",
-            "enum": [
-              "REALTY",
-              "AUTO_SALES",
-              "AUTO_SERVICE",
-              "BEAUTY",
-              "CLINIC",
-              "FITNESS",
-              "CONSULTING",
-              "OTHER_CALENDAR"
-            ],
-            "example": "BEAUTY"
-          },
-          "subSegment": {
-            "type": "object",
-            "example": "barbershop"
-          },
-          "city": {
-            "type": "object",
-            "example": "Almaty"
-          },
-          "country": {
-            "type": "object",
-            "example": "KZ"
-          },
-          "businessPhone": {
-            "type": "object",
-            "example": "+77011112233"
-          },
-          "businessEmail": {
-            "type": "object",
-            "example": "info@barberpro.kz"
-          },
-          "businessAddress": {
-            "type": "object",
-            "example": "Abylai Khan Ave 45"
-          },
-          "businessDescription": {
-            "type": "object",
-            "example": "Premium barbershop and grooming lounge"
-          },
-          "websiteUrl": {
-            "type": "object",
-            "example": "https://barberpro.kz"
-          },
-          "instagramUrl": {
-            "type": "object",
-            "example": "https://instagram.com/barberpro_kz"
-          },
-          "teamSize": {
-            "type": "number",
-            "example": 5
-          },
-          "timezone": {
-            "type": "object",
-            "example": "Asia/Almaty"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-09-13T12:00:00.000Z"
-          }
-        },
-        "required": [
-          "businessName"
-        ]
-      },
-      "BusinessProfileResponseDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "knowledge.profile_retrieved"
-          },
-          "profile": {
-            "$ref": "#/components/schemas/BusinessProfileDataDto"
-          }
-        },
-        "required": [
-          "code",
-          "profile"
-        ]
-      },
-      "UpdateBusinessProfileDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateBusinessProfileResponseDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "knowledge.profile_updated"
-          },
-          "message": {
-            "type": "string",
-            "example": "Business profile updated successfully."
-          },
-          "profile": {
-            "$ref": "#/components/schemas/BusinessProfileDataDto"
-          }
-        },
-        "required": [
-          "code",
-          "message",
-          "profile"
-        ]
       },
       "KnowledgeNotesDto": {
         "type": "object",
@@ -5884,63 +6729,6 @@
           "code",
           "message",
           "note"
-        ]
-      },
-      "TriggerWebsiteScrapeDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "TriggerTwoGisScrapeDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "SingleScraperStatusDto": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "COMPLETED"
-          },
-          "targetUrl": {
-            "type": "string",
-            "example": "https://barberpro.kz"
-          },
-          "branchId": {
-            "type": "string",
-            "example": "70000001018000000"
-          },
-          "itemsFound": {
-            "type": "number",
-            "example": 14
-          },
-          "itemsDone": {
-            "type": "number",
-            "example": 14
-          },
-          "error": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "status",
-          "itemsFound",
-          "itemsDone"
-        ]
-      },
-      "ScrapersStatusResponseDto": {
-        "type": "object",
-        "properties": {
-          "website": {
-            "$ref": "#/components/schemas/SingleScraperStatusDto"
-          },
-          "twoGis": {
-            "$ref": "#/components/schemas/SingleScraperStatusDto"
-          }
-        },
-        "required": [
-          "website",
-          "twoGis"
         ]
       },
       "KnowledgeEntryResponseDto": {
@@ -6071,6 +6859,179 @@
       "BulkDeleteEntriesDto": {
         "type": "object",
         "properties": {}
+      },
+      "BusinessProfileDataDto": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string",
+            "example": "Barber Pro Almaty"
+          },
+          "nicheProfile": {
+            "type": "string",
+            "enum": [
+              "REALTY",
+              "AUTO_SALES",
+              "AUTO_SERVICE",
+              "BEAUTY",
+              "CLINIC",
+              "FITNESS",
+              "CONSULTING",
+              "OTHER_CALENDAR"
+            ],
+            "example": "BEAUTY"
+          },
+          "subSegment": {
+            "type": "object",
+            "example": "barbershop"
+          },
+          "city": {
+            "type": "object",
+            "example": "Almaty"
+          },
+          "country": {
+            "type": "object",
+            "example": "KZ"
+          },
+          "businessPhone": {
+            "type": "object",
+            "example": "+77011112233"
+          },
+          "businessEmail": {
+            "type": "object",
+            "example": "info@barberpro.kz"
+          },
+          "businessAddress": {
+            "type": "object",
+            "example": "Abylai Khan Ave 45"
+          },
+          "businessDescription": {
+            "type": "object",
+            "example": "Premium barbershop and grooming lounge"
+          },
+          "websiteUrl": {
+            "type": "object",
+            "example": "https://barberpro.kz"
+          },
+          "instagramUrl": {
+            "type": "object",
+            "example": "https://instagram.com/barberpro_kz"
+          },
+          "teamSize": {
+            "type": "number",
+            "example": 5
+          },
+          "timezone": {
+            "type": "object",
+            "example": "Asia/Almaty"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-13T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "businessName"
+        ]
+      },
+      "BusinessProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.profile_retrieved"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/BusinessProfileDataDto"
+          }
+        },
+        "required": [
+          "code",
+          "profile"
+        ]
+      },
+      "UpdateBusinessProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateBusinessProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "knowledge.profile_updated"
+          },
+          "message": {
+            "type": "string",
+            "example": "Business profile updated successfully."
+          },
+          "profile": {
+            "$ref": "#/components/schemas/BusinessProfileDataDto"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "profile"
+        ]
+      },
+      "TriggerWebsiteScrapeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TriggerTwoGisScrapeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SingleScraperStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "COMPLETED"
+          },
+          "targetUrl": {
+            "type": "string",
+            "example": "https://barberpro.kz"
+          },
+          "branchId": {
+            "type": "string",
+            "example": "70000001018000000"
+          },
+          "itemsFound": {
+            "type": "number",
+            "example": 14
+          },
+          "itemsDone": {
+            "type": "number",
+            "example": 14
+          },
+          "error": {
+            "type": "object",
+            "example": null
+          }
+        },
+        "required": [
+          "status",
+          "itemsFound",
+          "itemsDone"
+        ]
+      },
+      "ScrapersStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "website": {
+            "$ref": "#/components/schemas/SingleScraperStatusDto"
+          },
+          "twoGis": {
+            "$ref": "#/components/schemas/SingleScraperStatusDto"
+          }
+        },
+        "required": [
+          "website",
+          "twoGis"
+        ]
       },
       "QualificationQuestionItemDto": {
         "type": "object",

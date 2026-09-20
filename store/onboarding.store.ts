@@ -63,7 +63,6 @@ const emptyBusinessProfile: BusinessProfileDto = {
   businessDescription: "",
   websiteUrl: "",
   instagramUrl: "",
-  workingHours: "",
 };
 
 const emptyKnowledgeSource: KnowledgeSourceDraft = {

@@ -447,5 +447,36 @@
   "dashboard.automations.test_latency_label": "Задержка:",
   "dashboard.automations.test_tokens_label": "Токены:",
   "dashboard.automations.test_channel_label": "Канал:",
-  "dashboard.automations.test_mode_label": "Режим:"
+  "dashboard.automations.test_mode_label": "Режим:",
+
+  "dashboard.nav.group_operations": "Операции",
+  "dashboard.nav.group_ai_growth": "ИИ и рост",
+  "dashboard.nav.group_governance": "Управление",
+
+  "dashboard.notifications.popover_title": "Уведомления",
+  "dashboard.notifications.mark_all_read": "Прочитать все",
+  "dashboard.notifications.view_all": "Все уведомления",
+  "dashboard.notifications.empty_title": "Нет новых уведомлений",
+  "dashboard.notifications.empty_desc": "Все записи и события обработаны",
+  "dashboard.notifications.tab_all": "Все",
+  "dashboard.notifications.tab_bookings": "Записи",
+  "dashboard.notifications.tab_handoff": "Внимание",
+  "dashboard.notifications.tab_system": "Система",
+
+  "dashboard.team.tab_shifts": "Смены и графики",
+  "dashboard.team.shifts_placeholder_title": "Графики смен специалистов",
+  "dashboard.team.shifts_placeholder_desc": "Индивидуальные рабочие дни и часы для каждого мастера компании.",
+
+  "dashboard.integrations.tab_channels": "Мессенджеры и соцсети",
+  "dashboard.integrations.tab_calendars": "Внешние календари",
+  "dashboard.integrations.tab_webhooks": "Вебхуки и API",
+  "dashboard.integrations.webhooks_title": "Интеграция по Webhook и API",
+  "dashboard.integrations.webhooks_desc": "Отправляйте данные о новых записях и лидах в сторонние CRM, Google Таблицы или корпоративные системы.",
+  "dashboard.integrations.webhooks_badge": "REST & Webhook",
+  "dashboard.integrations.webhooks_active_status": "API Шлюз активен",
+
+  "dashboard.settings.nav_workspace": "Профиль компании",
+  "dashboard.settings.nav_staff": "Права доступа",
+  "dashboard.settings.nav_account": "Мой профиль",
+  "dashboard.settings.nav_advanced": "Расширенные"
 }

@@ -3,6 +3,8 @@
 import React, { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Hash, ListOrdered, CheckCircle, Sparkles } from "lucide-react";
+import { isTableStart, extractMarkdownTable, MarkdownTableData, isInlinePipeRecord, parseInlinePipeRecords, InlinePipeRecord } from "@/lib/utils/markdown-table";
+import { MarkdownTable, InlinePipeServiceCards } from "@/components/ui/MarkdownTable";
 
 interface KbStructuredTextViewProps {
   isLoading: boolean;
@@ -11,14 +13,16 @@ interface KbStructuredTextViewProps {
 }
 
 interface ParsedBlock {
-  type: "h2" | "h3" | "h4" | "bullet" | "numbered" | "paragraph" | "divider";
+  type: "h2" | "h3" | "h4" | "bullet" | "numbered" | "paragraph" | "divider" | "table" | "pipe_records";
   content: string;
   number?: string;
+  tableData?: MarkdownTableData;
+  pipeRecords?: InlinePipeRecord[];
 }
 
 /**
  * Parses markdown-like structured text from 2GIS, website crawlers, and document extractors
- * into clean visual blocks (headings, lists, entity cards, paragraphs).
+ * into clean visual blocks (headings, lists, entity cards, paragraphs, tables).
  */
 function parseStructuredBlocks(rawText: string): ParsedBlock[] {
   if (!rawText) return [];
@@ -44,6 +48,21 @@ function parseStructuredBlocks(rawText: string): ParsedBlock[] {
     if (!trimmed) {
       flushParagraph();
       continue;
+    }
+
+    // Markdown Table detection
+    if (isTableStart(lines, i)) {
+      flushParagraph();
+      const extracted = extractMarkdownTable(lines, i);
+      if (extracted) {
+        blocks.push({
+          type: "table",
+          content: "",
+          tableData: extracted.tableData,
+        });
+        i = extracted.nextIndex - 1;
+        continue;
+      }
     }
 
     // Dividers (--- or ***)
@@ -95,6 +114,16 @@ function parseStructuredBlocks(rawText: string): ParsedBlock[] {
         content: bulletMatch[1],
       });
       continue;
+    }
+
+    // Inline pipe-delimited records (2GIS service format: Name | Desc | Цена)
+    if (isInlinePipeRecord(trimmed)) {
+      flushParagraph();
+      const pipeRecords = parseInlinePipeRecords(trimmed);
+      if (pipeRecords.length > 0) {
+        blocks.push({ type: "pipe_records", content: "", pipeRecords });
+        continue;
+      }
     }
 
     // Regular line -> accumulate into paragraph
@@ -177,6 +206,16 @@ export function KbStructuredTextView({
       <div className="relative rounded-2xl bg-card border border-border/60 p-5 max-h-[380px] overflow-y-auto space-y-3.5 select-text shadow-xs">
         {parsedBlocks.map((block, index) => {
           switch (block.type) {
+            case "table":
+              return block.tableData ? (
+                <MarkdownTable key={index} data={block.tableData} />
+              ) : null;
+
+            case "pipe_records":
+              return block.pipeRecords ? (
+                <InlinePipeServiceCards key={index} records={block.pipeRecords} />
+              ) : null;
+
             case "h2":
               return (
                 <div

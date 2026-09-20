@@ -71,7 +71,6 @@ export interface BusinessProfileDto {
   city: string;
   businessPhone?: string;
   businessAddress?: string;
-  workingHours?: string;
   businessDescription?: string;
   websiteUrl?: string;
   instagramUrl?: string;

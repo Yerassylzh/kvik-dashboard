@@ -22,7 +22,10 @@
     "automations": "Авто-дожим",
     "insights": "Анализ диалогов",
     "team": "Специалисты",
-    "integrations": "Каналы и интеграции"
+    "integrations": "Каналы и интеграции",
+    "group_operations": "Операции",
+    "group_ai_growth": "ИИ и рост",
+    "group_governance": "Управление"
   },
   "header": {
     "title": "Панель управления ИИ-агентом Kvik",
@@ -810,7 +813,10 @@
     "status_vacation": "В отпуске",
     "edit_schedule": "Настроить смены",
     "vacations_placeholder_title": "Управление отпусками специалистов",
-    "vacations_placeholder_desc": "Чтобы назначить отпуск или больничный мастеру, откройте его карточку во вкладке \"Список мастеров\" и нажмите \"Настроить смены\". ИИ автоматически заблокирует онлайн-запись на эти даты."
+    "vacations_placeholder_desc": "Чтобы назначить отпуск или больничный мастеру, откройте его карточку во вкладке \"Список мастеров\" и нажмите \"Настроить смены\". ИИ автоматически заблокирует онлайн-запись на эти даты.",
+    "tab_shifts": "Смены и графики",
+    "shifts_placeholder_title": "Графики смен специалистов",
+    "shifts_placeholder_desc": "Индивидуальные рабочие дни и часы для каждого мастера компании."
   },
   "ai_studio": {
     "title": "AI Студия",
@@ -1011,7 +1017,14 @@
   },
   "integrations": {
     "title": "Каналы связи и Интеграции",
-    "desc": "Подключение WhatsApp, Instagram Direct, Telegram и внешних календарей"
+    "desc": "Подключение WhatsApp, Instagram Direct, Telegram и внешних календарей",
+    "tab_channels": "Мессенджеры и соцсети",
+    "tab_calendars": "Внешние календари",
+    "tab_webhooks": "Вебхуки и API",
+    "webhooks_title": "Интеграция по Webhook и API",
+    "webhooks_desc": "Отправляйте данные о новых записях и лидах в сторонние CRM, Google Таблицы или корпоративные системы.",
+    "webhooks_badge": "REST & Webhook",
+    "webhooks_active_status": "API Шлюз активен"
   },
   "notifications": {
     "title": "Уведомления",
@@ -1021,7 +1034,12 @@
     "tab_system": "Система",
     "tab_channels": "Каналы",
     "empty": "Нет новых уведомлений",
-    "mark_all_read": "Прочитать все"
+    "mark_all_read": "Прочитать все",
+    "popover_title": "Уведомления",
+    "view_all": "Все уведомления",
+    "empty_title": "Нет новых уведомлений",
+    "empty_desc": "Все записи и события обработаны",
+    "tab_handoff": "Внимание"
   },
   "help_modal": {
     "title": "Центр поддержки",

@@ -13,7 +13,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 1. General Implementation Rules
 
 - **Modularity & File Size:** Never exceed 400 lines per file. Split complex views into focused sub-components. Follow DRY principles.
-- **Product Context:** Reference `dev_docs/` for domain specifications, business logic, and API contracts.
+- **Product Context & Specifications:** Reference `dev_docs/` for domain specifications, feature architecture, and business logic.
+- **Backend API Contracts:** Treat `openapi.json` as the authoritative source of truth for all backend endpoints, HTTP methods, request payloads, query params, and response DTOs. Always inspect or grep `openapi.json` before writing API integration code or TypeScript types.
 
 ---
 

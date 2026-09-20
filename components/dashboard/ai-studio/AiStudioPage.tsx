@@ -1,22 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { Bot, Database, Zap, LineChart, HelpCircle, PlayCircle, Sparkles } from "lucide-react";
+import { Bot, Database, HelpCircle, PlayCircle, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DashboardPageHeader } from "@/components/dashboard/shared/DashboardPageHeader";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { KnowledgeBaseManager } from "@/components/dashboard/settings/knowledge-base/KnowledgeBaseManager";
 import { AgentConfig } from "@/components/dashboard/settings/ai-agent/AgentConfig";
-import { AutomationsPage } from "@/components/dashboard/automations/AutomationsPage";
-import { InsightsPage } from "@/components/dashboard/insights/InsightsPage";
 import { KbQualificationTab } from "@/components/dashboard/settings/knowledge-base/KbQualificationTab";
 import { AiSandboxDrawer } from "@/components/dashboard/settings/ai-agent/AiSandboxDrawer";
 import { BusinessContextManager } from "@/components/dashboard/settings/business-context/BusinessContextManager";
 import { useKnowledgeBase } from "@/hooks/useKnowledgeBase";
 
-import { Button } from "@/components/ui/button";
-
-type StudioTab = "sources" | "persona" | "automations" | "insights" | "qualification" | "context";
+type StudioTab = "sources" | "persona" | "qualification" | "context";
 
 export function AiStudioPage() {
   const t = useTranslations("dashboard");
@@ -56,20 +53,6 @@ export function AiStudioPage() {
             onClick: () => setActiveTab("persona"),
           },
           {
-            id: "automations",
-            label: t("ai_studio.tab_automations"),
-            icon: Zap,
-            active: activeTab === "automations",
-            onClick: () => setActiveTab("automations"),
-          },
-          {
-            id: "insights",
-            label: t("ai_studio.tab_insights"),
-            icon: LineChart,
-            active: activeTab === "insights",
-            onClick: () => setActiveTab("insights"),
-          },
-          {
             id: "qualification",
             label: t("ai_studio.tab_qualification"),
             icon: HelpCircle,
@@ -90,8 +73,6 @@ export function AiStudioPage() {
       <div className="pt-2">
         {activeTab === "sources" && <KnowledgeBaseManager />}
         {activeTab === "persona" && <AgentConfig />}
-        {activeTab === "automations" && <AutomationsPage />}
-        {activeTab === "insights" && <InsightsPage />}
         {activeTab === "qualification" && (
           <KbQualificationTab
             initialData={qualificationData}
