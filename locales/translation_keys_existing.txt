@@ -1397,6 +1397,9 @@ dashboard.team.tab_vacations
 dashboard.team.title
 dashboard.team.vacations_placeholder_desc
 dashboard.team.vacations_placeholder_title
+dashboard.telegram_alerts_banner_cta
+dashboard.telegram_alerts_banner_description
+dashboard.telegram_alerts_banner_title
 dashboard.workspace_switcher.no_workspace
 dashboard.workspace_switcher.switch_label
 insights.actions.apply_one_click

@@ -10,6 +10,7 @@ import { TodayBookings } from "./TodayBookings";
 import { ChannelDistributionCard } from "./ChannelDistributionCard";
 import { AiAgentStatusCard } from "./AiAgentStatusCard";
 import { StaffWorkloadTable } from "./StaffWorkloadTable";
+import { TelegramAlertsBanner } from "./TelegramAlertsBanner";
 import { useAnalytics, type DatePreset } from "@/hooks/useAnalytics";
 import { useBookings } from "@/hooks/useBookings";
 import clsx from "clsx";
@@ -58,6 +59,8 @@ export function OverviewPage() {
           </div>
         }
       />
+
+      <TelegramAlertsBanner />
 
       <AiAgentStatusCard overview={overview} isLoading={isLoading} />
 

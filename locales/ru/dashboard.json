@@ -1195,5 +1195,8 @@
     "email_title": "Написать на почту",
     "email_desc": "support@kvik.ai — по техническим и партнерским вопросам",
     "close": "Закрыть"
-  }
+  },
+  "telegram_alerts_banner_title": "Подключите Telegram для оповещений",
+  "telegram_alerts_banner_description": "Получайте уведомления об эскалациях, новых записях и перехватах диалогов в личный Telegram",
+  "telegram_alerts_banner_cta": "Подключить"
 }
