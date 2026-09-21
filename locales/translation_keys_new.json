@@ -283,7 +283,7 @@
   "dashboard.leads.email_label": "Email",
   "dashboard.overview.kpi_conversion": "Конверсия воронки",
   "dashboard.overview.kpi_completed_visits": "Выполнено визитов",
-  "dashboard.overview.staff_workload_desc": "Количество записей и доходимость специалистов",
+  "dashboard.overview.staff_workload_desc": "Распределение записей по специалистам",
   "dashboard.overview.staff_completion_rate": "Доходимость",
   "dashboard.overview.staff_cancelled": "Отменено",
 
@@ -778,5 +778,16 @@
   "dashboard.inbox.download_file": "Скачать",
   "dashboard.inbox.media_unavailable": "Медиафайл недоступен",
   "dashboard.inbox.open_in_new_tab": "Открыть в новой вкладке",
-  "dashboard.inbox.outbound_media_failed": "Не удалось отправить медиафайл клиенту"
+  "dashboard.inbox.outbound_media_failed": "Не удалось отправить медиафайл клиенту",
+
+  "dashboard.overview.traffic_share": "Доля трафика",
+  "dashboard.overview.total_traffic": "Всего сообщений",
+  "dashboard.overview.open_calendar": "Открыть календарь",
+  "dashboard.overview.no_bookings_sub": "Запланированные визиты отобразятся здесь",
+  "dashboard.overview.specialist_col": "Специалист",
+  "dashboard.overview.total_bookings_col": "Всего записей",
+  "dashboard.overview.completed_col": "Выполнено",
+  "dashboard.overview.conversion_short": "Конверсия",
+  "dashboard.overview.stage_dropoff": "Конверсия шага",
+  "dashboard.overview.attention_needed": "Требуют внимания"
 }

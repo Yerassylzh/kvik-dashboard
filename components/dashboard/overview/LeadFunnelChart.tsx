@@ -20,14 +20,6 @@ const stageLabels: Record<string, string> = {
   DEAL_LOST: "Отказ",
 };
 
-const stageColors: Record<string, string> = {
-  NEW: "bg-blue-500",
-  QUALIFIED: "bg-amber-500",
-  APPOINTMENT_SET: "bg-purple-500",
-  DEAL_WON: "bg-emerald-500",
-  DEAL_LOST: "bg-rose-500",
-};
-
 export function LeadFunnelChart({ funnel, isLoading = false }: LeadFunnelChartProps) {
   const t = useTranslations("dashboard");
   const stages: FunnelStageItem[] = funnel?.stages || [];
@@ -38,53 +30,72 @@ export function LeadFunnelChart({ funnel, isLoading = false }: LeadFunnelChartPr
     <SectionCard
       title={t("overview.funnel_title")}
       description={t("overview.funnel_desc")}
-      className="h-full"
+      className="h-full flex flex-col justify-between"
     >
-      <div className="space-y-4 pt-2">
+      <div className="space-y-3.5 pt-1">
         {isLoading ? (
-          <div className="space-y-3.5">
+          <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="space-y-1.5">
+              <div key={i} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Skeleton className="h-3.5 w-24 rounded-full" />
-                  <Skeleton className="h-3.5 w-8 rounded-full" />
+                  <Skeleton className="h-3.5 w-28 rounded-full" />
+                  <Skeleton className="h-3.5 w-12 rounded-full" />
                 </div>
-                <Skeleton className="h-2.5 w-full rounded-full" />
+                <Skeleton className="h-2 w-full rounded-full" />
               </div>
             ))}
           </div>
         ) : stages.length === 0 ? (
-          <div className="text-sm text-muted-foreground text-center py-6">
+          <div className="text-xs text-muted-foreground text-center py-8">
             {t("common.empty_data")}
           </div>
         ) : (
           stages.map((stage: FunnelStageItem, idx: number) => {
-            const percentage = Math.round(((stage.count || 0) / maxCount) * 100);
-            const colorClass = stageColors[stage.status] || "bg-primary";
+            const count = stage.count || 0;
+            const percentage = Math.round((count / maxCount) * 100);
             const label = stageLabels[stage.status] || stage.status;
+            const isZero = count === 0;
+
+            // Progressive subtle shading from primary violet to muted slate
+            const barColor =
+              stage.status === "DEAL_LOST"
+                ? "bg-rose-500/80"
+                : idx === 0
+                ? "bg-primary"
+                : idx === 1
+                ? "bg-primary/85"
+                : idx === 2
+                ? "bg-primary/70"
+                : "bg-emerald-500";
 
             return (
-              <div key={stage.status} className="space-y-1.5">
+              <div key={stage.status} className="space-y-1.5 group">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-foreground">{label}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-foreground tabular-nums">
-                      {stage.count}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-4 h-4 rounded-full bg-muted text-[10px] font-mono text-muted-foreground flex items-center justify-center shrink-0">
+                      {idx + 1}
+                    </span>
+                    <span className="font-medium text-foreground truncate">{label}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="font-semibold text-foreground tabular-nums">
+                      {count}
                     </span>
                     {stage.conversionRate !== null && stage.conversionRate !== undefined && (
-                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono">
+                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground font-mono tabular-nums">
                         {stage.conversionRate}%
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="h-2.5 w-full bg-muted/60 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${Math.max(percentage, 4)}%` }}
-                    transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
-                    className={`h-full rounded-full ${colorClass}`}
+                    animate={{ width: isZero ? "0%" : `${Math.max(percentage, 2)}%` }}
+                    transition={{ duration: 0.4, delay: idx * 0.08, ease: "easeOut" }}
+                    className={`h-full rounded-full ${barColor}`}
                   />
                 </div>
               </div>

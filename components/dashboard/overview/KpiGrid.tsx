@@ -17,35 +17,45 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
 
   const totalLeads = overview?.leads?.total ?? 0;
   const dealWon = overview?.leads?.dealWon ?? 0;
+  const qualifiedLeads = overview?.leads?.qualified ?? 0;
   const conversionRate =
     totalLeads > 0 ? ((dealWon / totalLeads) * 100).toFixed(1) : "0.0";
 
+  const totalBookings = overview?.bookings?.total ?? 0;
+  const completedBookings = overview?.bookings?.completed ?? 0;
+
+  const totalConversations = overview?.conversations?.total ?? 0;
+  const botHandled = overview?.conversations?.botHandled ?? 0;
+
   return (
-    <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
       <StaggerItem>
         <StatCard
           label={t("overview.kpi_leads")}
           value={totalLeads}
+          sublabel={totalLeads > 0 ? `${qualifiedLeads} квалифицировано` : undefined}
           isLoading={isLoading}
-          icon={<Users className="w-5 h-5" />}
+          icon={<Users className="w-4.5 h-4.5" />}
         />
       </StaggerItem>
 
       <StaggerItem>
         <StatCard
           label={t("overview.kpi_bookings")}
-          value={overview?.bookings?.total ?? 0}
+          value={totalBookings}
+          sublabel={totalBookings > 0 ? `${completedBookings} выполнено` : undefined}
           isLoading={isLoading}
-          icon={<CalendarCheck className="w-5 h-5" />}
+          icon={<CalendarCheck className="w-4.5 h-4.5" />}
         />
       </StaggerItem>
 
       <StaggerItem>
         <StatCard
           label={t("overview.kpi_conversations")}
-          value={overview?.conversations?.total ?? 0}
+          value={totalConversations}
+          sublabel={totalConversations > 0 ? `${botHandled} обработано ИИ` : undefined}
           isLoading={isLoading}
-          icon={<MessageSquare className="w-5 h-5" />}
+          icon={<MessageSquare className="w-4.5 h-4.5" />}
         />
       </StaggerItem>
 
@@ -53,8 +63,9 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_conversion")}
           value={`${conversionRate}%`}
+          sublabel={totalLeads > 0 ? `${dealWon} успешных визитов` : undefined}
           isLoading={isLoading}
-          icon={<TrendingUp className="w-5 h-5" />}
+          icon={<TrendingUp className="w-4.5 h-4.5" />}
         />
       </StaggerItem>
     </StaggerContainer>

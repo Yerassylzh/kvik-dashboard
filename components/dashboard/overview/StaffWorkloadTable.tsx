@@ -19,16 +19,15 @@ export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffW
     <SectionCard
       title={t("overview.staff_workload_title")}
       description={t("overview.staff_workload_desc")}
-      className="h-full"
+      className="h-full flex flex-col justify-between"
     >
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto pt-1">
+        <table className="w-full text-left text-xs">
           <thead>
-            <tr className="border-b border-border/60 text-xs text-muted-foreground">
-              <th className="pb-2.5 font-medium">Специалист</th>
-              <th className="pb-2.5 font-medium text-center">Всего записей</th>
-              <th className="pb-2.5 font-medium text-center">Выполнено</th>
-              <th className="pb-2.5 font-medium text-right">{t("overview.staff_completion_rate")}</th>
+            <tr className="border-b border-border/70 text-[11px] font-medium text-muted-foreground">
+              <th className="pb-2.5 font-medium">{t("overview.specialist_col")}</th>
+              <th className="pb-2.5 font-medium text-center">{t("overview.total_bookings_col")}</th>
+              <th className="pb-2.5 font-medium text-right">{t("overview.completed_col")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/40">
@@ -44,47 +43,34 @@ export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffW
                   <td className="py-2.5 text-center">
                     <Skeleton className="h-3 w-8 rounded-full mx-auto" />
                   </td>
-                  <td className="py-2.5 text-center">
-                    <Skeleton className="h-3 w-8 rounded-full mx-auto" />
-                  </td>
                   <td className="py-2.5 text-right">
-                    <Skeleton className="h-3 w-12 rounded-full ml-auto" />
+                    <Skeleton className="h-3 w-8 rounded-full ml-auto" />
                   </td>
                 </tr>
               ))
             ) : staffList.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-6 text-center text-xs text-muted-foreground">
+                <td colSpan={3} className="py-8 text-center text-xs text-muted-foreground">
                   {t("common.empty_data")}
                 </td>
               </tr>
             ) : (
-              staffList.map((staff) => {
-                const rate =
-                  staff.totalBookings > 0
-                    ? `${Math.round((staff.completedBookings / staff.totalBookings) * 100)}%`
-                    : "—";
-
-                return (
-                  <tr key={staff.staffId} className="hover:bg-muted/30 transition-colors">
-                    <td className="py-2.5">
-                      <div className="flex items-center gap-2.5">
-                        <EntityAvatar name={staff.staffName} size="xs" />
-                        <span className="font-medium text-foreground text-xs">{staff.staffName}</span>
-                      </div>
-                    </td>
-                    <td className="py-2.5 text-center font-mono text-xs text-foreground">
-                      {staff.totalBookings}
-                    </td>
-                    <td className="py-2.5 text-center font-mono text-xs text-emerald-500 font-semibold">
-                      {staff.completedBookings}
-                    </td>
-                    <td className="py-2.5 text-right font-mono text-xs text-foreground font-semibold">
-                      {rate}
-                    </td>
-                  </tr>
-                );
-              })
+              staffList.map((staff) => (
+                <tr key={staff.staffId} className="hover:bg-muted/20 transition-colors">
+                  <td className="py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <EntityAvatar name={staff.staffName} size="xs" />
+                      <span className="font-medium text-foreground text-xs">{staff.staffName}</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 text-center font-mono text-xs text-foreground tabular-nums">
+                    {staff.totalBookings}
+                  </td>
+                  <td className="py-2.5 text-right font-mono text-xs text-foreground font-semibold tabular-nums">
+                    {staff.completedBookings}
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

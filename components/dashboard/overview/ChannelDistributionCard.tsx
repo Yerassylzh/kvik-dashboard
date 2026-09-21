@@ -13,25 +13,37 @@ interface ChannelDistributionCardProps {
 }
 
 const channelMeta = {
+  TELEGRAM: {
+    label: "Telegram",
+    color: "text-sky-600",
+    bg: "bg-sky-50",
+    border: "border-sky-200/60",
+    barColor: "bg-sky-500",
+  },
   WHATSAPP: {
     label: "WhatsApp",
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/20",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200/60",
+    barColor: "bg-emerald-500",
   },
   INSTAGRAM: {
     label: "Instagram Direct",
-    color: "text-pink-500",
-    bg: "bg-pink-500/10",
-    border: "border-pink-500/20",
-  },
-  TELEGRAM: {
-    label: "Telegram",
-    color: "text-sky-500",
-    bg: "bg-sky-500/10",
-    border: "border-sky-500/20",
+    color: "text-pink-600",
+    bg: "bg-pink-50",
+    border: "border-pink-200/60",
+    barColor: "bg-pink-500",
   },
 };
+
+function formatRuPlural(count: number, one: string, few: string, many: string): string {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod100 >= 11 && mod100 <= 19) return `${count} ${many}`;
+  if (mod10 === 1) return `${count} ${one}`;
+  if (mod10 >= 2 && mod10 <= 4) return `${count} ${few}`;
+  return `${count} ${many}`;
+}
 
 export function ChannelDistributionCard({
   channels,
@@ -40,10 +52,15 @@ export function ChannelDistributionCard({
   const t = useTranslations("dashboard");
 
   const channelList: Array<{
-    type: "WHATSAPP" | "INSTAGRAM" | "TELEGRAM";
+    type: "TELEGRAM" | "WHATSAPP" | "INSTAGRAM";
     conversations: number;
     messages: number;
   }> = [
+    {
+      type: "TELEGRAM",
+      conversations: channels?.TELEGRAM?.conversations || 0,
+      messages: channels?.TELEGRAM?.messages || 0,
+    },
     {
       type: "WHATSAPP",
       conversations: channels?.WHATSAPP?.conversations || 0,
@@ -54,11 +71,6 @@ export function ChannelDistributionCard({
       conversations: channels?.INSTAGRAM?.conversations || 0,
       messages: channels?.INSTAGRAM?.messages || 0,
     },
-    {
-      type: "TELEGRAM",
-      conversations: channels?.TELEGRAM?.conversations || 0,
-      messages: channels?.TELEGRAM?.messages || 0,
-    },
   ];
 
   const totalMessages = channelList.reduce((acc, c) => acc + c.messages, 0);
@@ -67,60 +79,96 @@ export function ChannelDistributionCard({
     <SectionCard
       title={t("overview.channel_dist_title")}
       description={t("overview.channel_dist_desc")}
-      className="h-full"
+      action={
+        totalMessages > 0 ? (
+          <span className="text-[11px] font-mono text-muted-foreground px-2 py-0.5 rounded-full bg-muted/60">
+            {formatRuPlural(totalMessages, "сообщение", "сообщения", "сообщений")}
+          </span>
+        ) : null
+      }
+      className="h-full flex flex-col justify-between"
     >
-      <div className="space-y-3 pt-1">
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-muted/20"
-              >
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-9 w-9 rounded-lg" />
-                  <div className="space-y-1.5">
-                    <Skeleton className="h-3.5 w-24 rounded-full" />
-                    <Skeleton className="h-2.5 w-32 rounded-full" />
-                  </div>
-                </div>
-                <div className="space-y-1 text-right">
-                  <Skeleton className="h-4 w-10 rounded-md ml-auto" />
-                  <Skeleton className="h-2.5 w-14 rounded-full ml-auto" />
-                </div>
-              </div>
-            ))}
+      <div className="space-y-4 pt-1">
+        {/* Top Multi-Segment Proportion Bar */}
+        {!isLoading && totalMessages > 0 && (
+          <div className="space-y-1.5">
+            <div className="h-2 w-full bg-muted/50 rounded-full overflow-hidden flex gap-0.5">
+              {channelList.map((item) => {
+                const share = Math.round((item.messages / totalMessages) * 100);
+                if (share === 0) return null;
+                const meta = channelMeta[item.type];
+                return (
+                  <div
+                    key={item.type}
+                    style={{ width: `${share}%` }}
+                    className={`h-full ${meta.barColor} transition-all`}
+                    title={`${meta.label}: ${share}%`}
+                  />
+                );
+              })}
+            </div>
           </div>
-        ) : (
-          channelList.map((item) => {
-            const meta = channelMeta[item.type];
-            const share = totalMessages > 0 ? Math.round((item.messages / totalMessages) * 100) : 0;
+        )}
 
-            return (
-              <div
-                key={item.type}
-                className={`flex items-center justify-between p-3 rounded-xl border ${meta.border} ${meta.bg}`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg bg-background/80 ${meta.color}`}>
-                    <ChannelIcon type={item.type} className="w-5 h-5" />
+        {/* Channel Rows */}
+        <div className="divide-y divide-border/40">
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between py-2.5">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3.5 w-24 rounded-full" />
+                      <Skeleton className="h-2.5 w-32 rounded-full" />
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-sm text-foreground">{meta.label}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {item.conversations} диалогов • {item.messages} сообщений
+                  <div className="space-y-1 text-right">
+                    <Skeleton className="h-4 w-10 rounded ml-auto" />
+                    <Skeleton className="h-2.5 w-16 rounded ml-auto" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            channelList.map((item) => {
+              const meta = channelMeta[item.type];
+              const share = totalMessages > 0 ? Math.round((item.messages / totalMessages) * 100) : 0;
+              const dialogueStr = formatRuPlural(item.conversations, "диалог", "диалога", "диалогов");
+              const messageStr = formatRuPlural(item.messages, "сообщение", "сообщения", "сообщений");
+
+              return (
+                <div
+                  key={item.type}
+                  className="flex items-center justify-between py-2.5 px-1 hover:bg-muted/20 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-8 h-8 rounded-lg ${meta.bg} ${meta.color} border ${meta.border} flex items-center justify-center shrink-0`}
+                    >
+                      <ChannelIcon type={item.type} className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-xs text-foreground">{meta.label}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">
+                        {dialogueStr} • {messageStr}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="font-bold text-xs text-foreground font-mono tabular-nums">
+                      {share}%
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {t("overview.traffic_share")}
                     </div>
                   </div>
                 </div>
-
-                <div className="text-right">
-                  <div className="font-bold text-sm text-foreground font-mono">{share}%</div>
-                  <div className="text-[11px] text-muted-foreground">доля трафика</div>
-                </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
     </SectionCard>
   );

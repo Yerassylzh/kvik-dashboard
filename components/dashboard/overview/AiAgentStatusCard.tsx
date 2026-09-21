@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { Bot, Sparkles, ArrowUpRight } from "lucide-react";
+import { Bot } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AnalyticsOverviewResponse } from "@/lib/api/analytics";
+import clsx from "clsx";
 
 interface AiAgentStatusCardProps {
   overview?: AnalyticsOverviewResponse;
@@ -22,69 +21,64 @@ export function AiAgentStatusCard({ overview, isLoading = false }: AiAgentStatus
   const automationRate = total > 0 ? Math.round((botHandled / total) * 100) : 0;
 
   return (
-    <div className="rounded-xl border border-border/80 bg-card p-4 sm:p-5">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="rounded-xl border border-border/80 bg-card p-3.5 sm:p-4 transition-all">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left: Assistant Identity */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-            <Bot className="w-5 h-5" />
+          <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
+            <Bot className="w-4.5 h-4.5" />
           </div>
 
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-semibold text-sm text-foreground">{t("overview.ai_status_title")}</h3>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span>{t("overview.ai_status_online")}</span>
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5 truncate">
+            <h3 className="font-semibold text-sm text-foreground leading-snug">
+              {t("overview.ai_status_title")}
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-md sm:max-w-xl">
               {t("overview.ai_active_desc")}
             </p>
           </div>
         </div>
 
-        <Link href="/ai-studio" className="shrink-0 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            rightIcon={<ArrowUpRight className="w-3.5 h-3.5 text-primary" />}
-            className="w-full sm:w-auto justify-center text-xs whitespace-nowrap shrink-0"
-          >
-            {t("overview.ai_test_dialogue")}
-          </Button>
-        </Link>
-      </div>
+        {/* Right: Telemetry Metrics */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Automation Rate */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50 text-xs">
+            <span className="text-muted-foreground">{t("overview.automation_rate")}:</span>
+            {isLoading ? (
+              <Skeleton className="h-4 w-9 rounded" />
+            ) : (
+              <span className="font-bold text-foreground tabular-nums">{automationRate}%</span>
+            )}
+          </div>
 
-      <div className="grid grid-cols-3 gap-3 mt-4 pt-3.5 border-t border-border/70 text-center">
-        <div className="p-2.5 rounded-lg bg-muted/40 flex flex-col items-center justify-center">
-          <div className="text-xs font-medium text-muted-foreground">{t("overview.automation_rate")}</div>
-          {isLoading ? (
-            <Skeleton className="h-6 w-14 rounded-md mt-1" />
-          ) : (
-            <div className="text-lg font-bold text-foreground mt-0.5 tabular-nums">
-              {automationRate}%
-            </div>
-          )}
-        </div>
-        <div className="p-2.5 rounded-lg bg-muted/40 flex flex-col items-center justify-center">
-          <div className="text-xs font-medium text-muted-foreground">{t("overview.bot_answers")}</div>
-          {isLoading ? (
-            <Skeleton className="h-6 w-12 rounded-md mt-1" />
-          ) : (
-            <div className="text-lg font-bold text-foreground mt-0.5 tabular-nums">
-              {botHandled}
-            </div>
-          )}
-        </div>
-        <div className="p-2.5 rounded-lg bg-muted/40 flex flex-col items-center justify-center">
-          <div className="text-xs font-medium text-muted-foreground">{t("overview.intercepts")}</div>
-          {isLoading ? (
-            <Skeleton className="h-6 w-12 rounded-md mt-1" />
-          ) : (
-            <div className="text-lg font-bold text-foreground mt-0.5 tabular-nums">
-              {intercepted}
-            </div>
-          )}
+          {/* AI Answers */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50 text-xs">
+            <span className="text-muted-foreground">{t("overview.bot_answers")}:</span>
+            {isLoading ? (
+              <Skeleton className="h-4 w-7 rounded" />
+            ) : (
+              <span className="font-bold text-foreground tabular-nums">{botHandled}</span>
+            )}
+          </div>
+
+          {/* Intercepts */}
+          <div
+            className={clsx(
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs transition-colors",
+              intercepted > 0
+                ? "bg-amber-50/70 border-amber-200/80 text-amber-900"
+                : "bg-muted/30 border-border/50 text-foreground"
+            )}
+          >
+            <span className={intercepted > 0 ? "text-amber-700 font-medium" : "text-muted-foreground"}>
+              {t("overview.intercepts")}:
+            </span>
+            {isLoading ? (
+              <Skeleton className="h-4 w-7 rounded" />
+            ) : (
+              <span className="font-bold tabular-nums">{intercepted}</span>
+            )}
+          </div>
         </div>
       </div>
     </div>
