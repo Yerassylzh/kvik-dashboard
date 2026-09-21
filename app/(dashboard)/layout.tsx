@@ -207,8 +207,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             user={user}
           />
 
-          {/* Page content scroll container */}
-          <main className="p-5 sm:p-6 flex-1 overflow-y-auto themed-scroll">
+          {/* Page content scroll container — inbox manages its own internal scroll */}
+          <main
+            className={
+              pathname.startsWith('/inbox')
+                ? 'p-5 sm:p-6 flex-1 overflow-hidden'
+                : 'p-5 sm:p-6 flex-1 overflow-y-auto themed-scroll'
+            }
+          >
             {children}
           </main>
         </div>

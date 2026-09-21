@@ -214,6 +214,7 @@
     "handoff_manager": "Менеджер у руля",
     "handoff_takeover": "Перехватить диалог",
     "handoff_return_bot": "Передать ИИ",
+    "handoff_media_blocked": "Нельзя передать ИИ: в диалоге есть вложения",
     "composer_placeholder": "Введите сообщение клиенту (Enter для отправки)...",
     "send_btn": "Отправить",
     "empty_thread": "Выберите диалог из списка слева",
@@ -282,7 +283,8 @@
     "download_file": "Скачать",
     "media_unavailable": "Медиафайл недоступен",
     "open_in_new_tab": "Открыть в новой вкладке",
-    "outbound_media_failed": "Не удалось отправить медиафайл клиенту"
+    "outbound_media_failed": "Не удалось отправить медиафайл клиенту",
+    "takeover_locked_by": "Занято"
   },
   "bookings": {
     "title": "Журнал записей",

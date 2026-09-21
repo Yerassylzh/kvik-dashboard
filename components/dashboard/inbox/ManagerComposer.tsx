@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { useInboxStore } from "@/store/inbox.store";
+import { useActorId } from "@/hooks/useActorId";
 import {
   conversationsApi,
   type ConversationStatus,
@@ -33,6 +34,7 @@ interface ManagerComposerProps {
   takenOverByActorId?: string | null;
   status?: ConversationStatus;
   onTakeover?: () => Promise<void>;
+  assignedStaff?: { id: string; name: string; role: string } | null;
 }
 
 export function ManagerComposer({
@@ -42,12 +44,15 @@ export function ManagerComposer({
   takenOverByActorId,
   status = "BOT_ACTIVE",
   onTakeover,
+  assignedStaff: _assignedStaff,
 }: ManagerComposerProps) {
   const t = useTranslations("dashboard");
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isTakingOver, setIsTakingOver] = useState(false);
   const [isLockedByOther, setIsLockedByOther] = useState(false);
+  // Optimistic: immediately show input after takeover without waiting for SWR revalidation
+  const [isOptimisticOwner, setIsOptimisticOwner] = useState(false);
   const [stagedMedia, setStagedMedia] = useState<{
     file: File;
     mediaType: MediaType;
@@ -56,7 +61,8 @@ export function ManagerComposer({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const user = useAuthStore((s) => s.user);
-  const myActorId = user?.staffProfile?.id ?? user?.id;
+  // Mirror backend: actorId = user.staffMemberId ?? user.sub (decoded from JWT)
+  const myActorId = useActorId();
   const { takenConversationIds } = useInboxStore();
 
   const {
@@ -79,20 +85,29 @@ export function ManagerComposer({
     }
   }, [micError, t]);
 
+  useEffect(() => {
+    setIsOptimisticOwner(false);
+    setIsLockedByOther(false);
+  }, [conversationId]);
+
   const senderLabel = user?.staffProfile?.name
     ? `${user.staffProfile.name}${user.staffProfile.role ? ` (${user.staffProfile.role})` : ""}`
     : t("inbox.sender_manager");
 
-  const isAssignedToMe = !!myActorId && takenOverByActorId === myActorId;
+  const isAssignedToMe = isOptimisticOwner || (!!myActorId && takenOverByActorId === myActorId);
   const isLockedExternally =
-    (!!takenOverByActorId && !isAssignedToMe) ||
-    (!!conversationId && takenConversationIds.has(conversationId));
+    !isAssignedToMe &&
+    (Boolean(takenOverByActorId) ||
+      Boolean(conversationId && takenConversationIds.has(conversationId)));
 
   const handleTakeoverClick = async () => {
     if (!onTakeover || isTakingOver) return;
     setIsTakingOver(true);
     try {
       await onTakeover();
+      // Optimistically unlock the composer without waiting for SWR revalidation
+      setIsOptimisticOwner(true);
+      setIsLockedByOther(false);
     } finally {
       setIsTakingOver(false);
     }
@@ -143,7 +158,7 @@ export function ManagerComposer({
   }
 
   // 3. Locked by another specialist
-  if (isLockedExternally || isLockedByOther) {
+  if (!isAssignedToMe && (isLockedExternally || isLockedByOther)) {
     return (
       <div className="p-3 border-t border-border/60 bg-muted/40 backdrop-blur-sm">
         <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700">
@@ -157,17 +172,17 @@ export function ManagerComposer({
   // 4. Escalated, but unassigned to current user
   if (!isAssignedToMe) {
     return (
-      <div className="p-3 border-t border-border/60 bg-muted/30 backdrop-blur-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900 shadow-xs">
+      <div className="p-3 border-t border-border/60 bg-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 rounded-xl bg-card border border-border border-l-4 border-l-amber-400 shadow-xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-2 rounded-lg bg-amber-100 text-amber-700 shrink-0">
+            <div className="p-2 rounded-lg bg-amber-50 text-amber-600 shrink-0">
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-amber-900">
+              <p className="text-xs font-semibold text-foreground">
                 {t("inbox.composer_unassigned_title")}
               </p>
-              <p className="text-[11px] text-amber-700/90 mt-0.5">
+              <p className="text-[11px] text-muted-foreground mt-0.5">
                 {t("inbox.composer_unassigned_desc")}
               </p>
             </div>

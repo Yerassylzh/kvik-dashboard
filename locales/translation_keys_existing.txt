@@ -694,6 +694,7 @@ dashboard.inbox.followup_cancel_error
 dashboard.inbox.followup_cancelled_toast
 dashboard.inbox.handoff_bot
 dashboard.inbox.handoff_manager
+dashboard.inbox.handoff_media_blocked
 dashboard.inbox.handoff_return_bot
 dashboard.inbox.handoff_takeover
 dashboard.inbox.live_overflow_alert
@@ -722,6 +723,7 @@ dashboard.inbox.status_closed
 dashboard.inbox.takeover_btn
 dashboard.inbox.takeover_error_toast
 dashboard.inbox.takeover_locked
+dashboard.inbox.takeover_locked_by
 dashboard.inbox.takeover_mine
 dashboard.inbox.takeover_release_btn
 dashboard.inbox.takeover_release_error

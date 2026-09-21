@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import { Bot, UserCheck, Lock, LogOut } from "lucide-react";
@@ -7,29 +7,51 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { conversationsApi } from "@/lib/api/conversations";
 import { useInboxStore } from "@/store/inbox.store";
-import { useAuthStore } from "@/store/auth.store";
+import { useActorId } from "@/hooks/useActorId";
+import { useRBAC } from "@/hooks/useRBAC";
 import type { ConversationDto, ConversationStatus } from "@/lib/api/conversations";
 
 interface TakeoverControlProps {
   conversation: ConversationDto;
+  /**
+   * Whether the conversation can be handed back to AI at all.
+   * `false` disables the "Передать ИИ" button (e.g. the thread contains
+   * attachments the bot cannot process when it resumes).
+   * Defaults to `true` when omitted.
+   */
+  canReturnToBot?: boolean;
   onStatusChange?: (status: ConversationStatus) => void;
   onRefresh?: () => void;
+  onTakeoverSuccess?: () => void;
+  onReleaseSuccess?: () => void;
 }
 
 export function TakeoverControl({
   conversation,
+  canReturnToBot = true,
   onStatusChange,
   onRefresh,
+  onTakeoverSuccess,
+  onReleaseSuccess,
 }: TakeoverControlProps) {
   const t = useTranslations("dashboard");
   const [isLoading, setIsLoading] = useState(false);
+  const [isOptimisticOwner, setIsOptimisticOwner] = useState(false);
+
+  React.useEffect(() => {
+    setIsOptimisticOwner(false);
+  }, [conversation.id]);
 
   const { takenConversationIds } = useInboxStore();
-  const currentUser = useAuthStore((s) => s.user);
-  // actorId mirrors the backend: staffMemberId (staff) or userId (owner)
-  const myActorId = currentUser?.staffProfile?.id ?? currentUser?.id;
+  // Mirror backend exactly: actorId = user.staffMemberId ?? user.sub
+  // Decoded from JWT so the owner (no staffMemberId in JWT) resolves to userId,
+  // while staff members resolve to their staffMemberId — matching what DB stores.
+  const myActorId = useActorId();
+  const { systemRole } = useRBAC();
 
   const { status, takenOverByActorId } = conversation;
+  /** OWNER and ADMIN_MANAGER can see who holds the lock for accountability */
+  const canSeeAssigneeName = systemRole === "OWNER" || systemRole === "ADMIN_MANAGER";
 
   // CLOSED: show neutral badge
   if (status === "CLOSED") {
@@ -51,10 +73,13 @@ export function TakeoverControl({
         } catch {
           // Status is still successfully transitioned even if lock endpoint has an issue
         }
+        setIsOptimisticOwner(true);
+        onTakeoverSuccess?.();
         toast.success(t("inbox.takeover_success_toast"));
         onStatusChange?.("MANAGER_INTERCEPTED");
         onRefresh?.();
       } catch {
+        setIsOptimisticOwner(false);
         toast.error(t("inbox.takeover_error_toast"));
       } finally {
         setIsLoading(false);
@@ -82,23 +107,29 @@ export function TakeoverControl({
     );
   }
 
-  // MANAGER_INTERCEPTED вЂ” determine who owns it
-  const isAssignedToMe = !!myActorId && takenOverByActorId === myActorId;
+  // MANAGER_INTERCEPTED — determine who owns it
+  const isAssignedToMe = isOptimisticOwner || (!!myActorId && takenOverByActorId === myActorId);
   const isTakenByOther =
-    (!!takenOverByActorId && !isAssignedToMe) ||
-    takenConversationIds.has(conversation.id);
+    !isAssignedToMe &&
+    (Boolean(takenOverByActorId) || takenConversationIds.has(conversation.id));
 
-  // Taken by someone else вЂ” disabled chip
-  if (isTakenByOther && !isAssignedToMe) {
+  // Taken by someone else — disabled chip
+  // OWNER/ADMIN_MANAGER can see the assignee name for accountability
+  if (isTakenByOther) {
+    const assigneeName = canSeeAssigneeName ? conversation.assignedStaff?.name : null;
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border bg-muted border-border/60 text-muted-foreground select-none">
         <Lock className="w-3.5 h-3.5 shrink-0" />
-        <span>{t("inbox.takeover_locked")}</span>
+        <span>
+          {assigneeName
+            ? `${t("inbox.takeover_locked_by")}: ${assigneeName}`
+            : t("inbox.takeover_locked")}
+        </span>
       </div>
     );
   }
 
-  // Assigned to current user вЂ” show "You are handling" + "РџРµСЂРµРґР°С‚СЊ РР" + "РћСЃРІРѕР±РѕРґРёС‚СЊ"
+  // Assigned to current user — show "You are handling" + "Передать ИИ" + "Освободить"
   if (isAssignedToMe) {
     const handleReturnToBot = async () => {
       setIsLoading(true);
@@ -109,6 +140,8 @@ export function TakeoverControl({
           // Ignore release error when resetting status
         }
         await conversationsApi.updateStatus(conversation.id, "BOT_ACTIVE");
+        setIsOptimisticOwner(false);
+        onReleaseSuccess?.();
         toast.success(t("inbox.takeover_returned_to_bot_toast"));
         onStatusChange?.("BOT_ACTIVE");
         onRefresh?.();
@@ -123,6 +156,8 @@ export function TakeoverControl({
       setIsLoading(true);
       try {
         await conversationsApi.releaseTakeover(conversation.id);
+        setIsOptimisticOwner(false);
+        onReleaseSuccess?.();
         toast.success(t("inbox.takeover_released_toast"));
         onRefresh?.();
       } catch {
@@ -142,9 +177,11 @@ export function TakeoverControl({
           variant="outline"
           size="sm"
           loading={isLoading}
+          disabled={!canReturnToBot}
           onClick={handleReturnToBot}
           leftIcon={<Bot className="w-3.5 h-3.5" />}
-          className="text-xs h-8 text-primary border-primary/30 hover:bg-primary/10"
+          title={!canReturnToBot ? t("inbox.handoff_media_blocked") : undefined}
+          className="text-xs h-8 text-primary border-primary/30 hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {t("inbox.handoff_return_bot")}
         </Button>
@@ -163,14 +200,17 @@ export function TakeoverControl({
     );
   }
 
-  // MANAGER_INTERCEPTED + unassigned вЂ” "Р’Р·СЏС‚СЊ РІ СЂР°Р±РѕС‚Сѓ" button
+  // MANAGER_INTERCEPTED + unassigned — "Взять в работу" button
   const handleTakeover = async () => {
     setIsLoading(true);
     try {
       await conversationsApi.takeover(conversation.id);
+      setIsOptimisticOwner(true);
+      onTakeoverSuccess?.();
       toast.success(t("inbox.takeover_success_toast"));
       onRefresh?.();
     } catch (err: unknown) {
+      setIsOptimisticOwner(false);
       const errCode = (err as { data?: { code?: string } })?.data?.code;
       if (errCode === "conversations.taken_over_by_other") {
         toast.error(t("inbox.takeover_taken_toast"));
@@ -195,4 +235,3 @@ export function TakeoverControl({
     </Button>
   );
 }
-

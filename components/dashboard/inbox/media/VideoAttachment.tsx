@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Play, VideoOff, Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MediaLightboxModal } from "./MediaLightboxModal";
+import { AttachmentActions } from "./AttachmentActions";
+import { useMediaObjectSrc } from "@/hooks/useMediaObjectSrc";
 import clsx from "clsx";
 
 interface VideoAttachmentProps {
@@ -22,6 +24,7 @@ export function VideoAttachment({
   isUserMessage = false,
 }: VideoAttachmentProps) {
   const t = useTranslations("dashboard");
+  const { src } = useMediaObjectSrc(mediaUrl);
   const [hasError, setHasError] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
@@ -46,7 +49,7 @@ export function VideoAttachment({
     <>
       <div className="relative group max-w-[280px] sm:max-w-[340px] rounded-xl overflow-hidden border border-black/10 shadow-xs bg-black">
         <video
-          src={mediaUrl}
+          src={src || undefined}
           controls
           preload="metadata"
           onError={() => setHasError(true)}
@@ -63,6 +66,11 @@ export function VideoAttachment({
           <Maximize2 className="w-3.5 h-3.5" />
         </button>
 
+        {/* Hover badge: browser preview + download to Downloads folder */}
+        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center rounded-lg bg-black/60 backdrop-blur-xs shadow-md p-0.5 [&_button]:text-white [&_button:hover]:bg-white/20">
+          <AttachmentActions mediaUrl={mediaUrl} fileName={fileName} />
+        </div>
+
         {sizeLabel && (
           <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/70 text-[10px] font-mono tabular-nums text-white/90">
             {sizeLabel}
@@ -73,7 +81,7 @@ export function VideoAttachment({
       <MediaLightboxModal
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
-        mediaUrl={mediaUrl}
+        mediaUrl={src || mediaUrl}
         mediaType="VIDEO"
         fileName={fileName}
       />

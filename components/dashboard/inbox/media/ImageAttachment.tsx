@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Maximize2, ImageOff } from "lucide-react";
+import { ImageOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MediaLightboxModal } from "./MediaLightboxModal";
+import { AttachmentActions } from "./AttachmentActions";
+import { useMediaObjectSrc } from "@/hooks/useMediaObjectSrc";
 import clsx from "clsx";
 
 interface ImageAttachmentProps {
@@ -18,6 +20,7 @@ export function ImageAttachment({
   isUserMessage = false,
 }: ImageAttachmentProps) {
   const t = useTranslations("dashboard");
+  const { src, loading } = useMediaObjectSrc(mediaUrl);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -38,33 +41,33 @@ export function ImageAttachment({
         className="group relative cursor-pointer overflow-hidden rounded-xl border border-black/10 shadow-xs max-w-[280px] sm:max-w-[320px] transition-transform active:scale-[0.99]"
       >
         {/* Skeleton while loading */}
-        {!isLoaded && (
+        {(!isLoaded || loading) && (
           <div className="w-64 h-44 bg-muted/60 animate-pulse flex items-center justify-center text-muted-foreground" />
         )}
 
-        <img
-          src={mediaUrl}
-          alt={fileName || "Image attachment"}
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setHasError(true)}
-          className={clsx(
-            "w-full h-auto max-h-[280px] object-cover rounded-xl transition-all duration-200 group-hover:scale-[1.02]",
-            !isLoaded && "hidden"
-          )}
-        />
+        {src && (
+          <img
+            src={src}
+            alt={fileName || "Image attachment"}
+            onLoad={() => setIsLoaded(true)}
+            onError={() => setHasError(true)}
+            className={clsx(
+              "w-full h-auto max-h-[280px] object-cover rounded-xl transition-all duration-200 group-hover:scale-[1.02]",
+              !isLoaded && "hidden"
+            )}
+          />
+        )}
 
-        {/* Hover zoom icon badge */}
-        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <div className="p-2 rounded-full bg-black/60 text-white backdrop-blur-xs shadow-md">
-            <Maximize2 className="w-4 h-4" />
-          </div>
+        {/* Hover badge: browser preview + download to Downloads folder */}
+        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 rounded-full bg-black/60 text-white backdrop-blur-xs shadow-md p-0.5 [&_button]:text-white [&_button:hover]:bg-white/20">
+          <AttachmentActions mediaUrl={mediaUrl} fileName={fileName} />
         </div>
       </div>
 
       <MediaLightboxModal
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
-        mediaUrl={mediaUrl}
+        mediaUrl={src || mediaUrl}
         mediaType="IMAGE"
         fileName={fileName}
       />

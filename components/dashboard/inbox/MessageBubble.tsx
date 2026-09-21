@@ -43,7 +43,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <div
       className={clsx(
         "flex items-end gap-2.5 my-3 max-w-[85%] sm:max-w-[75%]",
-        isUser ? "ml-auto flex-row-reverse" : "mr-auto"
+        isUser ? "mr-auto" : "ml-auto flex-row-reverse"
       )}
     >
       {/* Role Avatar */}
@@ -66,7 +66,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           "relative px-4 py-2.5 rounded-2xl text-sm shadow-xs transition-all",
           isUser && "bg-primary text-primary-foreground rounded-br-xs",
           isBot && "bg-card border border-border text-foreground rounded-bl-xs",
-          isManager && "bg-amber-500/10 border border-amber-500/30 text-foreground rounded-bl-xs"
+          isManager && "bg-slate-50 border border-slate-200 text-foreground rounded-bl-xs"
         )}
       >
         {/* Role & Time Header */}

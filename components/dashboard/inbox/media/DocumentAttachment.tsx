@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { FileText, FileSpreadsheet, FileCode, Download, File } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { FileText, FileSpreadsheet, FileCode, File } from "lucide-react";
+import { AttachmentActions } from "./AttachmentActions";
 import clsx from "clsx";
 
 interface DocumentAttachmentProps {
@@ -20,7 +20,6 @@ export function DocumentAttachment({
   mimeType,
   isUserMessage = false,
 }: DocumentAttachmentProps) {
-  const t = useTranslations("dashboard");
 
   const formatFileSize = (bytes?: number | null) => {
     if (!bytes) return null;
@@ -92,21 +91,8 @@ export function DocumentAttachment({
         </div>
       </div>
 
-      <a
-        href={mediaUrl}
-        download={fileName}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={clsx(
-          "p-2 rounded-lg transition-colors shrink-0 cursor-pointer",
-          isUserMessage
-            ? "hover:bg-white/20 text-white"
-            : "hover:bg-muted text-muted-foreground hover:text-foreground"
-        )}
-        title={t("inbox.download_file")}
-      >
-        <Download className="w-4 h-4" />
-      </a>
+      {/* Browser preview + download to Downloads folder */}
+      <AttachmentActions mediaUrl={mediaUrl} fileName={fileName} />
     </div>
   );
 }

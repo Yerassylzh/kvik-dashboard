@@ -10,9 +10,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/health": {
@@ -24,9 +22,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "App"
-        ]
+        "tags": ["App"]
       }
     },
     "/workspaces/settings/round-robin": {
@@ -50,9 +46,7 @@
           }
         ],
         "summary": "Get workspace round robin booking distribution settings",
-        "tags": [
-          "Workspaces"
-        ]
+        "tags": ["Workspaces"]
       },
       "put": {
         "operationId": "WorkspacesController_updateRoundRobinSettings",
@@ -84,9 +78,7 @@
           }
         ],
         "summary": "Update workspace round robin booking distribution settings",
-        "tags": [
-          "Workspaces"
-        ]
+        "tags": ["Workspaces"]
       }
     },
     "/workspaces/schedule": {
@@ -126,9 +118,7 @@
           }
         ],
         "summary": "Get business weekly schedule templates and date overrides",
-        "tags": [
-          "Workspaces"
-        ]
+        "tags": ["Workspaces"]
       },
       "put": {
         "operationId": "WorkspacesController_setSchedule",
@@ -163,9 +153,7 @@
           }
         ],
         "summary": "Set or update business weekly schedule templates",
-        "tags": [
-          "Workspaces"
-        ]
+        "tags": ["Workspaces"]
       }
     },
     "/workspaces/schedule/overrides": {
@@ -202,9 +190,7 @@
           }
         ],
         "summary": "Add a date-level business override (holiday / closed day / custom hours)",
-        "tags": [
-          "Workspaces"
-        ]
+        "tags": ["Workspaces"]
       }
     },
     "/workspaces/schedule/overrides/{id}": {
@@ -240,9 +226,7 @@
           }
         ],
         "summary": "Remove a business date override",
-        "tags": [
-          "Workspaces"
-        ]
+        "tags": ["Workspaces"]
       }
     },
     "/workspaces/{workspaceId}/recommendations": {
@@ -264,13 +248,7 @@
             "schema": {
               "default": "NEW",
               "type": "string",
-              "enum": [
-                "NEW",
-                "ACCEPTED",
-                "DISMISSED",
-                "IMPLEMENTED",
-                "ALL"
-              ]
+              "enum": ["NEW", "ACCEPTED", "DISMISSED", "IMPLEMENTED", "ALL"]
             }
           },
           {
@@ -295,11 +273,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "HIGH",
-                "MEDIUM",
-                "LOW"
-              ]
+              "enum": ["HIGH", "MEDIUM", "LOW"]
             }
           }
         ],
@@ -330,9 +304,7 @@
           }
         ],
         "summary": "List business recommendations with filtering and pagination",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/workspaces/{workspaceId}/recommendations/summary": {
@@ -372,9 +344,7 @@
           }
         ],
         "summary": "Get summary KPIs and category breakdown for recommendation badges",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/workspaces/{workspaceId}/recommendations/{id}/apply": {
@@ -431,9 +401,7 @@
           }
         ],
         "summary": "Apply 1-click execution action for a recommendation",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/workspaces/{workspaceId}/recommendations/{id}/dismiss": {
@@ -490,9 +458,7 @@
           }
         ],
         "summary": "Dismiss a recommendation with structured owner feedback",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/workspaces/{workspaceId}/recommendations/demand-trends": {
@@ -532,9 +498,7 @@
           }
         ],
         "summary": "Get demand trend metrics (unmet services, hourly distribution, objections)",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/workspaces/{workspaceId}/reports": {
@@ -590,9 +554,7 @@
           }
         ],
         "summary": "List historical weekly insight reports",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/workspaces/{workspaceId}/reports/{reportId}": {
@@ -643,9 +605,7 @@
           }
         ],
         "summary": "Get single weekly insight report with full markdown content",
-        "tags": [
-          "Business Insights & Recommendations"
-        ]
+        "tags": ["Business Insights & Recommendations"]
       }
     },
     "/auth/register": {
@@ -671,9 +631,7 @@
           }
         },
         "summary": "Register a new business owner and send email verification OTP",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/login": {
@@ -699,9 +657,7 @@
           }
         },
         "summary": "Log in with email and password",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/staff-invite": {
@@ -720,9 +676,7 @@
           }
         },
         "summary": "Validate staff invitation token and get metadata",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/register-staff": {
@@ -751,9 +705,7 @@
           }
         },
         "summary": "Accept staff invitation, create user, set password, and log in",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/switch-workspace": {
@@ -787,9 +739,7 @@
           }
         ],
         "summary": "Switch active workspace context",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/workspaces": {
@@ -810,9 +760,7 @@
           }
         ],
         "summary": "Get all workspaces accessible by the current user",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/verify-email": {
@@ -841,9 +789,7 @@
           }
         },
         "summary": "Verify email address using 6-digit OTP code",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/resend-verification": {
@@ -875,9 +821,7 @@
           }
         },
         "summary": "Resend email verification 6-digit OTP code",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/forgot-password": {
@@ -900,9 +844,7 @@
           }
         },
         "summary": "Request password reset code (sends 6-digit OTP if account exists)",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/reset-password": {
@@ -928,9 +870,7 @@
           }
         },
         "summary": "Reset account password using 6-digit OTP code",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/change-password": {
@@ -964,9 +904,7 @@
           }
         ],
         "summary": "Change password from dashboard settings (authenticated)",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/refresh": {
@@ -987,9 +925,7 @@
           }
         ],
         "summary": "Rotate access and refresh tokens using HttpOnly cookie",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/logout": {
@@ -1007,9 +943,7 @@
           }
         ],
         "summary": "Log out user and clear refresh token",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/auth/me": {
@@ -1030,9 +964,7 @@
           }
         ],
         "summary": "Get current user profile and workspace state",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/staff": {
@@ -1065,9 +997,7 @@
           }
         ],
         "summary": "List all staff members for the workspace",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       },
       "post": {
         "operationId": "StaffController_create",
@@ -1102,9 +1032,7 @@
           }
         ],
         "summary": "Create a new staff member (optionally send immediate email invite)",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/staff/{id}": {
@@ -1140,9 +1068,7 @@
           }
         ],
         "summary": "Get staff member profile by ID",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       },
       "patch": {
         "operationId": "StaffController_update",
@@ -1186,9 +1112,7 @@
           }
         ],
         "summary": "Update staff member profile fields",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       },
       "delete": {
         "operationId": "StaffController_deactivate",
@@ -1222,9 +1146,7 @@
           }
         ],
         "summary": "Deactivate staff member (soft delete & session invalidation)",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/staff/{id}/invite": {
@@ -1273,9 +1195,7 @@
           }
         ],
         "summary": "Send or resend email invitation to join dashboard",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       },
       "delete": {
         "operationId": "StaffController_revokeInvite",
@@ -1309,9 +1229,7 @@
           }
         ],
         "summary": "Revoke pending invitation for staff member",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/staff/{id}/round-robin": {
@@ -1357,9 +1275,7 @@
           }
         ],
         "summary": "Update staff member round-robin load balancing configuration",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/staff/{id}/schedule": {
@@ -1410,9 +1326,7 @@
           }
         ],
         "summary": "Get staff schedule templates and date overrides",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       },
       "put": {
         "operationId": "StaffController_setSchedule",
@@ -1456,9 +1370,7 @@
           }
         ],
         "summary": "Replace full weekly schedule template for staff member",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       },
       "delete": {
         "operationId": "StaffController_resetSchedule",
@@ -1492,9 +1404,7 @@
           }
         ],
         "summary": "Reset staff schedule to inherit default business schedule",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/staff/{id}/overrides": {
@@ -1540,9 +1450,7 @@
           }
         ],
         "summary": "Add availability override (day off or custom hours)",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/staff/{id}/overrides/{overrideId}": {
@@ -1586,9 +1494,7 @@
           }
         ],
         "summary": "Remove a specific availability override",
-        "tags": [
-          "Staff"
-        ]
+        "tags": ["Staff"]
       }
     },
     "/knowledge-base/documents": {
@@ -1608,9 +1514,7 @@
                     "description": "PDF, DOCX, XLSX, or TXT file (max 10MB)"
                   }
                 },
-                "required": [
-                  "file"
-                ]
+                "required": ["file"]
               }
             }
           }
@@ -1632,9 +1536,7 @@
           }
         ],
         "summary": "Upload a document (PDF, DOCX, XLSX, TXT) for knowledge ingestion",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "get": {
         "operationId": "KnowledgeBaseEntriesController_listDocuments",
@@ -1653,9 +1555,7 @@
           }
         ],
         "summary": "List all uploaded documents for workspace",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/notes": {
@@ -1689,9 +1589,7 @@
           }
         ],
         "summary": "Add manual operational notes",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "get": {
         "operationId": "KnowledgeBaseEntriesController_listNotes",
@@ -1710,9 +1608,7 @@
           }
         ],
         "summary": "List all manual notes for workspace",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/notes/{id}": {
@@ -1752,9 +1648,7 @@
           }
         ],
         "summary": "Get single manual note by ID",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "put": {
         "operationId": "KnowledgeBaseEntriesController_updateNote",
@@ -1805,9 +1699,7 @@
           }
         ],
         "summary": "Update an existing manual note and re-index vector chunks",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "patch": {
         "operationId": "KnowledgeBaseEntriesController_patchNote",
@@ -1858,9 +1750,7 @@
           }
         ],
         "summary": "Update an existing manual note (PATCH)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "delete": {
         "operationId": "KnowledgeBaseEntriesController_deleteNote",
@@ -1891,9 +1781,7 @@
           }
         ],
         "summary": "Delete a manual note and its vector chunks",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/entries": {
@@ -1938,9 +1826,7 @@
           }
         ],
         "summary": "List knowledge entries (paginated, filter by type)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/entries/{id}": {
@@ -1980,9 +1866,7 @@
           }
         ],
         "summary": "Get single knowledge entry by ID",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "patch": {
         "operationId": "KnowledgeBaseEntriesController_updateEntry",
@@ -2023,9 +1907,7 @@
           }
         ],
         "summary": "Update knowledge entry title or active status",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "delete": {
         "operationId": "KnowledgeBaseEntriesController_deleteEntry",
@@ -2056,9 +1938,7 @@
           }
         ],
         "summary": "Delete knowledge entry and its vector chunks",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/entries/bulk-delete": {
@@ -2092,9 +1972,7 @@
           }
         ],
         "summary": "Bulk delete multiple knowledge base entries",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/entries/{id}/reindex": {
@@ -2127,9 +2005,7 @@
           }
         ],
         "summary": "Re-index a specific knowledge entry (re-run parsing/embedding)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/profile": {
@@ -2157,9 +2033,7 @@
           }
         ],
         "summary": "Get workspace business profile and contact information",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "put": {
         "operationId": "KnowledgeBaseProfileController_updateBusinessProfile",
@@ -2198,9 +2072,7 @@
           }
         ],
         "summary": "Update workspace business profile",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "patch": {
         "operationId": "KnowledgeBaseProfileController_patchBusinessProfile",
@@ -2239,9 +2111,7 @@
           }
         ],
         "summary": "Update workspace business profile (PATCH)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/scrapers/website": {
@@ -2275,9 +2145,7 @@
           }
         ],
         "summary": "Trigger website crawling (async)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/scrapers/2gis": {
@@ -2311,9 +2179,7 @@
           }
         ],
         "summary": "Trigger 2GIS catalog scraping (async)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/scrapers/status": {
@@ -2341,9 +2207,7 @@
           }
         ],
         "summary": "Get unified status of all knowledge scrapers (website & 2GIS)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/scrapers/{type}": {
@@ -2376,9 +2240,7 @@
           }
         ],
         "summary": "Bulk clear all scraped entries for website or 2gis",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/qualification": {
@@ -2406,9 +2268,7 @@
           }
         ],
         "summary": "Get configured lead qualification rules",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "put": {
         "operationId": "KnowledgeBaseProfileController_updateQualification",
@@ -2447,9 +2307,7 @@
           }
         ],
         "summary": "Update lead qualification rules and re-embed chunks",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/business-context": {
@@ -2477,9 +2335,7 @@
           }
         ],
         "summary": "Get current AI-generated business context summary",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       },
       "put": {
         "operationId": "KnowledgeBaseProfileController_updateBusinessContext",
@@ -2518,9 +2374,7 @@
           }
         ],
         "summary": "Update or override business context summary",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/business-context/regenerate": {
@@ -2541,9 +2395,7 @@
           }
         ],
         "summary": "Trigger re-extraction of business context from all knowledge sources",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/search": {
@@ -2586,9 +2438,7 @@
           }
         ],
         "summary": "Semantic vector search across workspace knowledge",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/status/{type}": {
@@ -2621,9 +2471,7 @@
           }
         ],
         "summary": "Get scraping job status (website or 2gis)",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/knowledge-base/stats": {
@@ -2651,9 +2499,7 @@
           }
         ],
         "summary": "Get aggregate Knowledge Base metrics and health statistics",
-        "tags": [
-          "Knowledge Base"
-        ]
+        "tags": ["Knowledge Base"]
       }
     },
     "/onboarding/state": {
@@ -2681,9 +2527,7 @@
           }
         ],
         "summary": "Get current onboarding step (Derived State)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/niche": {
@@ -2721,9 +2565,7 @@
           }
         ],
         "summary": "Step 0: Select niche profile",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/business-profile": {
@@ -2764,9 +2606,7 @@
           }
         ],
         "summary": "Step 1: Save business profile info",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       },
       "put": {
         "operationId": "OnboardingWizardController_updateBusinessProfile",
@@ -2805,9 +2645,7 @@
           }
         ],
         "summary": "Step 1: Update business profile info (PUT)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-source": {
@@ -2845,9 +2683,7 @@
           }
         ],
         "summary": "Step 2: Confirm data sources input and proceed to preview",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-source-confirm": {
@@ -2875,9 +2711,7 @@
           }
         ],
         "summary": "Step 2: Confirm data sources input step (transition to DATA_PREVIEW)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-source/confirm": {
@@ -2905,9 +2739,7 @@
           }
         ],
         "summary": "Step 2: Confirm data sources input step (alias, transition to DATA_PREVIEW)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-preview": {
@@ -2935,9 +2767,7 @@
           }
         ],
         "summary": "Step 3: Preview parsed knowledge entries and parsing progress",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/data-confirm": {
@@ -2965,9 +2795,7 @@
           }
         ],
         "summary": "Step 3: Confirm data is correct",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/channel": {
@@ -3008,9 +2836,7 @@
           }
         ],
         "summary": "Step 4: Connect a messaging channel",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/channel-confirm": {
@@ -3038,9 +2864,7 @@
           }
         ],
         "summary": "Step 4: Confirm channel connection step",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/channel/confirm": {
@@ -3068,9 +2892,7 @@
           }
         ],
         "summary": "Step 4: Confirm channel connection step (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/channel-skip": {
@@ -3098,9 +2920,7 @@
           }
         ],
         "summary": "Step 4: Skip channel connection step",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/channel/skip": {
@@ -3128,9 +2948,7 @@
           }
         ],
         "summary": "Step 4: Skip channel connection step (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/qualification": {
@@ -3171,9 +2989,7 @@
           }
         ],
         "summary": "Step 5: Save lead qualification rules",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/qualification-rules": {
@@ -3214,9 +3030,7 @@
           }
         ],
         "summary": "Step 5: Save lead qualification rules (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       },
       "get": {
         "operationId": "OnboardingWizardController_getQualificationRules",
@@ -3232,9 +3046,7 @@
           }
         ],
         "summary": "Get current qualification rules",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/complete": {
@@ -3262,9 +3074,7 @@
           }
         ],
         "summary": "Step 6: Complete onboarding and activate bot",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/website-scraping": {
@@ -3298,9 +3108,7 @@
           }
         ],
         "summary": "Start background website scraping (async)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/2gis-scraping": {
@@ -3334,9 +3142,7 @@
           }
         ],
         "summary": "Start background 2GIS catalog scraping (async)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/scraping/status": {
@@ -3348,10 +3154,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "enum": [
-                "website",
-                "2gis"
-              ],
+              "enum": ["website", "2gis"],
               "type": "string"
             }
           }
@@ -3370,9 +3173,7 @@
           }
         ],
         "summary": "Get async scraping status (website or 2gis)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/knowledge-notes": {
@@ -3403,9 +3204,7 @@
           }
         ],
         "summary": "Save manual knowledge notes (indexed to pgvector)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/notes": {
@@ -3436,9 +3235,7 @@
           }
         ],
         "summary": "Save manual knowledge notes (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       },
       "get": {
         "operationId": "OnboardingSourcesController_listNotes",
@@ -3454,9 +3251,7 @@
           }
         ],
         "summary": "List manual knowledge notes (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/knowledge-notes": {
@@ -3474,9 +3269,7 @@
           }
         ],
         "summary": "List manual knowledge notes",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/notes/{id}": {
@@ -3506,9 +3299,7 @@
           }
         ],
         "summary": "Delete a note by ID",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/knowledge-documents": {
@@ -3545,9 +3336,7 @@
           }
         ],
         "summary": "Upload a knowledge document (async processing)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/knowledge-files": {
@@ -3584,9 +3373,7 @@
           }
         ],
         "summary": "Upload a knowledge document (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       },
       "get": {
         "operationId": "OnboardingSourcesController_listKnowledgeFiles",
@@ -3602,9 +3389,7 @@
           }
         ],
         "summary": "List uploaded documents (alias)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/knowledge-documents": {
@@ -3622,9 +3407,7 @@
           }
         ],
         "summary": "List uploaded documents with processing status",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/step/knowledge-files/{id}": {
@@ -3654,9 +3437,7 @@
           }
         ],
         "summary": "Delete a knowledge file by ID",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/knowledge/{id}": {
@@ -3686,9 +3467,7 @@
           }
         ],
         "summary": "Delete a knowledge entry (and its file, if any)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/knowledge/search": {
@@ -3724,9 +3503,7 @@
           }
         ],
         "summary": "[Debug] Semantic vector search over knowledge chunks",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/knowledge-entries": {
@@ -3774,9 +3551,7 @@
           }
         ],
         "summary": "List knowledge base entries (scraped pages, 2GIS catalog, files, notes) with pagination",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/knowledge-entries/{id}": {
@@ -3816,9 +3591,7 @@
           }
         ],
         "summary": "Get full details of a specific knowledge entry (including raw & structuredText data)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/onboarding/business-context": {
@@ -3846,9 +3619,7 @@
           }
         ],
         "summary": "Get AI-extracted business summary (businessContext JSON for system prompt review)",
-        "tags": [
-          "Onboarding"
-        ]
+        "tags": ["Onboarding"]
       }
     },
     "/channels/meta/config": {
@@ -3876,9 +3647,7 @@
           }
         ],
         "summary": "Get public Meta App configuration for Facebook JS SDK",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels": {
@@ -3906,9 +3675,7 @@
           }
         ],
         "summary": "List all messaging channels for current workspace",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels/{type}": {
@@ -3920,11 +3687,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "enum": [
-                "WHATSAPP",
-                "INSTAGRAM",
-                "TELEGRAM"
-              ],
+              "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
               "type": "string"
             }
           }
@@ -3953,9 +3716,7 @@
           }
         ],
         "summary": "Get details and status for a specific channel type",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels/whatsapp/connect": {
@@ -3996,9 +3757,7 @@
           }
         ],
         "summary": "Connect WhatsApp channel via Meta Embedded Signup code",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels/instagram/connect": {
@@ -4039,9 +3798,7 @@
           }
         ],
         "summary": "Connect Instagram Business channel via Facebook Login OAuth code",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels/telegram/connect": {
@@ -4082,9 +3839,7 @@
           }
         ],
         "summary": "Connect Telegram bot via BotFather token and register webhook",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels/{type}/disconnect": {
@@ -4096,11 +3851,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "enum": [
-                "WHATSAPP",
-                "INSTAGRAM",
-                "TELEGRAM"
-              ],
+              "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
               "type": "string"
             }
           }
@@ -4129,9 +3880,7 @@
           }
         ],
         "summary": "Disconnect channel and clean up webhooks",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/channels/{type}/health": {
@@ -4143,11 +3892,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "enum": [
-                "WHATSAPP",
-                "INSTAGRAM",
-                "TELEGRAM"
-              ],
+              "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
               "type": "string"
             }
           }
@@ -4176,9 +3921,7 @@
           }
         ],
         "summary": "Check channel health and webhook status",
-        "tags": [
-          "Channels"
-        ]
+        "tags": ["Channels"]
       }
     },
     "/webhooks/meta": {
@@ -4216,9 +3959,7 @@
           }
         },
         "summary": "Meta webhook verification challenge (WhatsApp & Instagram)",
-        "tags": [
-          "Webhooks"
-        ]
+        "tags": ["Webhooks"]
       }
     },
     "/ai-engine/config": {
@@ -4246,9 +3987,7 @@
           }
         ],
         "summary": "Get workspace AI configuration and system prompt preview",
-        "tags": [
-          "AI Engine"
-        ]
+        "tags": ["AI Engine"]
       },
       "patch": {
         "operationId": "AiEngineController_updateConfig",
@@ -4280,9 +4019,7 @@
           }
         ],
         "summary": "Update workspace AI configuration",
-        "tags": [
-          "AI Engine"
-        ]
+        "tags": ["AI Engine"]
       }
     },
     "/ai-engine/prompt-preview": {
@@ -4310,9 +4047,7 @@
           }
         ],
         "summary": "Get live compiled system prompt preview with active variables and business context",
-        "tags": [
-          "AI Engine"
-        ]
+        "tags": ["AI Engine"]
       }
     },
     "/ai-engine/tools": {
@@ -4340,9 +4075,7 @@
           }
         ],
         "summary": "List all available AI agent tools and their activation status",
-        "tags": [
-          "AI Engine"
-        ]
+        "tags": ["AI Engine"]
       }
     },
     "/ai-engine/tools/{toolName}": {
@@ -4385,9 +4118,7 @@
           }
         ],
         "summary": "Toggle activation or customize instructions for a specific AI tool",
-        "tags": [
-          "AI Engine"
-        ]
+        "tags": ["AI Engine"]
       }
     },
     "/ai-engine/test": {
@@ -4428,9 +4159,7 @@
           }
         ],
         "summary": "Test dialogue generation through the RAG and Gemini pipeline",
-        "tags": [
-          "AI Engine"
-        ]
+        "tags": ["AI Engine"]
       }
     },
     "/workspaces/{workspaceId}/follow-ups/config": {
@@ -4464,9 +4193,7 @@
           }
         ],
         "summary": "Get follow-up and appointment reminder configuration",
-        "tags": [
-          "Follow-Up System"
-        ]
+        "tags": ["Follow-Up System"]
       },
       "patch": {
         "operationId": "FollowUpController_updateConfig",
@@ -4511,9 +4238,7 @@
           }
         ],
         "summary": "Update follow-up and appointment reminder configuration",
-        "tags": [
-          "Follow-Up System"
-        ]
+        "tags": ["Follow-Up System"]
       }
     },
     "/workspaces/{workspaceId}/follow-ups/stats": {
@@ -4563,9 +4288,7 @@
           }
         ],
         "summary": "Get follow-up analytics and conversion statistics",
-        "tags": [
-          "Follow-Up System"
-        ]
+        "tags": ["Follow-Up System"]
       }
     },
     "/workspaces/{workspaceId}/follow-ups/logs": {
@@ -4599,9 +4322,7 @@
           }
         ],
         "summary": "Get paginated follow-up activity logs",
-        "tags": [
-          "Follow-Up System"
-        ]
+        "tags": ["Follow-Up System"]
       }
     },
     "/workspaces/{workspaceId}/follow-ups/test-preview": {
@@ -4645,9 +4366,7 @@
           }
         ],
         "summary": "Simulate generated follow-up message for a conversation without sending",
-        "tags": [
-          "Follow-Up System"
-        ]
+        "tags": ["Follow-Up System"]
       }
     },
     "/conversations/{id}/cancel-followup": {
@@ -4684,9 +4403,7 @@
           }
         ],
         "summary": "Manually abort any pending scheduled follow-up for a dialogue",
-        "tags": [
-          "Follow-Up System"
-        ]
+        "tags": ["Follow-Up System"]
       }
     },
     "/conversations": {
@@ -4699,11 +4416,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "BOT_ACTIVE",
-                "MANAGER_INTERCEPTED",
-                "CLOSED"
-              ]
+              "enum": ["BOT_ACTIVE", "MANAGER_INTERCEPTED", "CLOSED"]
             }
           },
           {
@@ -4712,11 +4425,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "WHATSAPP",
-                "INSTAGRAM",
-                "TELEGRAM"
-              ]
+              "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
             }
           }
         ],
@@ -4734,9 +4443,7 @@
           }
         ],
         "summary": "List conversations with filters and pagination",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}": {
@@ -4769,9 +4476,7 @@
           }
         ],
         "summary": "Get conversation detail",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/messages": {
@@ -4820,9 +4525,7 @@
           }
         ],
         "summary": "Get message history (auto-resets unread count to 0)",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       },
       "post": {
         "operationId": "ConversationsController_sendMessage",
@@ -4872,9 +4575,7 @@
           }
         ],
         "summary": "Send outbound message (text and/or media) to client via channel adapter",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/media/upload": {
@@ -4904,12 +4605,7 @@
                   },
                   "mediaType": {
                     "type": "string",
-                    "enum": [
-                      "IMAGE",
-                      "AUDIO",
-                      "VIDEO",
-                      "DOCUMENT"
-                    ],
+                    "enum": ["IMAGE", "AUDIO", "VIDEO", "DOCUMENT"],
                     "description": "Optional media type override (auto-detected by default)"
                   },
                   "durationSeconds": {
@@ -4917,9 +4613,7 @@
                     "description": "Optional duration in seconds for audio/video recordings"
                   }
                 },
-                "required": [
-                  "file"
-                ]
+                "required": ["file"]
               }
             }
           }
@@ -4951,9 +4645,7 @@
           }
         ],
         "summary": "Upload media asset (photo, voice, video, document) prior to sending",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/media": {
@@ -4974,12 +4666,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "IMAGE",
-                "AUDIO",
-                "VIDEO",
-                "DOCUMENT"
-              ]
+              "enum": ["IMAGE", "AUDIO", "VIDEO", "DOCUMENT"]
             }
           }
         ],
@@ -5007,9 +4694,7 @@
           }
         ],
         "summary": "List all shared media files in conversation",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/status": {
@@ -5055,9 +4740,7 @@
           }
         ],
         "summary": "Update conversation status",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/read": {
@@ -5090,9 +4773,7 @@
           }
         ],
         "summary": "Mark conversation as read",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/escalations": {
@@ -5135,9 +4816,7 @@
           }
         ],
         "summary": "Get escalation history for a conversation",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/takeover": {
@@ -5176,9 +4855,7 @@
           }
         ],
         "summary": "Take over an escalated conversation",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/conversations/{id}/release-takeover": {
@@ -5214,9 +4891,7 @@
           }
         ],
         "summary": "Release takeover lock from a conversation",
-        "tags": [
-          "Conversations"
-        ]
+        "tags": ["Conversations"]
       }
     },
     "/notifications/recipients": {
@@ -5250,9 +4925,7 @@
           }
         ],
         "summary": "List Telegram notification recipients for workspace",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/notifications/recipients/telegram/generate-code": {
@@ -5283,9 +4956,7 @@
           }
         ],
         "summary": "Generate Telegram connection deep link and one-time code",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/notifications/recipients/{id}": {
@@ -5331,9 +5002,7 @@
           }
         ],
         "summary": "Update notification recipient preferences",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       },
       "delete": {
         "operationId": "NotificationsController_removeRecipient",
@@ -5367,9 +5036,7 @@
           }
         ],
         "summary": "Remove a notification recipient",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/notifications": {
@@ -5407,9 +5074,7 @@
           }
         ],
         "summary": "List in-app notifications for workspace",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/notifications/read-all": {
@@ -5430,9 +5095,7 @@
           }
         ],
         "summary": "Mark all notifications as read",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/notifications/{id}/read": {
@@ -5465,9 +5128,7 @@
           }
         ],
         "summary": "Mark a notification as read",
-        "tags": [
-          "Notifications"
-        ]
+        "tags": ["Notifications"]
       }
     },
     "/bookings": {
@@ -5505,9 +5166,7 @@
           }
         ],
         "summary": "List bookings for calendar view (filter by date range)",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       },
       "post": {
         "operationId": "BookingsController_create",
@@ -5542,9 +5201,7 @@
           }
         ],
         "summary": "Create a new appointment booking",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/bookings/slots": {
@@ -5568,9 +5225,7 @@
           }
         ],
         "summary": "Get available time slots for a staff member on a given date",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/bookings/preview-assignment": {
@@ -5601,9 +5256,7 @@
           }
         ],
         "summary": "Preview Round Robin specialist auto-assignment for a slot",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/bookings/{id}": {
@@ -5636,9 +5289,7 @@
           }
         ],
         "summary": "Get booking detail by ID",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/bookings/{id}/no-show": {
@@ -5681,9 +5332,7 @@
           }
         ],
         "summary": "Mark booking as not attended (No-Show)",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/bookings/{id}/status": {
@@ -5726,9 +5375,7 @@
           }
         ],
         "summary": "Update booking status",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/bookings/{id}/reschedule": {
@@ -5774,9 +5421,7 @@
           }
         ],
         "summary": "Reschedule booking to a new time slot",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/leads": {
@@ -5804,11 +5449,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": [
-                "WHATSAPP",
-                "INSTAGRAM",
-                "TELEGRAM"
-              ]
+              "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
             }
           },
           {
@@ -5846,9 +5487,7 @@
           }
         ],
         "summary": "List leads with filters and pagination",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/counts": {
@@ -5869,9 +5508,7 @@
           }
         ],
         "summary": "Get lead counts grouped by status",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/funnel": {
@@ -5899,9 +5536,7 @@
           }
         ],
         "summary": "Get CRM lead conversion funnel and loss reasons breakdown",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}": {
@@ -5934,9 +5569,7 @@
           }
         ],
         "summary": "Get lead detail with conversations and bookings",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       },
       "patch": {
         "operationId": "LeadsController_update",
@@ -5977,9 +5610,7 @@
           }
         ],
         "summary": "Update lead profile fields",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       },
       "delete": {
         "operationId": "LeadsController_archive",
@@ -6010,9 +5641,7 @@
           }
         ],
         "summary": "Archive lead (soft delete → DEAL_LOST)",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}/qualify": {
@@ -6055,9 +5684,7 @@
           }
         ],
         "summary": "Force qualify a lead with updated criteria",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}/disqualify": {
@@ -6103,9 +5730,7 @@
           }
         ],
         "summary": "Disqualify a lead with loss reason",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}/status": {
@@ -6151,9 +5776,7 @@
           }
         ],
         "summary": "Update lead status (funnel stage)",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}/timeline": {
@@ -6209,9 +5832,7 @@
           }
         ],
         "summary": "Get lead timeline audit log",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}/notes": {
@@ -6254,9 +5875,7 @@
           }
         ],
         "summary": "Add internal manager note to lead profile",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/leads/{id}/notes/{noteId}": {
@@ -6297,9 +5916,7 @@
           }
         ],
         "summary": "Delete internal note from lead profile",
-        "tags": [
-          "Leads"
-        ]
+        "tags": ["Leads"]
       }
     },
     "/analytics/overview": {
@@ -6330,9 +5947,7 @@
           }
         ],
         "summary": "Get main dashboard overview KPIs",
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     },
     "/analytics/funnel": {
@@ -6363,9 +5978,7 @@
           }
         ],
         "summary": "Get lead pipeline conversion funnel",
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     },
     "/analytics/bookings-by-day": {
@@ -6396,9 +6009,7 @@
           }
         ],
         "summary": "Get daily bookings count breakdown",
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     },
     "/analytics/channels": {
@@ -6429,9 +6040,7 @@
           }
         ],
         "summary": "Get channel traffic breakdown",
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     },
     "/analytics/staff": {
@@ -6465,9 +6074,7 @@
           }
         ],
         "summary": "Get staff workload and performance metrics",
-        "tags": [
-          "Analytics"
-        ]
+        "tags": ["Analytics"]
       }
     },
     "/dev-messaging/provision": {
@@ -6489,9 +6096,7 @@
           }
         ],
         "summary": "[DEV] Provision mock channels",
-        "tags": [
-          "Dev Messaging (simulator)"
-        ]
+        "tags": ["Dev Messaging (simulator)"]
       }
     },
     "/dev-messaging/simulate-inbound": {
@@ -6526,9 +6131,7 @@
           }
         ],
         "summary": "[DEV] Simulate inbound client message",
-        "tags": [
-          "Dev Messaging (simulator)"
-        ]
+        "tags": ["Dev Messaging (simulator)"]
       }
     },
     "/dev-messaging/conversations/{id}/messages": {
@@ -6562,9 +6165,7 @@
           }
         ],
         "summary": "[DEV] Get conversation message history",
-        "tags": [
-          "Dev Messaging (simulator)"
-        ]
+        "tags": ["Dev Messaging (simulator)"]
       }
     },
     "/dev-messaging/conversation-by-sender": {
@@ -6595,9 +6196,7 @@
           }
         ],
         "summary": "[DEV] Get conversation by sender and channel",
-        "tags": [
-          "Dev Messaging (simulator)"
-        ]
+        "tags": ["Dev Messaging (simulator)"]
       }
     },
     "/dev-messaging/reset-conversation/{id}": {
@@ -6631,9 +6230,7 @@
           }
         ],
         "summary": "[DEV] Reset conversation to BOT_ACTIVE",
-        "tags": [
-          "Dev Messaging (simulator)"
-        ]
+        "tags": ["Dev Messaging (simulator)"]
       }
     }
   },
@@ -6664,11 +6261,7 @@
         "properties": {
           "strategy": {
             "type": "string",
-            "enum": [
-              "LEAST_LOADED",
-              "CIRCULAR",
-              "WEIGHTED"
-            ]
+            "enum": ["LEAST_LOADED", "CIRCULAR", "WEIGHTED"]
           }
         }
       },
@@ -6696,11 +6289,7 @@
             "example": "2026-09-17T14:22:00.000Z"
           }
         },
-        "required": [
-          "quote",
-          "channel",
-          "date"
-        ]
+        "required": ["quote", "channel", "date"]
       },
       "RecommendationItemDto": {
         "type": "object",
@@ -6723,21 +6312,12 @@
           },
           "impact": {
             "type": "string",
-            "enum": [
-              "HIGH",
-              "MEDIUM",
-              "LOW"
-            ],
+            "enum": ["HIGH", "MEDIUM", "LOW"],
             "example": "HIGH"
           },
           "status": {
             "type": "string",
-            "enum": [
-              "NEW",
-              "ACCEPTED",
-              "DISMISSED",
-              "IMPLEMENTED"
-            ],
+            "enum": ["NEW", "ACCEPTED", "DISMISSED", "IMPLEMENTED"],
             "example": "NEW"
           },
           "title": {
@@ -6833,12 +6413,7 @@
             "example": 10
           }
         },
-        "required": [
-          "data",
-          "total",
-          "page",
-          "limit"
-        ]
+        "required": ["data", "total", "page", "limit"]
       },
       "RecommendationsSummaryResponseDto": {
         "type": "object",
@@ -6901,9 +6476,7 @@
             ]
           }
         },
-        "required": [
-          "reasonCode"
-        ]
+        "required": ["reasonCode"]
       },
       "DemandTrendsPeriodDto": {
         "type": "object",
@@ -6917,10 +6490,7 @@
             "example": "2026-09-17"
           }
         },
-        "required": [
-          "from",
-          "to"
-        ]
+        "required": ["from", "to"]
       },
       "UnmetServiceItemDto": {
         "type": "object",
@@ -6938,11 +6508,7 @@
             "example": 19
           }
         },
-        "required": [
-          "service",
-          "inquiries",
-          "lostLeads"
-        ]
+        "required": ["service", "inquiries", "lostLeads"]
       },
       "HourlyDistributionItemDto": {
         "type": "object",
@@ -6960,11 +6526,7 @@
             "example": false
           }
         },
-        "required": [
-          "hour",
-          "inquiries",
-          "isWorkingHour"
-        ]
+        "required": ["hour", "inquiries", "isWorkingHour"]
       },
       "TopObjectionItemDto": {
         "type": "object",
@@ -6982,11 +6544,7 @@
             "example": 38.2
           }
         },
-        "required": [
-          "reason",
-          "count",
-          "percentage"
-        ]
+        "required": ["reason", "count", "percentage"]
       },
       "DemandTrendsResponseDto": {
         "type": "object",
@@ -7141,12 +6699,7 @@
             "example": 10
           }
         },
-        "required": [
-          "data",
-          "total",
-          "page",
-          "limit"
-        ]
+        "required": ["data", "total", "page", "limit"]
       },
       "SingleWeeklyReportResponseDto": {
         "type": "object",
@@ -7256,11 +6809,7 @@
         "properties": {
           "systemRole": {
             "type": "string",
-            "enum": [
-              "OWNER",
-              "ADMIN_MANAGER",
-              "SPECIALIST"
-            ],
+            "enum": ["OWNER", "ADMIN_MANAGER", "SPECIALIST"],
             "default": "SPECIALIST",
             "description": "System role determining dashboard permissions"
           }
@@ -7271,11 +6820,7 @@
         "properties": {
           "systemRole": {
             "type": "string",
-            "enum": [
-              "OWNER",
-              "ADMIN_MANAGER",
-              "SPECIALIST"
-            ],
+            "enum": ["OWNER", "ADMIN_MANAGER", "SPECIALIST"],
             "default": "SPECIALIST",
             "description": "System role determining dashboard permissions"
           }
@@ -7290,11 +6835,7 @@
         "properties": {
           "systemRole": {
             "type": "string",
-            "enum": [
-              "OWNER",
-              "ADMIN_MANAGER",
-              "SPECIALIST"
-            ],
+            "enum": ["OWNER", "ADMIN_MANAGER", "SPECIALIST"],
             "description": "System role determining dashboard permissions"
           }
         }
@@ -7328,12 +6869,7 @@
           },
           "processingStatus": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "PROCESSING",
-              "COMPLETED",
-              "FAILED"
-            ],
+            "enum": ["PENDING", "PROCESSING", "COMPLETED", "FAILED"],
             "example": "COMPLETED"
           },
           "active": {
@@ -7372,10 +6908,7 @@
             "$ref": "#/components/schemas/ManualNoteItemDto"
           }
         },
-        "required": [
-          "code",
-          "note"
-        ]
+        "required": ["code", "note"]
       },
       "UpdateManualNoteDto": {
         "type": "object",
@@ -7396,11 +6929,7 @@
             "$ref": "#/components/schemas/ManualNoteItemDto"
           }
         },
-        "required": [
-          "code",
-          "message",
-          "note"
-        ]
+        "required": ["code", "message", "note"]
       },
       "KnowledgeEntryResponseDto": {
         "type": "object",
@@ -7453,12 +6982,7 @@
           },
           "processingStatus": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "PROCESSING",
-              "COMPLETED",
-              "FAILED"
-            ],
+            "enum": ["PENDING", "PROCESSING", "COMPLETED", "FAILED"],
             "example": "COMPLETED"
           },
           "active": {
@@ -7516,12 +7040,7 @@
             "example": 0
           }
         },
-        "required": [
-          "entries",
-          "total",
-          "limit",
-          "offset"
-        ]
+        "required": ["entries", "total", "limit", "offset"]
       },
       "UpdateKnowledgeEntryDto": {
         "type": "object",
@@ -7602,9 +7121,7 @@
             "example": "2026-09-13T12:00:00.000Z"
           }
         },
-        "required": [
-          "businessName"
-        ]
+        "required": ["businessName"]
       },
       "BusinessProfileResponseDto": {
         "type": "object",
@@ -7617,10 +7134,7 @@
             "$ref": "#/components/schemas/BusinessProfileDataDto"
           }
         },
-        "required": [
-          "code",
-          "profile"
-        ]
+        "required": ["code", "profile"]
       },
       "UpdateBusinessProfileDto": {
         "type": "object",
@@ -7641,11 +7155,7 @@
             "$ref": "#/components/schemas/BusinessProfileDataDto"
           }
         },
-        "required": [
-          "code",
-          "message",
-          "profile"
-        ]
+        "required": ["code", "message", "profile"]
       },
       "TriggerWebsiteScrapeDto": {
         "type": "object",
@@ -7683,11 +7193,7 @@
             "example": null
           }
         },
-        "required": [
-          "status",
-          "itemsFound",
-          "itemsDone"
-        ]
+        "required": ["status", "itemsFound", "itemsDone"]
       },
       "ScrapersStatusResponseDto": {
         "type": "object",
@@ -7699,10 +7205,7 @@
             "$ref": "#/components/schemas/SingleScraperStatusDto"
           }
         },
-        "required": [
-          "website",
-          "twoGis"
-        ]
+        "required": ["website", "twoGis"]
       },
       "QualificationQuestionItemDto": {
         "type": "object",
@@ -7724,12 +7227,7 @@
             "example": true
           }
         },
-        "required": [
-          "id",
-          "field",
-          "question",
-          "required"
-        ]
+        "required": ["id", "field", "question", "required"]
       },
       "QualificationRulesDataDto": {
         "type": "object",
@@ -7741,18 +7239,14 @@
             }
           },
           "disqualifiers": {
-            "example": [
-              "Clients looking for pet grooming"
-            ],
+            "example": ["Clients looking for pet grooming"],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "autoPassConditions": {
-            "example": [
-              "VIP client or urgent booking"
-            ],
+            "example": ["VIP client or urgent booking"],
             "type": "array",
             "items": {
               "type": "string"
@@ -7791,9 +7285,7 @@
             "$ref": "#/components/schemas/QualificationRulesDataDto"
           }
         },
-        "required": [
-          "qualificationRulesSet"
-        ]
+        "required": ["qualificationRulesSet"]
       },
       "QualificationDto": {
         "type": "object",
@@ -7814,11 +7306,7 @@
             "$ref": "#/components/schemas/QualificationResponseDto"
           }
         },
-        "required": [
-          "code",
-          "message",
-          "data"
-        ]
+        "required": ["code", "message", "data"]
       },
       "BusinessContextResponseDto": {
         "type": "object",
@@ -7834,20 +7322,14 @@
             "nullable": true
           },
           "keyDifferentiators": {
-            "example": [
-              "Eco-friendly organic products",
-              "Online booking 24/7"
-            ],
+            "example": ["Eco-friendly organic products", "Online booking 24/7"],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "servicesOffered": {
-            "example": [
-              "Haircut | from 5000 KZT",
-              "Manicure | 4000 KZT"
-            ],
+            "example": ["Haircut | from 5000 KZT", "Manicure | 4000 KZT"],
             "type": "array",
             "items": {
               "type": "string"
@@ -7859,9 +7341,7 @@
             "nullable": true
           },
           "restrictions": {
-            "example": [
-              "No pet grooming services"
-            ],
+            "example": ["No pet grooming services"],
             "type": "array",
             "items": {
               "type": "string"
@@ -7962,12 +7442,7 @@
             "example": 0
           }
         },
-        "required": [
-          "COMPLETED",
-          "PENDING",
-          "PROCESSING",
-          "FAILED"
-        ]
+        "required": ["COMPLETED", "PENDING", "PROCESSING", "FAILED"]
       },
       "AiEngineStatusSummaryDto": {
         "type": "object",
@@ -8061,13 +7536,7 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
+            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
             "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
           },
           "parsedCount": {
@@ -8088,11 +7557,7 @@
             "example": "All listings failed to parse"
           }
         },
-        "required": [
-          "step",
-          "stepIndex",
-          "completed"
-        ]
+        "required": ["step", "stepIndex", "completed"]
       },
       "SelectNicheDto": {
         "type": "object",
@@ -8110,9 +7575,7 @@
             "example": "BEAUTY"
           }
         },
-        "required": [
-          "nicheProfile"
-        ]
+        "required": ["nicheProfile"]
       },
       "BusinessProfileDto": {
         "type": "object",
@@ -8149,13 +7612,7 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
+            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
             "description": "Только на шагах DATA_SOURCE и DATA_PREVIEW"
           },
           "parsedCount": {
@@ -8188,13 +7645,7 @@
             "example": false
           }
         },
-        "required": [
-          "step",
-          "stepIndex",
-          "completed",
-          "code",
-          "message"
-        ]
+        "required": ["step", "stepIndex", "completed", "code", "message"]
       },
       "DataPreviewResponseDto": {
         "type": "object",
@@ -8208,13 +7659,7 @@
           },
           "parsingStatus": {
             "type": "string",
-            "enum": [
-              "IDLE",
-              "QUEUED",
-              "PROCESSING",
-              "DONE",
-              "FAILED"
-            ],
+            "enum": ["IDLE", "QUEUED", "PROCESSING", "DONE", "FAILED"],
             "example": "PROCESSING"
           },
           "parsedCount": {
@@ -8249,16 +7694,10 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ]
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "WebsiteScrapingDto": {
         "type": "object",
@@ -8299,10 +7738,7 @@
             }
           }
         },
-        "required": [
-          "apiVersion",
-          "instagramScopes"
-        ]
+        "required": ["apiVersion", "instagramScopes"]
       },
       "ChannelDto": {
         "type": "object",
@@ -8313,11 +7749,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ],
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
             "example": "WHATSAPP"
           },
           "status": {
@@ -8370,14 +7802,7 @@
             "example": "2026-09-07T12:00:00.000Z"
           }
         },
-        "required": [
-          "id",
-          "type",
-          "status",
-          "active",
-          "createdAt",
-          "updatedAt"
-        ]
+        "required": ["id", "type", "status", "active", "createdAt", "updatedAt"]
       },
       "ChannelsListResponseDto": {
         "type": "object",
@@ -8389,9 +7814,7 @@
             }
           }
         },
-        "required": [
-          "channels"
-        ]
+        "required": ["channels"]
       },
       "ConnectWhatsAppDto": {
         "type": "object",
@@ -8412,11 +7835,7 @@
             "$ref": "#/components/schemas/ChannelDto"
           }
         },
-        "required": [
-          "code",
-          "message",
-          "channel"
-        ]
+        "required": ["code", "message", "channel"]
       },
       "ConnectInstagramDto": {
         "type": "object",
@@ -8439,30 +7858,18 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ],
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
             "example": "TELEGRAM"
           }
         },
-        "required": [
-          "code",
-          "message",
-          "type"
-        ]
+        "required": ["code", "message", "type"]
       },
       "ChannelHealthResponseDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ],
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
             "example": "TELEGRAM"
           },
           "status": {
@@ -8488,11 +7895,7 @@
             }
           }
         },
-        "required": [
-          "type",
-          "status",
-          "isHealthy"
-        ]
+        "required": ["type", "status", "isHealthy"]
       },
       "AiConfigResponseDto": {
         "type": "object",
@@ -8610,18 +8013,11 @@
                   "type": "STRING"
                 }
               },
-              "required": [
-                "query"
-              ]
+              "required": ["query"]
             }
           }
         },
-        "required": [
-          "name",
-          "description",
-          "enabled",
-          "parameters"
-        ]
+        "required": ["name", "description", "enabled", "parameters"]
       },
       "ToolsResponseDto": {
         "type": "object",
@@ -8633,9 +8029,7 @@
             }
           }
         },
-        "required": [
-          "tools"
-        ]
+        "required": ["tools"]
       },
       "UpdateToolConfigDto": {
         "type": "object",
@@ -8662,17 +8056,11 @@
             "type": "object",
             "example": {
               "found": 2,
-              "results": [
-                "Окрашивание от 15000 ₸"
-              ]
+              "results": ["Окрашивание от 15000 ₸"]
             }
           }
         },
-        "required": [
-          "name",
-          "args",
-          "result"
-        ]
+        "required": ["name", "args", "result"]
       },
       "TestMessageResponseDto": {
         "type": "object",
@@ -8696,11 +8084,7 @@
             "example": 1240
           }
         },
-        "required": [
-          "response",
-          "toolCallsCount",
-          "latencyMs"
-        ]
+        "required": ["response", "toolCallsCount", "latencyMs"]
       },
       "QuietHoursResponseDto": {
         "type": "object",
@@ -8722,12 +8106,7 @@
             "example": "Asia/Almaty"
           }
         },
-        "required": [
-          "enabled",
-          "start",
-          "end",
-          "timezone"
-        ]
+        "required": ["enabled", "start", "end", "timezone"]
       },
       "AbandonmentStepResponseDto": {
         "type": "object",
@@ -8745,11 +8124,7 @@
             "example": "2 Hours (Soft Check)"
           }
         },
-        "required": [
-          "stepIndex",
-          "delayMinutes",
-          "label"
-        ]
+        "required": ["stepIndex", "delayMinutes", "label"]
       },
       "AbandonmentSequenceResponseDto": {
         "type": "object",
@@ -8769,11 +8144,7 @@
             "example": 72
           }
         },
-        "required": [
-          "enabled",
-          "steps",
-          "autoDisqualifyAfterHours"
-        ]
+        "required": ["enabled", "steps", "autoDisqualifyAfterHours"]
       },
       "AdaptiveNoticeRulesResponseDto": {
         "type": "object",
@@ -9016,12 +8387,7 @@
             }
           }
         },
-        "required": [
-          "period",
-          "summary",
-          "stepBreakdown",
-          "channelBreakdown"
-        ]
+        "required": ["period", "summary", "stepBreakdown", "channelBreakdown"]
       },
       "FollowUpLogLeadDto": {
         "type": "object",
@@ -9041,11 +8407,7 @@
             "nullable": true
           }
         },
-        "required": [
-          "id",
-          "name",
-          "phone"
-        ]
+        "required": ["id", "name", "phone"]
       },
       "FollowUpLogItemDto": {
         "type": "object",
@@ -9063,11 +8425,7 @@
           },
           "channelType": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ],
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
             "example": "WHATSAPP"
           },
           "stepIndex": {
@@ -9086,13 +8444,7 @@
           "status": {
             "type": "string",
             "example": "SENT",
-            "enum": [
-              "PENDING",
-              "SENT",
-              "REPLIED",
-              "SKIPPED",
-              "CANCELLED"
-            ]
+            "enum": ["PENDING", "SENT", "REPLIED", "SKIPPED", "CANCELLED"]
           },
           "messageText": {
             "type": "object",
@@ -9145,12 +8497,7 @@
             "example": 20
           }
         },
-        "required": [
-          "data",
-          "total",
-          "page",
-          "limit"
-        ]
+        "required": ["data", "total", "page", "limit"]
       },
       "TestPreviewFollowUpInputDto": {
         "type": "object",
@@ -9165,11 +8512,7 @@
           },
           "channelType": {
             "type": "string",
-            "enum": [
-              "WHATSAPP",
-              "INSTAGRAM",
-              "TELEGRAM"
-            ],
+            "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"],
             "example": "WHATSAPP"
           },
           "withinMeta24hWindow": {
@@ -9212,12 +8555,7 @@
           },
           "mediaType": {
             "type": "string",
-            "enum": [
-              "IMAGE",
-              "AUDIO",
-              "VIDEO",
-              "DOCUMENT"
-            ],
+            "enum": ["IMAGE", "AUDIO", "VIDEO", "DOCUMENT"],
             "example": "IMAGE"
           },
           "mimeType": {
@@ -9260,11 +8598,7 @@
           },
           "role": {
             "type": "string",
-            "enum": [
-              "USER",
-              "BOT",
-              "MANAGER"
-            ],
+            "enum": ["USER", "BOT", "MANAGER"],
             "example": "USER"
           },
           "senderName": {
@@ -9273,12 +8607,7 @@
           },
           "mediaType": {
             "type": "string",
-            "enum": [
-              "IMAGE",
-              "AUDIO",
-              "VIDEO",
-              "DOCUMENT"
-            ],
+            "enum": ["IMAGE", "AUDIO", "VIDEO", "DOCUMENT"],
             "example": "IMAGE"
           },
           "mediaUrl": {
@@ -9320,13 +8649,7 @@
             "example": "2026-09-20T10:00:00.000Z"
           }
         },
-        "required": [
-          "messageId",
-          "role",
-          "mediaType",
-          "mediaUrl",
-          "createdAt"
-        ]
+        "required": ["messageId", "role", "mediaType", "mediaUrl", "createdAt"]
       },
       "ConversationMediaListResponseDto": {
         "type": "object",
@@ -9350,24 +8673,14 @@
             "example": 30
           }
         },
-        "required": [
-          "data",
-          "total",
-          "page",
-          "limit"
-        ]
+        "required": ["data", "total", "page", "limit"]
       },
       "SendManagerMessageDto": {
         "type": "object",
         "properties": {
           "mediaType": {
             "type": "string",
-            "enum": [
-              "IMAGE",
-              "AUDIO",
-              "VIDEO",
-              "DOCUMENT"
-            ]
+            "enum": ["IMAGE", "AUDIO", "VIDEO", "DOCUMENT"]
           }
         }
       },
@@ -9376,16 +8689,10 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "BOT_ACTIVE",
-              "MANAGER_INTERCEPTED",
-              "CLOSED"
-            ]
+            "enum": ["BOT_ACTIVE", "MANAGER_INTERCEPTED", "CLOSED"]
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "ConversationEscalationResponseDto": {
         "type": "object",
@@ -9470,11 +8777,7 @@
             "nullable": true
           },
           "notificationTypes": {
-            "example": [
-              "escalation",
-              "new_booking",
-              "booking_cancelled"
-            ],
+            "example": ["escalation", "new_booking", "booking_cancelled"],
             "description": "Event types this recipient is subscribed to",
             "type": "array",
             "items": {
@@ -9522,11 +8825,7 @@
             "description": "Expiration ISO timestamp of the code"
           }
         },
-        "required": [
-          "deepLink",
-          "code",
-          "expiresAt"
-        ]
+        "required": ["deepLink", "code", "expiresAt"]
       },
       "UpdateNotificationRecipientDto": {
         "type": "object",
@@ -9559,9 +8858,7 @@
             ]
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "RescheduleBookingDto": {
         "type": "object",
@@ -9594,12 +8891,7 @@
             "example": 43.7
           }
         },
-        "required": [
-          "stage",
-          "count",
-          "conversionFromPrevious",
-          "dropoffRate"
-        ]
+        "required": ["stage", "count", "conversionFromPrevious", "dropoffRate"]
       },
       "LossReasonBreakdownDto": {
         "type": "object",
@@ -9629,11 +8921,7 @@
             "example": 37.5
           }
         },
-        "required": [
-          "reason",
-          "count",
-          "percentage"
-        ]
+        "required": ["reason", "count", "percentage"]
       },
       "LeadFunnelResponseDto": {
         "type": "object",
@@ -9707,9 +8995,7 @@
             ]
           }
         },
-        "required": [
-          "lossReason"
-        ]
+        "required": ["lossReason"]
       },
       "UpdateLeadStatusDto": {
         "type": "object",
@@ -9740,9 +9026,7 @@
             ]
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "UpdateLeadDto": {
         "type": "object",
@@ -9780,11 +9064,7 @@
           },
           "changedBy": {
             "type": "string",
-            "enum": [
-              "AI",
-              "MANAGER",
-              "SYSTEM"
-            ],
+            "enum": ["AI", "MANAGER", "SYSTEM"],
             "example": "AI"
           },
           "reason": {
@@ -9838,12 +9118,7 @@
             "example": 30
           }
         },
-        "required": [
-          "data",
-          "total",
-          "page",
-          "limit"
-        ]
+        "required": ["data", "total", "page", "limit"]
       },
       "CreateLeadNoteDto": {
         "type": "object",
@@ -9861,10 +9136,7 @@
             "example": "2026-09-11"
           }
         },
-        "required": [
-          "from",
-          "to"
-        ]
+        "required": ["from", "to"]
       },
       "LeadsKpiDto": {
         "type": "object",
@@ -9927,13 +9199,7 @@
             "example": 4
           }
         },
-        "required": [
-          "total",
-          "confirmed",
-          "completed",
-          "cancelled",
-          "declined"
-        ]
+        "required": ["total", "confirmed", "completed", "cancelled", "declined"]
       },
       "ConversationsKpiDto": {
         "type": "object",
@@ -9979,12 +9245,7 @@
             "$ref": "#/components/schemas/ConversationsKpiDto"
           }
         },
-        "required": [
-          "period",
-          "leads",
-          "bookings",
-          "conversations"
-        ]
+        "required": ["period", "leads", "bookings", "conversations"]
       },
       "FunnelStageDto": {
         "type": "object",
@@ -10003,11 +9264,7 @@
             "nullable": true
           }
         },
-        "required": [
-          "status",
-          "count",
-          "conversionRate"
-        ]
+        "required": ["status", "count", "conversionRate"]
       },
       "FunnelResponseDto": {
         "type": "object",
@@ -10019,9 +9276,7 @@
             }
           }
         },
-        "required": [
-          "stages"
-        ]
+        "required": ["stages"]
       },
       "DayBookingDto": {
         "type": "object",
@@ -10047,13 +9302,7 @@
             "example": 1
           }
         },
-        "required": [
-          "date",
-          "total",
-          "confirmed",
-          "completed",
-          "cancelled"
-        ]
+        "required": ["date", "total", "confirmed", "completed", "cancelled"]
       },
       "BookingsByDayResponseDto": {
         "type": "object",
@@ -10065,9 +9314,7 @@
             }
           }
         },
-        "required": [
-          "data"
-        ]
+        "required": ["data"]
       },
       "ChannelMetricDto": {
         "type": "object",
@@ -10081,10 +9328,7 @@
             "example": 312
           }
         },
-        "required": [
-          "conversations",
-          "messages"
-        ]
+        "required": ["conversations", "messages"]
       },
       "ChannelsAnalyticsResponseDto": {
         "type": "object",
@@ -10099,11 +9343,7 @@
             "$ref": "#/components/schemas/ChannelMetricDto"
           }
         },
-        "required": [
-          "WHATSAPP",
-          "INSTAGRAM",
-          "TELEGRAM"
-        ]
+        "required": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
       },
       "StaffPerformanceDto": {
         "type": "object",
@@ -10139,11 +9379,7 @@
       },
       "ChannelType": {
         "type": "string",
-        "enum": [
-          "WHATSAPP",
-          "INSTAGRAM",
-          "TELEGRAM"
-        ]
+        "enum": ["WHATSAPP", "INSTAGRAM", "TELEGRAM"]
       },
       "SimulateInboundDto": {
         "type": "object",
@@ -10156,9 +9392,7 @@
             ]
           }
         },
-        "required": [
-          "channelType"
-        ]
+        "required": ["channelType"]
       }
     }
   }

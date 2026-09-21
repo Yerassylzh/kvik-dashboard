@@ -42,6 +42,7 @@ export function useConversations(initialParams?: ListConversationsParams) {
     mutate: mutateConversations,
   } = useSWR(['conversations', queryParams], () => conversationsApi.getConversations(queryParams), {
     revalidateOnFocus: true,
+    revalidateOnReconnect: true,
   });
 
   return {
@@ -67,9 +68,10 @@ export function useConversations(initialParams?: ListConversationsParams) {
 export function useConversationMessages(conversationId: string | null) {
   const { data, error, isLoading, mutate } = useSWR(
     conversationId ? ['conversation/messages', conversationId] : null,
-    () => (conversationId ? conversationsApi.getMessages(conversationId, { limit: 100 }) : null),
+    () => (conversationId ? conversationsApi.getMessages(conversationId, { limit: 50 }) : null),
     {
       revalidateOnFocus: true,
+      revalidateOnReconnect: true,
     }
   );
 

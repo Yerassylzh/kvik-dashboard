@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useTranslations } from "next-intl";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
-import { PageHeader } from "@/components/dashboard/shared/PageHeader";
 import { ConversationList } from "./ConversationList";
 import { ConversationThread } from "./ConversationThread";
 import { useConversations } from "@/hooks/useConversations";
@@ -14,7 +12,6 @@ interface InboxPageProps {
 }
 
 export function InboxPage({ initialConversationId }: InboxPageProps) {
-  const t = useTranslations("dashboard");
   const {
     conversations,
     activeConversationId,
@@ -40,8 +37,13 @@ export function InboxPage({ initialConversationId }: InboxPageProps) {
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
 
   return (
-    <FadeIn direction="up" distance={8} duration={0.2} className="h-[calc(100vh-80px)] flex flex-col">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 flex-1 min-h-0">
+    <FadeIn
+      direction="up"
+      distance={8}
+      duration={0.2}
+      className="h-[calc(100vh-80px)] flex flex-col overflow-hidden"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 flex-1 min-h-0 overflow-hidden">
         <div className="md:col-span-4 lg:col-span-4 h-full min-h-0">
           <ConversationList
             conversations={conversations}
@@ -60,6 +62,7 @@ export function InboxPage({ initialConversationId }: InboxPageProps) {
           <ConversationThread
             conversation={activeConversation}
             onStatusChange={() => refresh()}
+            onRefreshConversations={refresh}
           />
         </div>
       </div>

@@ -6,7 +6,6 @@ import {
   FileSpreadsheet,
   FileCode,
   File,
-  Download,
   Play,
   Maximize2,
   Music,
@@ -14,6 +13,8 @@ import {
 import { useTranslations } from "next-intl";
 import type { MediaItemDto } from "@/lib/api/conversations";
 import { MediaLightboxModal } from "../media/MediaLightboxModal";
+import { AttachmentActions } from "../media/AttachmentActions";
+import { useMediaObjectSrc } from "@/hooks/useMediaObjectSrc";
 import clsx from "clsx";
 
 interface MediaGalleryItemProps {
@@ -22,6 +23,7 @@ interface MediaGalleryItemProps {
 
 export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
   const t = useTranslations("dashboard");
+  const { src } = useMediaObjectSrc(item.mediaUrl);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const formatFileSize = (bytes?: number | null) => {
@@ -62,13 +64,18 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
           className="group relative cursor-pointer aspect-square rounded-xl overflow-hidden border border-border/70 bg-muted/30 transition-transform active:scale-95"
         >
           <img
-            src={item.mediaUrl}
+            src={src || undefined}
             alt={item.fileName || "Photo"}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
           />
 
           <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <Maximize2 className="w-4 h-4 text-white" />
+          </div>
+
+          {/* Hover badge: browser preview + download to Downloads folder */}
+          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg bg-black/60 backdrop-blur-xs p-0.5 [&_button]:text-white [&_button:hover]:bg-white/20">
+            <AttachmentActions mediaUrl={item.mediaUrl} fileName={item.fileName} />
           </div>
 
           <div className="absolute bottom-1 right-1 px-1 rounded bg-black/60 text-[9px] font-mono tabular-nums text-white">
@@ -79,7 +86,7 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
         <MediaLightboxModal
           isOpen={isLightboxOpen}
           onClose={() => setIsLightboxOpen(false)}
-          mediaUrl={item.mediaUrl}
+          mediaUrl={src || item.mediaUrl}
           mediaType="IMAGE"
           fileName={item.fileName}
         />
@@ -96,7 +103,7 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
           className="group relative cursor-pointer aspect-square rounded-xl overflow-hidden border border-border/70 bg-black/80 flex items-center justify-center transition-transform active:scale-95"
         >
           <video
-            src={item.mediaUrl}
+            src={src || undefined}
             preload="metadata"
             className="w-full h-full object-cover opacity-80"
           />
@@ -107,6 +114,11 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
             </div>
           </div>
 
+          {/* Hover badge: browser preview + download to Downloads folder */}
+          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg bg-black/60 backdrop-blur-xs p-0.5 [&_button]:text-white [&_button:hover]:bg-white/20">
+            <AttachmentActions mediaUrl={item.mediaUrl} fileName={item.fileName} />
+          </div>
+
           <div className="absolute bottom-1 right-1 px-1 rounded bg-black/70 text-[9px] font-mono tabular-nums text-white">
             {timeLabel}
           </div>
@@ -115,7 +127,7 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
         <MediaLightboxModal
           isOpen={isLightboxOpen}
           onClose={() => setIsLightboxOpen(false)}
-          mediaUrl={item.mediaUrl}
+          mediaUrl={src || item.mediaUrl}
           mediaType="VIDEO"
           fileName={item.fileName}
         />
@@ -142,14 +154,7 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
           </div>
         </div>
 
-        <a
-          href={item.mediaUrl}
-          download={item.fileName || "voice.ogg"}
-          className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
-          title={t("inbox.download_file")}
-        >
-          <Download className="w-3.5 h-3.5" />
-        </a>
+        <AttachmentActions mediaUrl={item.mediaUrl} fileName={item.fileName || "voice.ogg"} />
       </div>
     );
   }
@@ -172,16 +177,7 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
         </div>
       </div>
 
-      <a
-        href={item.mediaUrl}
-        download={item.fileName || "document"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
-        title={t("inbox.download_file")}
-      >
-        <Download className="w-3.5 h-3.5" />
-      </a>
+      <AttachmentActions mediaUrl={item.mediaUrl} fileName={item.fileName || "document"} />
     </div>
   );
 }

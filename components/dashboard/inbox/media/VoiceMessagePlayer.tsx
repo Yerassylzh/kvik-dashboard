@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Play, Pause, ChevronDown, Volume2, AlertCircle } from "lucide-react";
+import { Play, Pause, ChevronDown, Volume2, AlertCircle, ArrowDownToLine } from "lucide-react";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
+import { downloadFile } from "@/lib/utils/fileDownload";
+import { useMediaObjectSrc } from "@/hooks/useMediaObjectSrc";
 
 // Global audio coordinator ensuring only one voice note plays at a time
 let activeAudio: HTMLAudioElement | null = null;
@@ -30,6 +32,7 @@ export function VoiceMessagePlayer({
 }: VoiceMessagePlayerProps) {
   const t = useTranslations("dashboard");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { src, loading } = useMediaObjectSrc(mediaUrl);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -54,7 +57,7 @@ export function VoiceMessagePlayer({
   }, []);
 
   const togglePlay = () => {
-    if (!audioRef.current || hasError) return;
+    if (!audioRef.current || hasError || loading) return;
 
     if (isPlaying) {
       audioRef.current.pause();
@@ -140,7 +143,7 @@ export function VoiceMessagePlayer({
       {/* Hidden native HTML5 Audio */}
       <audio
         ref={audioRef}
-        src={mediaUrl}
+        src={src || undefined}
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
@@ -154,13 +157,13 @@ export function VoiceMessagePlayer({
         <button
           type="button"
           onClick={togglePlay}
-          disabled={hasError}
+          disabled={hasError || loading}
           className={clsx(
             "w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-transform active:scale-95 cursor-pointer shadow-xs",
             isUserMessage
               ? "bg-white text-primary hover:bg-white/90"
               : "bg-primary text-white hover:bg-primary/90",
-            hasError && "opacity-50 cursor-not-allowed"
+            (hasError || loading) && "opacity-50 cursor-not-allowed"
           )}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
@@ -203,7 +206,7 @@ export function VoiceMessagePlayer({
             )}
           >
             <span>{formatTime(currentTime)}</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={cyclePlaybackRate}
@@ -215,6 +218,20 @@ export function VoiceMessagePlayer({
                 )}
               >
                 {playbackRate}x
+              </button>
+              {/* Download voice note to default Downloads folder */}
+              <button
+                type="button"
+                onClick={() => downloadFile(mediaUrl)}
+                className={clsx(
+                  "p-0.5 rounded transition-colors cursor-pointer opacity-80 hover:opacity-100",
+                  isUserMessage
+                    ? "hover:bg-white/20 text-white"
+                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                )}
+                title={t("inbox.download_file")}
+              >
+                <ArrowDownToLine className="w-3.5 h-3.5" />
               </button>
               <span>{formatTime(duration)}</span>
             </div>
