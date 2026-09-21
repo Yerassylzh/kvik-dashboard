@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+﻿import { apiClient } from './client';
 
 export type ConversationStatus = 'BOT_ACTIVE' | 'MANAGER_INTERCEPTED' | 'CLOSED';
 export type ChannelType = 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM';
@@ -16,6 +16,22 @@ export interface MessageDto {
   createdAt: string;
 }
 
+export interface AssignedStaffDto {
+  id: string;
+  name: string;
+  role: string;
+}
+
+export interface EscalationDto {
+  id: string;
+  conversationId: string;
+  triggerType: string;
+  reason: string | null;
+  triggeredAt: string;
+  resolvedAt: string | null;
+  resolvedByStaffId: string | null;
+}
+
 export interface ConversationDto {
   id: string;
   status: ConversationStatus;
@@ -23,6 +39,10 @@ export interface ConversationDto {
   lastMessagePreview?: string | null;
   unreadCount: number;
   channelType?: ChannelType | null;
+  assignedStaffId?: string | null;
+  takenOverByActorId?: string | null; // staffMemberId OR userId — identifies who holds the exclusive lock
+  takenOverAt?: string | null;
+  assignedStaff?: AssignedStaffDto | null;
   lead?: {
     id: string;
     name?: string | null;
@@ -110,4 +130,26 @@ export const conversationsApi = {
     const { data } = await apiClient.patch<{ code: string; message: string }>(`/conversations/${id}/read`);
     return data;
   },
+
+  takeover: async (id: string): Promise<{ code: string; message: string }> => {
+    const { data } = await apiClient.post<{ code: string; message: string }>(
+      `/conversations/${id}/takeover`
+    );
+    return data;
+  },
+
+  releaseTakeover: async (id: string): Promise<{ code: string; message: string }> => {
+    const { data } = await apiClient.post<{ code: string; message: string }>(
+      `/conversations/${id}/release-takeover`
+    );
+    return data;
+  },
+
+  getEscalations: async (id: string): Promise<EscalationDto[]> => {
+    const { data } = await apiClient.get<EscalationDto[]>(
+      `/conversations/${id}/escalations`
+    );
+    return data;
+  },
 };
+

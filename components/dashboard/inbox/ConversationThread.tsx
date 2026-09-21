@@ -1,15 +1,17 @@
-"use client";
+﻿"use client";
 
 import React, { useRef, useEffect } from "react";
-import { MessageSquare, Phone, ExternalLink } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
-import { HandoffToggle } from "./HandoffToggle";
+import { TakeoverControl } from "./TakeoverControl";
 import { MessageBubble } from "./MessageBubble";
 import { ManagerComposer } from "./ManagerComposer";
 import { FollowUpThreadBanner } from "./FollowUpThreadBanner";
+import { EscalationHistoryPanel } from "./EscalationHistoryPanel";
 import { useConversationMessages } from "@/hooks/useConversations";
-import type { ConversationDto, ConversationStatus } from "@/lib/api/conversations";
+import { conversationsApi, type ConversationDto, type ConversationStatus } from "@/lib/api/conversations";
 
 interface ConversationThreadProps {
   conversation?: ConversationDto;
@@ -23,7 +25,7 @@ export function ConversationThread({
   const t = useTranslations("dashboard");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { messages, isLoading, sendMessage, updateStatus } = useConversationMessages(
+  const { messages, isLoading, sendMessage, updateStatus, refresh } = useConversationMessages(
     conversation?.id || null
   );
 
@@ -47,7 +49,23 @@ export function ConversationThread({
     onStatusChange?.(newStatus);
   };
 
-  const leadName = conversation.lead?.name || "Клиент";
+  const handleTakeover = async () => {
+    if (!conversation) return;
+    try {
+      if (conversation.status === "BOT_ACTIVE") {
+        await conversationsApi.updateStatus(conversation.id, "MANAGER_INTERCEPTED");
+      }
+      await conversationsApi.takeover(conversation.id);
+      toast.success(t("inbox.takeover_success_toast"));
+      handleStatusToggle("MANAGER_INTERCEPTED");
+      refresh();
+    } catch {
+      toast.error(t("inbox.takeover_error_toast"));
+    }
+  };
+
+  const leadName = conversation.lead?.name || t("inbox.role_user");
+  const isEscalated = conversation.status === "MANAGER_INTERCEPTED";
 
   return (
     <div className="flex flex-col h-full bg-card/60 border border-border/60 rounded-2xl overflow-hidden shadow-xs">
@@ -70,11 +88,17 @@ export function ConversationThread({
           </div>
         </div>
 
-        <HandoffToggle
-          status={conversation.status}
+        <TakeoverControl
+          conversation={conversation}
           onStatusChange={handleStatusToggle}
+          onRefresh={refresh}
         />
       </div>
+
+      {/* Escalation history panel вЂ” only shows for MANAGER_INTERCEPTED */}
+      {isEscalated && (
+        <EscalationHistoryPanel conversationId={conversation.id} />
+      )}
 
       {/* Pending Follow-up Active Banner */}
       <FollowUpThreadBanner
@@ -86,7 +110,7 @@ export function ConversationThread({
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-1">
         {messages.length === 0 && !isLoading && (
           <div className="text-center py-16 text-xs text-muted-foreground">
-            История сообщений пуста
+            {t("inbox.empty_messages")}
           </div>
         )}
 
@@ -96,7 +120,14 @@ export function ConversationThread({
       </div>
 
       {/* Composer */}
-      <ManagerComposer onSendMessage={sendMessage} />
+      <ManagerComposer
+        onSendMessage={sendMessage}
+        conversationId={conversation.id}
+        takenOverByActorId={conversation.takenOverByActorId}
+        status={conversation.status}
+        onTakeover={handleTakeover}
+      />
     </div>
   );
 }
+

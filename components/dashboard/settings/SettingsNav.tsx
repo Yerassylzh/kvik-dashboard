@@ -7,6 +7,7 @@ import {
   Building2,
   Users,
   Shield,
+  Bell,
   SlidersHorizontal,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -38,6 +39,12 @@ const settingsNavItems: NavItem[] = [
     labelKey: "settings.nav_account",
     icon: Shield,
     roles: ["OWNER", "ADMIN_MANAGER", "SPECIALIST"],
+  },
+  {
+    href: "/settings/notifications",
+    labelKey: "settings.nav_notifications",
+    icon: Bell,
+    roles: ["OWNER", "ADMIN_MANAGER"],
   },
   {
     href: "/settings/advanced",

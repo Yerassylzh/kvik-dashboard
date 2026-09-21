@@ -20,12 +20,15 @@ import { useRBAC } from '@/hooks/useRBAC';
 import { useDevMode } from '@/hooks/useDevMode';
 import { getOnboardingState } from '@/lib/api/onboarding';
 import { useInboxStore } from '@/store/inbox.store';
+import { useNotificationsStore } from '@/store/notifications.store';
+import { notificationsApi } from '@/lib/api/notifications';
 import { useInboxRealtime } from '@/hooks/useInboxRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import type { SystemRole } from '@/types/auth';
 import { HelpSupportModal } from '@/components/dashboard/layout/HelpSupportModal';
 import { DashboardTopbar } from '@/components/dashboard/layout/DashboardTopbar';
 import { DashboardSidebar, type NavCluster } from '@/components/dashboard/layout/DashboardSidebar';
+import { SettingsSheet } from '@/components/dashboard/layout/SettingsSheet';
 
 const emptySubscribe = () => () => {};
 
@@ -35,6 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const { user } = useAuth();
   const { getTotalUnread } = useInboxStore();
+  const setNotificationCount = useNotificationsStore((s) => s.setCount);
   const { isDevMode } = useDevMode();
   const { systemRole } = useRBAC();
 
@@ -45,9 +49,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   );
 
   const [helpOpen, setHelpOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Initialize Socket.IO real-time inbox events
   useInboxRealtime(user?.workspace?.id);
+
+  // Request browser Notification permission once & seed initial unread notification count
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+    }
+
+    if (user?.workspace?.id) {
+      notificationsApi
+        .getNotifications({ page: 1, limit: 1 })
+        .then((res) => {
+          setNotificationCount(res.unreadCount);
+        })
+        .catch(() => {});
+    }
+  }, [user?.workspace?.id, setNotificationCount]);
 
   useEffect(() => {
     let cancelled = false;
@@ -173,6 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           systemRole={systemRole}
           mounted={mounted}
           onOpenHelp={() => setHelpOpen(true)}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -192,6 +216,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Help & Support Modal */}
       <HelpSupportModal isOpen={helpOpen} onOpenChange={setHelpOpen} />
+
+      {/* Settings Slide-over Sheet */}
+      <SettingsSheet isOpen={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }

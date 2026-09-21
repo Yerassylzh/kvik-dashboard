@@ -116,7 +116,8 @@
     "marked_read": "Диалог прочитан",
     "send_failed": "Не удалось отправить сообщение клиенту",
     "channel_disconnected": "Канал связи отключен",
-    "invalid_status_transition": "Недопустимое изменение статуса диалога"
+    "invalid_status_transition": "Недопустимое изменение статуса диалога",
+    "taken_over_by_other": "Этот диалог уже взят в работу другим специалистом"
   },
   "ai_engine": {
     "config_updated": "Настройки AI-ассистента обновлены",

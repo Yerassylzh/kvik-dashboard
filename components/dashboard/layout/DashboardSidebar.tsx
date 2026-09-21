@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { LayoutDashboard, HelpCircle } from 'lucide-react';
+import { LayoutDashboard, HelpCircle, Settings2 } from 'lucide-react';
 import clsx from 'clsx';
 import { WorkspaceSwitcher } from '@/components/dashboard/shared/WorkspaceSwitcher';
 import type { SystemRole } from '@/types/auth';
@@ -27,6 +27,7 @@ interface DashboardSidebarProps {
   systemRole: SystemRole;
   mounted: boolean;
   onOpenHelp: () => void;
+  onOpenSettings: () => void;
 }
 
 export function DashboardSidebar({
@@ -35,6 +36,7 @@ export function DashboardSidebar({
   systemRole,
   mounted,
   onOpenHelp,
+  onOpenSettings,
 }: DashboardSidebarProps) {
   const t = useTranslations('dashboard');
 
@@ -97,6 +99,26 @@ export function DashboardSidebar({
                       pathname === item.href ||
                       (item.href !== '/overview' && pathname.startsWith(item.href));
                     const Icon = item.Icon;
+
+                    // Settings opens the slide-over sheet instead of navigating
+                    if (item.href === '/settings') {
+                      return (
+                        <button
+                          key={item.href}
+                          type="button"
+                          onClick={onOpenSettings}
+                          className={clsx(
+                            'w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all whitespace-nowrap cursor-pointer',
+                            'text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 font-medium'
+                          )}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Settings2 className="w-4 h-4 shrink-0 text-zinc-500" />
+                            <span className="truncate">{item.label}</span>
+                          </div>
+                        </button>
+                      );
+                    }
 
                     return (
                       <Link

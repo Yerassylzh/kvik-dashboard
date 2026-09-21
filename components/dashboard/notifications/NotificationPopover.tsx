@@ -2,15 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Bell,
   CalendarCheck,
-  Bot,
-  MessageSquare,
-  Clock,
-  ArrowRight,
+  CalendarX,
+  AlertTriangle,
+  UserCheck,
+  LogOut,
+  Info,
   Check,
+  ArrowRight,
+  Loader2,
 } from "lucide-react";
 import {
   Popover,
@@ -18,71 +22,55 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import clsx from "clsx";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useNotificationsStore } from "@/store/notifications.store";
+import type { NotificationType } from "@/lib/api/notifications";
+import { formatRelativeTime } from "@/lib/utils/format";
 
-interface NotificationPreviewItem {
-  id: string;
-  title: string;
-  description: string;
-  category: "bookings" | "system" | "channels";
-  timestamp: string;
-  read: boolean;
-  icon: React.ComponentType<{ className?: string }>;
-}
+const TYPE_ICON: Record<NotificationType, React.ComponentType<{ className?: string }>> = {
+  ESCALATION: AlertTriangle,
+  TAKEOVER: UserCheck,
+  TAKEOVER_RELEASED: LogOut,
+  NEW_BOOKING: CalendarCheck,
+  BOOKING_CANCELLED: CalendarX,
+  SYSTEM: Info,
+};
 
-const initialNotifications: NotificationPreviewItem[] = [
-  {
-    id: "1",
-    title: "Новая запись через ИИ",
-    description: "Алина Смирнова на 'Чистка лица' к мастеру Елена на 18:00",
-    category: "bookings",
-    timestamp: "10 мин назад",
-    read: false,
-    icon: CalendarCheck,
-  },
-  {
-    id: "2",
-    title: "WhatsApp канал активен",
-    description: "WhatsApp Cloud API успешно подключен для текущего филиала",
-    category: "channels",
-    timestamp: "2 часа назад",
-    read: false,
-    icon: MessageSquare,
-  },
-  {
-    id: "3",
-    title: "ИИ обработал обращение",
-    description: "Консультация по стоимости услуг завершена без участия менеджера",
-    category: "system",
-    timestamp: "4 часа назад",
-    read: true,
-    icon: Bot,
-  },
-  {
-    id: "4",
-    title: "Перенос записи",
-    description: "Арман Ержанов перенес запись на 16:30",
-    category: "bookings",
-    timestamp: "Вчера",
-    read: true,
-    icon: Clock,
-  },
-];
+const TYPE_COLOR: Record<NotificationType, string> = {
+  ESCALATION: "bg-red-50 text-red-600 border-red-100",
+  TAKEOVER: "bg-violet-50 text-primary border-violet-100",
+  TAKEOVER_RELEASED: "bg-slate-50 text-slate-500 border-slate-200",
+  NEW_BOOKING: "bg-emerald-50 text-emerald-600 border-emerald-100",
+  BOOKING_CANCELLED: "bg-rose-50 text-rose-500 border-rose-100",
+  SYSTEM: "bg-sky-50 text-sky-600 border-sky-100",
+};
 
 export function NotificationPopover() {
   const t = useTranslations("dashboard");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationPreviewItem[]>(initialNotifications);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Use the global store badge count (updated by WS in real-time)
+  const storeUnreadCount = useNotificationsStore((s) => s.unreadCount);
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
+  const { items, unreadCount, isLoading, markRead, markAllRead } = useNotifications();
 
-  const markItemAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  // Show top 5 most recent
+  const previewItems = items.slice(0, 5);
+
+  // Badge drives from WS store so it updates instantly without opening the popover
+  const badgeCount = storeUnreadCount > 0 ? storeUnreadCount : unreadCount;
+
+  const handleItemClick = async (
+    id: string,
+    type: NotificationType,
+    conversationId?: string
+  ) => {
+    await markRead(id);
+    setOpen(false);
+    if ((type === "ESCALATION" || type === "TAKEOVER") && conversationId) {
+      router.push(`/inbox?conversationId=${conversationId}`);
+    }
   };
 
   return (
@@ -94,7 +82,7 @@ export function NotificationPopover() {
           className="relative p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <Bell className="w-4 h-4" />
-          {unreadCount > 0 && (
+          {badgeCount > 0 && (
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-card" />
           )}
         </button>
@@ -111,9 +99,9 @@ export function NotificationPopover() {
             <span className="text-xs font-bold text-foreground">
               {t("notifications.popover_title")}
             </span>
-            {unreadCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary font-mono">
-                {unreadCount}
+            {badgeCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary font-mono tabular-nums">
+                {badgeCount}
               </span>
             )}
           </div>
@@ -121,7 +109,7 @@ export function NotificationPopover() {
           {unreadCount > 0 && (
             <button
               type="button"
-              onClick={markAllAsRead}
+              onClick={() => markAllRead()}
               className="text-[11px] font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Check className="w-3 h-3" />
@@ -132,7 +120,11 @@ export function NotificationPopover() {
 
         {/* Notifications List */}
         <div className="max-h-[320px] overflow-y-auto divide-y divide-border/60 themed-scroll">
-          {notifications.length === 0 ? (
+          {isLoading ? (
+            <div className="py-8 flex items-center justify-center gap-2 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+            </div>
+          ) : previewItems.length === 0 ? (
             <div className="py-8 px-4 text-center">
               <p className="text-xs font-semibold text-foreground">
                 {t("notifications.empty_title")}
@@ -142,25 +134,27 @@ export function NotificationPopover() {
               </p>
             </div>
           ) : (
-            notifications.map((item) => {
-              const Icon = item.icon;
+            previewItems.map((item) => {
+              const Icon = TYPE_ICON[item.type] ?? Info;
+              const colorCls = TYPE_COLOR[item.type] ?? TYPE_COLOR.SYSTEM;
+
               return (
                 <div
                   key={item.id}
-                  onClick={() => markItemAsRead(item.id)}
+                  onClick={() =>
+                    handleItemClick(item.id, item.type, item.data?.conversationId)
+                  }
                   className={clsx(
                     "flex items-start gap-3 p-3 transition-colors cursor-pointer select-none",
-                    item.read
+                    item.isRead
                       ? "hover:bg-muted/40 opacity-75"
                       : "bg-primary/[0.02] hover:bg-primary/[0.05]"
                   )}
                 >
                   <div
                     className={clsx(
-                      "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
-                      item.category === "bookings" && "bg-violet-50 text-primary border border-violet-100",
-                      item.category === "channels" && "bg-emerald-50 text-emerald-600 border border-emerald-100",
-                      item.category === "system" && "bg-sky-50 text-sky-600 border border-sky-100"
+                      "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 border",
+                      item.isRead ? "bg-muted text-muted-foreground border-border/60" : colorCls
                     )}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -171,24 +165,22 @@ export function NotificationPopover() {
                       <p
                         className={clsx(
                           "text-xs truncate",
-                          item.read
-                            ? "font-medium text-foreground"
-                            : "font-semibold text-foreground"
+                          item.isRead ? "font-medium text-foreground" : "font-semibold text-foreground"
                         )}
                       >
                         {item.title}
                       </p>
-                      <span className="text-[10px] text-muted-foreground whitespace-nowrap tabular-nums">
-                        {item.timestamp}
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap tabular-nums font-mono">
+                        {formatRelativeTime(item.createdAt)}
                       </span>
                     </div>
 
                     <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5 leading-snug">
-                      {item.description}
+                      {item.body}
                     </p>
                   </div>
 
-                  {!item.read && (
+                  {!item.isRead && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-2" />
                   )}
                 </div>

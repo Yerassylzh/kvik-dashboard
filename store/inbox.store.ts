@@ -14,6 +14,10 @@ export interface InboxStore {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   getTotalUnread: () => number;
+  /** Set of conversationIds currently locked by another specialist via WS takeover event */
+  takenConversationIds: Set<string>;
+  markTaken: (conversationId: string) => void;
+  markReleased: (conversationId: string) => void;
 }
 
 export const useInboxStore = create<InboxStore>((set, get) => ({
@@ -43,4 +47,15 @@ export const useInboxStore = create<InboxStore>((set, get) => ({
     const counts = get().unreadCounts;
     return Object.values(counts).reduce((sum, n) => sum + (n || 0), 0);
   },
+  takenConversationIds: new Set<string>(),
+  markTaken: (conversationId) =>
+    set((state) => ({
+      takenConversationIds: new Set([...state.takenConversationIds, conversationId]),
+    })),
+  markReleased: (conversationId) =>
+    set((state) => {
+      const next = new Set(state.takenConversationIds);
+      next.delete(conversationId);
+      return { takenConversationIds: next };
+    }),
 }));

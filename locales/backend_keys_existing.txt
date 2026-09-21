@@ -58,6 +58,7 @@ api.conversations.marked_read
 api.conversations.not_found
 api.conversations.send_failed
 api.conversations.status_updated
+api.conversations.taken_over_by_other
 api.dev_messaging.channel_not_provisioned
 api.dev_messaging.channels_provisioned
 api.dev_messaging.conversation_reset

@@ -1,18 +1,21 @@
-"use client";
-
 import { useEffect, useRef } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { useAuthStore } from '@/store/auth.store';
 import { useInboxStore } from '@/store/inbox.store';
+import { useNotificationsStore } from '@/store/notifications.store';
 import { useSWRConfig } from 'swr';
 import { getSocketBaseUrl } from '@/lib/api/socketUrl';
 import type { MessageDto, ConversationDto } from '@/lib/api/conversations';
+import type { NotificationDto } from '@/lib/api/notifications';
+import { useMessageSound } from '@/hooks/useMessageSound';
 
 export function useInboxRealtime(workspaceId?: string) {
   const socketRef = useRef<Socket | null>(null);
   const { accessToken } = useAuthStore();
-  const { setUnreadCount } = useInboxStore();
+  const { setUnreadCount, markTaken, markReleased } = useInboxStore();
+  const { increment: incrementNotification, setLatestNotification } = useNotificationsStore();
   const { mutate } = useSWRConfig();
+  const { playNotificationSound } = useMessageSound();
 
   // Keep workspaceId synced if socket is already connected
   useEffect(() => {
@@ -65,6 +68,9 @@ export function useInboxRealtime(workspaceId?: string) {
         const state = useInboxStore.getState();
         const prev = state.unreadCounts[payload.conversationId] || 0;
         setUnreadCount(payload.conversationId, prev + 1);
+
+        // Play chime — user is not in this conversation
+        playNotificationSound();
       }
 
       // Revalidate conversation list to update previews
@@ -80,6 +86,55 @@ export function useInboxRealtime(workspaceId?: string) {
       mutate((key) => Array.isArray(key) && key[0] === 'conversations');
     });
 
+    // --- Escalation & Takeover Events ---
+
+    socket.on('notification.new', (payload: NotificationDto) => {
+      // 1. Bump global badge
+      incrementNotification();
+      setLatestNotification(payload);
+
+      // 2. Prepend to notifications SWR cache
+      mutate(
+        (key) => Array.isArray(key) && key[0] === 'notifications',
+        undefined,
+        { revalidate: true }
+      );
+
+      // 3. Browser desktop notification
+      if (typeof window !== 'undefined' && Notification.permission === 'granted') {
+        new Notification(payload.title, {
+          body: payload.body,
+          icon: '/favicon.ico',
+        });
+      }
+    });
+
+    socket.on(
+      'conversation.escalated',
+      (payload: { conversationId: string; triggerType: string; reason: string | null; triggeredAt: string }) => {
+        // Revalidate conversation list so escalated item shows amber badge
+        mutate((key) => Array.isArray(key) && key[0] === 'conversations');
+      }
+    );
+
+    socket.on(
+      'conversation.takeover',
+      (payload: { conversationId: string; takenOverAt: string }) => {
+        // Mark as taken so TakeoverControl disables the button for other users
+        markTaken(payload.conversationId);
+        mutate((key) => Array.isArray(key) && key[0] === 'conversations');
+      }
+    );
+
+    socket.on(
+      'conversation.takeover_released',
+      (payload: { conversationId: string }) => {
+        // Re-enable Take Over button for all users
+        markReleased(payload.conversationId);
+        mutate((key) => Array.isArray(key) && key[0] === 'conversations');
+      }
+    );
+
     return () => {
       const currentWorkspaceId = workspaceId || useAuthStore.getState().user?.workspace?.id;
       if (currentWorkspaceId) {
@@ -88,7 +143,7 @@ export function useInboxRealtime(workspaceId?: string) {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [accessToken, workspaceId, setUnreadCount, mutate]);
+  }, [accessToken, workspaceId, setUnreadCount, markTaken, markReleased, incrementNotification, setLatestNotification, mutate, playNotificationSound]);
 
   return {
     socket: socketRef.current,
