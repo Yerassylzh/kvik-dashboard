@@ -1,15 +1,33 @@
-﻿"use client";
+"use client";
 
-import React, { useState, useRef } from "react";
-import { Send, ShieldCheck, Lock, Bot, UserCheck, AlertTriangle } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Send,
+  ShieldCheck,
+  Lock,
+  Bot,
+  UserCheck,
+  AlertTriangle,
+  Mic,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { useInboxStore } from "@/store/inbox.store";
-import type { ConversationStatus } from "@/lib/api/conversations";
+import {
+  conversationsApi,
+  type ConversationStatus,
+  type SendManagerMessageDto,
+  type MediaType,
+} from "@/lib/api/conversations";
+import { useAudioRecorder } from "@/hooks/useAudioRecorder";
+import { VoiceRecordingBar } from "./composer/VoiceRecordingBar";
+import { AttachmentPicker } from "./composer/AttachmentPicker";
+import { PendingMediaPreview } from "./composer/PendingMediaPreview";
 
 interface ManagerComposerProps {
-  onSendMessage: (content: string) => Promise<unknown>;
+  onSendMessage: (payload: string | SendManagerMessageDto) => Promise<unknown>;
   disabled?: boolean;
   conversationId?: string;
   takenOverByActorId?: string | null;
@@ -30,18 +48,41 @@ export function ManagerComposer({
   const [isSending, setIsSending] = useState(false);
   const [isTakingOver, setIsTakingOver] = useState(false);
   const [isLockedByOther, setIsLockedByOther] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [stagedMedia, setStagedMedia] = useState<{
+    file: File;
+    mediaType: MediaType;
+  } | null>(null);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const user = useAuthStore((s) => s.user);
-  // actorId mirrors the backend: staffMemberId (staff) or userId (owner)
   const myActorId = user?.staffProfile?.id ?? user?.id;
   const { takenConversationIds } = useInboxStore();
+
+  const {
+    isRecording,
+    durationSeconds,
+    volumeLevel,
+    error: micError,
+    startRecording,
+    stopRecording,
+    cancelRecording,
+  } = useAudioRecorder();
+
+  useEffect(() => {
+    if (micError) {
+      if (micError === "voice_mic_denied") {
+        toast.error(t("inbox.voice_mic_denied"));
+      } else {
+        toast.error(t("inbox.voice_mic_unsupported"));
+      }
+    }
+  }, [micError, t]);
 
   const senderLabel = user?.staffProfile?.name
     ? `${user.staffProfile.name}${user.staffProfile.role ? ` (${user.staffProfile.role})` : ""}`
     : t("inbox.sender_manager");
 
-  // Determine if this conversation is locked by someone else
   const isAssignedToMe = !!myActorId && takenOverByActorId === myActorId;
   const isLockedExternally =
     (!!takenOverByActorId && !isAssignedToMe) ||
@@ -66,7 +107,7 @@ export function ManagerComposer({
     );
   }
 
-  // 2. Bot is answering and we haven't taken over yet вЂ” block input and offer takeover
+  // 2. Bot active — block input and offer takeover
   if (status === "BOT_ACTIVE") {
     return (
       <div className="p-3 border-t border-border/60 bg-muted/30 backdrop-blur-sm">
@@ -101,7 +142,7 @@ export function ManagerComposer({
     );
   }
 
-  // 3. Conversation is locked by another specialist
+  // 3. Locked by another specialist
   if (isLockedExternally || isLockedByOther) {
     return (
       <div className="p-3 border-t border-border/60 bg-muted/40 backdrop-blur-sm">
@@ -113,7 +154,7 @@ export function ManagerComposer({
     );
   }
 
-  // 4. Escalated (MANAGER_INTERCEPTED), but not claimed by current user yet
+  // 4. Escalated, but unassigned to current user
   if (!isAssignedToMe) {
     return (
       <div className="p-3 border-t border-border/60 bg-muted/30 backdrop-blur-sm">
@@ -148,29 +189,98 @@ export function ManagerComposer({
     );
   }
 
-  // 5. Assigned to current user вЂ” input is unlocked!
-  const effectivelyDisabled = disabled || isSending;
+  // 5. Assigned to current user — input is fully unlocked!
+  const isBusy = isSending || isUploadingMedia || disabled;
+  const canSend = (content.trim().length > 0 || !!stagedMedia) && !isBusy;
 
-  const handleSend = async () => {
-    if (!content.trim() || isSending || effectivelyDisabled) return;
-
-    const textToSend = content.trim();
-    setContent("");
-    setIsSending(true);
+  const handleSendVoice = async () => {
+    if (!conversationId || isBusy) return;
+    setIsUploadingMedia(true);
 
     try {
-      await onSendMessage(textToSend);
+      const { blob, duration } = await stopRecording();
+      if (!blob || blob.size === 0) {
+        setIsUploadingMedia(false);
+        return;
+      }
+
+      // 1. Upload audio recording to Cloudflare R2 / local storage
+      const uploadRes = await conversationsApi.uploadMedia(
+        conversationId,
+        blob,
+        "AUDIO",
+        duration
+      );
+
+      // 2. Send outbound manager message
+      await onSendMessage({
+        mediaUrl: uploadRes.mediaUrl,
+        mediaType: "AUDIO",
+        durationSeconds: duration,
+        fileName: uploadRes.fileName,
+        mimeType: uploadRes.mimeType,
+        fileSize: uploadRes.fileSize,
+      });
+
       setIsLockedByOther(false);
     } catch (err: unknown) {
       const errCode = (err as { data?: { code?: string } })?.data?.code;
       if (errCode === "conversations.taken_over_by_other") {
         setIsLockedByOther(true);
-        setContent(textToSend);
+      } else {
+        toast.error(t("inbox.outbound_media_failed" as any) || "Failed to send voice note");
+      }
+    } finally {
+      setIsUploadingMedia(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!canSend || !conversationId) return;
+
+    const textToSend = content.trim();
+    const mediaToUpload = stagedMedia;
+
+    setIsSending(true);
+
+    try {
+      if (mediaToUpload) {
+        setIsUploadingMedia(true);
+        // Upload staged media attachment
+        const uploadRes = await conversationsApi.uploadMedia(
+          conversationId,
+          mediaToUpload.file,
+          mediaToUpload.mediaType
+        );
+
+        // Send message with media payload and optional caption
+        await onSendMessage({
+          content: textToSend || undefined,
+          mediaUrl: uploadRes.mediaUrl,
+          mediaType: mediaToUpload.mediaType,
+          fileName: uploadRes.fileName,
+          mimeType: uploadRes.mimeType,
+          fileSize: uploadRes.fileSize,
+        });
+
+        setStagedMedia(null);
+      } else {
+        // Send regular text message
+        await onSendMessage(textToSend);
+      }
+
+      setContent("");
+      setIsLockedByOther(false);
+    } catch (err: unknown) {
+      const errCode = (err as { data?: { code?: string } })?.data?.code;
+      if (errCode === "conversations.taken_over_by_other") {
+        setIsLockedByOther(true);
       } else {
         setContent(textToSend);
       }
     } finally {
       setIsSending(false);
+      setIsUploadingMedia(false);
       textareaRef.current?.focus();
     }
   };
@@ -184,6 +294,7 @@ export function ManagerComposer({
 
   return (
     <div className="p-3 border-t border-border/60 bg-card/80 backdrop-blur-sm space-y-2">
+      {/* Active Responder Identity Badge */}
       <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-semibold px-1">
         <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
         <span>
@@ -191,31 +302,74 @@ export function ManagerComposer({
         </span>
       </div>
 
-      <div className="flex items-end gap-2 bg-muted/40 border border-border/60 rounded-2xl p-2 focus-within:border-primary/60 transition-colors">
-        <textarea
-          ref={textareaRef}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={t("inbox.composer_placeholder")}
-          rows={1}
-          disabled={disabled || isSending}
-          className="flex-1 bg-transparent resize-none px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none max-h-32 min-h-[38px]"
+      {/* Staged Media Attachment Preview */}
+      {stagedMedia && (
+        <PendingMediaPreview
+          file={stagedMedia.file}
+          mediaType={stagedMedia.mediaType}
+          isUploading={isUploadingMedia}
+          onRemove={() => setStagedMedia(null)}
         />
+      )}
 
-        <Button
-          type="button"
-          size="sm"
-          onClick={handleSend}
-          loading={isSending}
-          disabled={!content.trim() || isSending || disabled}
-          rightIcon={<Send className="w-3.5 h-3.5" />}
-          className="rounded-xl shrink-0 h-9 px-3.5 font-semibold"
-        >
-          {t("inbox.send_btn")}
-        </Button>
-      </div>
+      {/* Input Bar or Voice Recording Bar */}
+      {isRecording ? (
+        <VoiceRecordingBar
+          durationSeconds={durationSeconds}
+          volumeLevel={volumeLevel}
+          isUploading={isUploadingMedia}
+          onCancel={cancelRecording}
+          onSend={handleSendVoice}
+        />
+      ) : (
+        <div className="flex items-end gap-1.5 bg-muted/40 border border-border/60 rounded-2xl p-1.5 focus-within:border-primary/60 transition-colors">
+          {/* Attachment Paperclip Picker */}
+          <AttachmentPicker
+            disabled={isBusy}
+            onFileSelected={(file, mediaType) => setStagedMedia({ file, mediaType })}
+          />
+
+          {/* Text / Caption Area */}
+          <textarea
+            ref={textareaRef}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              stagedMedia
+                ? t("inbox.caption_placeholder")
+                : t("inbox.composer_placeholder")
+            }
+            rows={1}
+            disabled={isBusy}
+            className="flex-1 bg-transparent resize-none px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none max-h-32 min-h-[38px]"
+          />
+
+          {/* Voice Record Mic Trigger */}
+          <button
+            type="button"
+            disabled={isBusy || !!stagedMedia}
+            onClick={() => startRecording()}
+            className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-muted/70 transition-colors disabled:opacity-40 cursor-pointer"
+            title={t("inbox.voice_recording")}
+          >
+            <Mic className="w-4 h-4" />
+          </button>
+
+          {/* Send Button */}
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleSend}
+            loading={isSending || isUploadingMedia}
+            disabled={!canSend}
+            rightIcon={<Send className="w-3.5 h-3.5" />}
+            className="rounded-xl shrink-0 h-9 px-3.5 font-semibold"
+          >
+            {t("inbox.send_btn")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
-

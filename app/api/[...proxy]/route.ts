@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 const rawBackendUrl = process.env.BACKEND_URL || 'http://localhost:4000';
 const BACKEND_URL = rawBackendUrl.replace(/\/+$/, '');
 
@@ -19,6 +22,7 @@ async function handleProxy(request: NextRequest, params: { proxy: string[] }) {
   const headers = new Headers(request.headers);
   headers.delete('host');
   headers.delete('connection');
+  headers.delete('content-length');
   headers.set('ngrok-skip-browser-warning', 'true');
 
   let body: BodyInit | undefined = undefined;

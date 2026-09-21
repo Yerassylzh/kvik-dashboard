@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { useRef, useEffect } from "react";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, FileImage } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
@@ -10,6 +10,7 @@ import { MessageBubble } from "./MessageBubble";
 import { ManagerComposer } from "./ManagerComposer";
 import { FollowUpThreadBanner } from "./FollowUpThreadBanner";
 import { EscalationHistoryPanel } from "./EscalationHistoryPanel";
+import { MediaGallerySheet } from "./gallery/MediaGallerySheet";
 import { useConversationMessages } from "@/hooks/useConversations";
 import { conversationsApi, type ConversationDto, type ConversationStatus } from "@/lib/api/conversations";
 
@@ -88,11 +89,27 @@ export function ConversationThread({
           </div>
         </div>
 
-        <TakeoverControl
-          conversation={conversation}
-          onStatusChange={handleStatusToggle}
-          onRefresh={refresh}
-        />
+        <div className="flex items-center gap-2">
+          <MediaGallerySheet
+            conversationId={conversation.id}
+            trigger={
+              <button
+                type="button"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-border/70 hover:bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                title={t("inbox.media_gallery_title")}
+              >
+                <FileImage className="w-3.5 h-3.5 text-primary" />
+                <span className="hidden sm:inline">{t("inbox.media_gallery_btn")}</span>
+              </button>
+            }
+          />
+
+          <TakeoverControl
+            conversation={conversation}
+            onStatusChange={handleStatusToggle}
+            onRefresh={refresh}
+          />
+        </div>
       </div>
 
       {/* Escalation history panel вЂ” only shows for MANAGER_INTERCEPTED */}

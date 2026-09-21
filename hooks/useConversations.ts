@@ -7,6 +7,8 @@ import {
   type ConversationStatus,
   type ChannelType,
   type ListConversationsParams,
+  type SendManagerMessageDto,
+  type MessageDto,
 } from '@/lib/api/conversations';
 import { useInboxStore } from '@/store/inbox.store';
 
@@ -72,14 +74,30 @@ export function useConversationMessages(conversationId: string | null) {
   );
 
   const sendMessage = useCallback(
-    async (content: string) => {
-      if (!conversationId || !content.trim()) return;
+    async (payload: string | SendManagerMessageDto) => {
+      if (!conversationId) return;
 
-      const optimisticMsg = {
+      const isString = typeof payload === 'string';
+      const content = isString ? payload.trim() : (payload.content?.trim() || '');
+      const hasMedia = !isString && !!payload.mediaUrl;
+
+      if (!content && !hasMedia) return;
+
+      const optimisticMsg: MessageDto = {
         id: `temp-${Date.now()}`,
         conversationId,
         role: 'MANAGER' as const,
-        content: content.trim(),
+        content: content || (payload as SendManagerMessageDto).fileName || '',
+        metadata: hasMedia
+          ? {
+              mediaType: (payload as SendManagerMessageDto).mediaType,
+              mediaUrl: (payload as SendManagerMessageDto).mediaUrl,
+              fileName: (payload as SendManagerMessageDto).fileName,
+              mimeType: (payload as SendManagerMessageDto).mimeType,
+              fileSize: (payload as SendManagerMessageDto).fileSize,
+              durationSeconds: (payload as SendManagerMessageDto).durationSeconds ?? undefined,
+            }
+          : null,
         createdAt: new Date().toISOString(),
       };
 
@@ -96,7 +114,7 @@ export function useConversationMessages(conversationId: string | null) {
       );
 
       try {
-        const sent = await conversationsApi.sendMessage(conversationId, content.trim());
+        const sent = await conversationsApi.sendMessage(conversationId, payload);
         await mutate();
         return sent;
       } catch (err) {

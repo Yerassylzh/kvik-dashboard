@@ -1,8 +1,31 @@
-﻿import { apiClient } from './client';
+import { apiClient } from './client';
 
 export type ConversationStatus = 'BOT_ACTIVE' | 'MANAGER_INTERCEPTED' | 'CLOSED';
 export type ChannelType = 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM';
 export type MessageRole = 'USER' | 'BOT' | 'MANAGER';
+export type MediaType = 'IMAGE' | 'AUDIO' | 'VIDEO' | 'DOCUMENT';
+
+export interface MessageMediaMetadata {
+  mediaType?: MediaType;
+  mediaUrl?: string;
+  fileKey?: string;
+  mimeType?: string;
+  fileSize?: number;
+  fileName?: string;
+  durationSeconds?: number;
+  
+  // Voice STT Specific (Inbound)
+  isVoice?: boolean;
+  transcription?: string;
+  transcriptionConfidence?: number;
+  detectedLanguage?: 'ru' | 'kk' | 'en' | string;
+  transcriptionDurationMs?: number;
+  transcriptionError?: string;
+  
+  // Channel Context
+  rawType?: string;
+  externalMediaId?: string;
+}
 
 export interface MessageDto {
   id: string;
@@ -12,7 +35,7 @@ export interface MessageDto {
   senderName?: string | null;
   content: string;
   externalMessageId?: string | null;
-  metadata?: Record<string, unknown> | null;
+  metadata?: MessageMediaMetadata | Record<string, unknown> | null;
   createdAt: string;
 }
 
@@ -77,6 +100,49 @@ export interface PaginatedConversationsResponse {
   limit: number;
 }
 
+export interface SendManagerMessageDto {
+  content?: string;
+  mediaUrl?: string;
+  mediaType?: MediaType;
+  fileName?: string;
+  mimeType?: string;
+  fileSize?: number;
+  durationSeconds?: number | null;
+}
+
+export interface UploadMediaResponse {
+  mediaUrl: string;
+  mediaType: MediaType;
+  mimeType: string;
+  fileKey: string;
+  fileName: string;
+  fileSize: number;
+  durationSeconds?: number;
+}
+
+export interface MediaItemDto {
+  messageId: string;
+  role: 'USER' | 'MANAGER' | 'BOT';
+  senderName?: string;
+  mediaType: MediaType;
+  mediaUrl: string;
+  fileName?: string;
+  mimeType?: string;
+  fileSize?: number;
+  caption?: string;
+  durationSeconds?: number;
+  transcription?: string;
+  detectedLanguage?: string;
+  createdAt: string;
+}
+
+export interface PaginatedMediaResponse {
+  data: MediaItemDto[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface PaginatedMessagesResponse {
   data: MessageDto[];
   total: number;
@@ -102,9 +168,44 @@ export const conversationsApi = {
     return data;
   },
 
-  sendMessage: async (id: string, content: string): Promise<MessageDto> => {
-    const { data } = await apiClient.post<MessageDto>(`/conversations/${id}/messages`, {
-      content,
+  uploadMedia: async (
+    conversationId: string,
+    file: File | Blob,
+    mediaType?: MediaType,
+    durationSeconds?: number
+  ): Promise<UploadMediaResponse> => {
+    const formData = new FormData();
+    const fileName = file instanceof File ? file.name : `voice-recording-${Date.now()}.webm`;
+    formData.append('file', file, fileName);
+    if (mediaType) {
+      formData.append('mediaType', mediaType);
+    }
+    if (durationSeconds !== undefined && durationSeconds !== null) {
+      formData.append('durationSeconds', String(durationSeconds));
+    }
+
+    const { data } = await apiClient.post<UploadMediaResponse>(
+      `/conversations/${conversationId}/media/upload`,
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+    return data;
+  },
+
+  sendMessage: async (id: string, payload: string | SendManagerMessageDto): Promise<MessageDto> => {
+    const body = typeof payload === 'string' ? { content: payload } : payload;
+    const { data } = await apiClient.post<MessageDto>(`/conversations/${id}/messages`, body);
+    return data;
+  },
+
+  getMediaGallery: async (
+    id: string,
+    params?: { type?: MediaType; page?: number; limit?: number }
+  ): Promise<PaginatedMediaResponse> => {
+    const { data } = await apiClient.get<PaginatedMediaResponse>(`/conversations/${id}/media`, {
+      params,
     });
     return data;
   },

@@ -75,6 +75,11 @@ export function useInboxRealtime(workspaceId?: string) {
 
       // Revalidate conversation list to update previews
       mutate((key) => Array.isArray(key) && key[0] === 'conversations');
+
+      // If media attached, revalidate conversation media gallery
+      if (payload.message?.metadata && (payload.message.metadata as { mediaUrl?: string })?.mediaUrl) {
+        mutate((key) => Array.isArray(key) && key[0] === 'conversation/media' && key[1] === payload.conversationId);
+      }
     });
 
     socket.on('conversation.updated', (payload: { id: string; status: string; lastMessageAt: string; unreadCount: number }) => {
