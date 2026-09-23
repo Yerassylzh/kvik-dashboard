@@ -33,6 +33,7 @@ api.bookings.missing_client_info
 api.bookings.not_found
 api.bookings.rescheduled
 api.bookings.slot_conflict
+api.bookings.slot_outside_working_hours
 api.bookings.staff_not_bookable
 api.bookings.staff_not_found
 api.bookings.status_updated
