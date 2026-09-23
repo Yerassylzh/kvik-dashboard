@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Bell, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
-import { DashboardPageHeader } from "@/components/dashboard/shared/DashboardPageHeader";
-import { FadeIn } from "@/components/ui/motion/FadeIn";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TelegramRecipientsCard } from "./TelegramRecipientsCard";
@@ -44,12 +42,7 @@ export function NotificationSettingsPage() {
   };
 
   return (
-    <FadeIn direction="up" distance={8} duration={0.2} className="space-y-6 max-w-4xl">
-      <DashboardPageHeader
-        title={t("settings.notifications_title")}
-        description={t("settings.notifications_desc")}
-      />
-
+    <div className="space-y-6">
       <div className="space-y-4">
         {/* Browser Push Notifications Card */}
         <div className="rounded-xl border border-border/80 bg-card p-5 shadow-xs">
@@ -120,6 +113,6 @@ export function NotificationSettingsPage() {
         {/* Telegram Recipients Card */}
         <TelegramRecipientsCard />
       </div>
-    </FadeIn>
+    </div>
   );
 }

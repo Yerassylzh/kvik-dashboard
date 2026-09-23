@@ -34,45 +34,61 @@ function getInitials(name?: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Deterministic gradient from name — ensures consistent color per person
-function getGradient(name?: string): string {
-  const gradients = [
-    "from-indigo-500 to-cyan-400",
-    "from-violet-500 to-pink-400",
-    "from-emerald-500 to-teal-400",
-    "from-amber-500 to-orange-400",
-    "from-rose-500 to-pink-400",
-    "from-sky-500 to-blue-400",
-  ];
-  if (!name) return gradients[0];
-  const idx = name.charCodeAt(0) % gradients.length;
-  return gradients[idx];
+// Deterministic refined tone-on-tone palette inspired by Linear & Stripe
+const colorVariants = [
+  "bg-primary/10 text-primary border-primary/25",
+  "bg-slate-100 text-slate-700 border-slate-200/90",
+  "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+  "bg-sky-50 text-sky-700 border-sky-200/80",
+  "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+  "bg-amber-50 text-amber-800 border-amber-200/80",
+  "bg-violet-50 text-violet-700 border-violet-200/80",
+];
+
+function getColorVariant(name?: string): string {
+  if (!name) return colorVariants[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % colorVariants.length;
+  return colorVariants[idx];
 }
 
 export function Avatar({ name, src, size = "md", online, className }: AvatarProps) {
+  const [imgError, setImgError] = React.useState(false);
+  const showImage = Boolean(src) && !imgError;
+
   return (
-    <div className={clsx("relative flex-shrink-0", className)}>
+    <div className={clsx("relative flex-shrink-0 select-none", className)}>
       <div
         className={clsx(
-          "rounded-full flex items-center justify-center font-bold text-white select-none overflow-hidden",
+          "rounded-full flex items-center justify-center font-semibold overflow-hidden border transition-colors",
           sizeClasses[size],
-          !src && `bg-gradient-to-tr ${getGradient(name)}`
+          showImage
+            ? "border-border/60 bg-muted/40"
+            : getColorVariant(name)
         )}
       >
-        {src ? (
+        {showImage ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={name ?? "avatar"} className="w-full h-full object-cover" />
+          <img
+            src={src}
+            alt={name ?? "avatar"}
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
         ) : (
-          <span>{getInitials(name)}</span>
+          <span className="tracking-tight uppercase">{getInitials(name)}</span>
         )}
       </div>
 
       {online !== undefined && (
         <span
           className={clsx(
-            "absolute bottom-0 right-0 rounded-full ring-card",
+            "absolute bottom-0 right-0 rounded-full ring-2 ring-card",
             onlineDotSizes[size],
-            online ? "bg-emerald-500" : "bg-muted-foreground"
+            online ? "bg-emerald-500" : "bg-muted-foreground/60"
           )}
         />
       )}

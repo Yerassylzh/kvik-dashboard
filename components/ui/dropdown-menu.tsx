@@ -1,10 +1,82 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import React from "react";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 
-export interface DropdownMenuItem {
+export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
+export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+export const DropdownMenuGroup = DropdownMenuPrimitive.Group;
+export const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
+
+export interface DropdownMenuContentProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content> {
+  className?: string;
+}
+
+export const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
+  DropdownMenuContentProps
+>(({ className, sideOffset = 4, align = "end", children, ...props }, ref) => (
+  <DropdownMenuPrimitive.Portal>
+    <DropdownMenuPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      align={align}
+      className={clsx(
+        "z-50 min-w-[180px] overflow-hidden rounded-xl border border-border/80 bg-card p-1 shadow-lg text-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </DropdownMenuPrimitive.Content>
+  </DropdownMenuPrimitive.Portal>
+));
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
+
+export interface DropdownMenuItemProps
+  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> {
+  className?: string;
+  variant?: "default" | "destructive";
+  inset?: boolean;
+}
+
+export const DropdownMenuItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
+  DropdownMenuItemProps
+>(({ className, variant = "default", inset, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.Item
+    ref={ref}
+    className={clsx(
+      "relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs outline-none transition-colors font-medium",
+      "focus:bg-muted focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      variant === "destructive" &&
+        "text-destructive focus:bg-destructive/10 focus:text-destructive",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </DropdownMenuPrimitive.Item>
+));
+DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
+
+export const DropdownMenuSeparator = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Separator
+    ref={ref}
+    className={clsx("-mx-1 my-1 h-px bg-border/60", className)}
+    {...props}
+  />
+));
+DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
+
+// High-level config-based component for simple usage
+export interface SimpleDropdownMenuItem {
   id: string;
   label: string;
   icon?: React.ReactNode;
@@ -15,85 +87,43 @@ export interface DropdownMenuItem {
 
 export interface DropdownMenuProps {
   trigger: React.ReactNode;
-  items: DropdownMenuItem[];
-  align?: "left" | "right";
+  items: SimpleDropdownMenuItem[];
+  align?: "left" | "right" | "start" | "end" | "center";
   className?: string;
+  contentClassName?: string;
 }
 
 export function DropdownMenu({
   trigger,
   items,
-  align = "right",
+  align = "end",
   className,
+  contentClassName,
 }: DropdownMenuProps) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    if (open) document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, []);
+  const alignProp = align === "left" ? "start" : align === "right" ? "end" : align;
 
   return (
-    <div ref={ref} className={clsx("relative inline-block", className)}>
-      <div onClick={() => setOpen((v) => !v)}>{trigger}</div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
-            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className={clsx(
-              "absolute top-full mt-1.5 z-50 min-w-[160px] rounded-xl bg-card border border-border shadow-xl py-1 overflow-hidden",
-              align === "right" ? "right-0" : "left-0"
-            )}
+    <DropdownMenuRoot>
+      <DropdownMenuTrigger asChild className={className}>
+        {trigger}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align={alignProp} className={contentClassName}>
+        {items.map((item) => (
+          <DropdownMenuItem
+            key={item.id}
+            variant={item.variant}
+            disabled={item.disabled}
+            onSelect={() => item.onClick()}
           >
-            {items.map((item) => (
-              <button
-                key={item.id}
-                disabled={item.disabled}
-                onClick={() => {
-                  if (!item.disabled) {
-                    item.onClick();
-                    setOpen(false);
-                  }
-                }}
-                className={clsx(
-                  "w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium transition-colors text-left",
-                  item.disabled && "opacity-40 cursor-not-allowed",
-                  !item.disabled && item.variant === "destructive"
-                    ? "text-destructive hover:bg-destructive/10"
-                    : !item.disabled
-                    ? "text-foreground hover:bg-muted"
-                    : ""
-                )}
-              >
-                {item.icon && (
-                  <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center">
-                    {item.icon}
-                  </span>
-                )}
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            {item.icon && (
+              <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center">
+                {item.icon}
+              </span>
+            )}
+            <span>{item.label}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenuRoot>
   );
 }

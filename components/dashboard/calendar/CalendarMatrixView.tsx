@@ -41,15 +41,15 @@ export function CalendarMatrixView({
           >
             <div className="flex items-center justify-between border-b border-border/50 pb-2">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-xs">
-                  {member.name?.[0]?.toUpperCase() || "M"}
+                <div className="w-7 h-7 rounded-md bg-muted text-muted-foreground flex items-center justify-center font-semibold text-xs">
+                  {member.name?.[0]?.toUpperCase() || "?"}
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-foreground leading-tight">
                     {member.name}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
-                    {member.role || "Специалист"}
+                    {member.role || t("calendar.specialist_fallback")}
                   </p>
                 </div>
               </div>

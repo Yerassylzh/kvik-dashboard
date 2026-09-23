@@ -26,8 +26,6 @@ interface DashboardSidebarProps {
   navClusters: NavCluster[];
   systemRole: SystemRole;
   mounted: boolean;
-  onOpenHelp: () => void;
-  onOpenSettings: () => void;
 }
 
 export function DashboardSidebar({
@@ -35,8 +33,6 @@ export function DashboardSidebar({
   navClusters,
   systemRole,
   mounted,
-  onOpenHelp,
-  onOpenSettings,
 }: DashboardSidebarProps) {
   const t = useTranslations('dashboard');
 
@@ -100,26 +96,6 @@ export function DashboardSidebar({
                       (item.href !== '/overview' && pathname.startsWith(item.href));
                     const Icon = item.Icon;
 
-                    // Settings opens the slide-over sheet instead of navigating
-                    if (item.href === '/settings') {
-                      return (
-                        <button
-                          key={item.href}
-                          type="button"
-                          onClick={onOpenSettings}
-                          className={clsx(
-                            'w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-all whitespace-nowrap cursor-pointer',
-                            'text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 font-medium'
-                          )}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <Settings2 className="w-4 h-4 shrink-0 text-zinc-500" />
-                            <span className="truncate">{item.label}</span>
-                          </div>
-                        </button>
-                      );
-                    }
-
                     return (
                       <Link
                         key={item.href}
@@ -162,18 +138,19 @@ export function DashboardSidebar({
         </nav>
       </div>
 
-      {/* Sidebar Footer: Get Help Button */}
+      {/* Sidebar Footer: Telegram Support link */}
       <div className="pt-2 border-t border-border/60">
-        <button
-          type="button"
-          onClick={onOpenHelp}
+        <a
+          href="https://t.me/yerazh4"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
             <HelpCircle className="w-4 h-4 text-zinc-500 group-hover:text-foreground transition-colors shrink-0" />
             <span>{t('sidebar.get_help')}</span>
           </div>
-        </button>
+        </a>
       </div>
     </aside>
   );

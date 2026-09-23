@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
 
@@ -53,23 +53,39 @@ export function WeeklyScheduleTab({
                     : "bg-muted/10 border-border/30 opacity-60 text-muted-foreground"
                 )}
               >
-                <div className="flex items-center gap-3 min-w-[140px]">
-                  <button
-                    type="button"
-                    onClick={() => onToggleDay(idx)}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={day.isOpen}
+                  onClick={() => onToggleDay(idx)}
+                  className="flex items-center gap-3 min-w-47.5 text-left cursor-pointer group"
+                >
+                  <span
                     className={clsx(
-                      "w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer",
+                      "relative flex h-6 w-10 shrink-0 items-center rounded-full border transition-colors",
                       day.isOpen
-                        ? "bg-primary border-primary text-primary-foreground"
-                        : "border-border bg-card"
+                        ? "border-primary bg-primary"
+                        : "border-border bg-muted"
                     )}
                   >
-                    {day.isOpen && <CheckCircle2 className="w-3.5 h-3.5" />}
-                  </button>
-                  <span className="font-semibold text-xs">
-                    {t(`staff.days.${day.dayOfWeek}`)}
+                    <span
+                      className={clsx(
+                        "flex h-4 w-4 items-center justify-center rounded-full bg-white shadow-sm transition-transform",
+                        day.isOpen ? "translate-x-5" : "translate-x-1"
+                      )}
+                    >
+                      {day.isOpen && <Check className="h-3 w-3 text-primary" />}
+                    </span>
                   </span>
-                </div>
+                  <span>
+                    <span className="block font-semibold text-xs text-foreground">
+                      {t(`staff.days.${day.dayOfWeek}`)}
+                    </span>
+                    <span className="block text-[11px] text-muted-foreground">
+                      {day.isOpen ? t("schedule.day_open") : t("schedule.day_closed")}
+                    </span>
+                  </span>
+                </button>
 
                 {day.isOpen ? (
                   <div className="flex items-center gap-2">

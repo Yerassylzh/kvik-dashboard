@@ -54,7 +54,7 @@ export function ChangePasswordForm() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6">
       {/* Account Info Card */}
       <SectionCard
         title={t("settings.account_title")}
@@ -64,7 +64,7 @@ export function ChangePasswordForm() {
           <div className="p-4 rounded-xl bg-card border border-border/60 space-y-1">
             <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <Mail className="w-3.5 h-3.5" />
-              Электронная почта
+              {t("settings.account_email_label")}
             </span>
             <p className="text-sm font-semibold text-foreground font-mono">
               {user?.email || "—"}
@@ -74,12 +74,12 @@ export function ChangePasswordForm() {
           <div className="p-4 rounded-xl bg-card border border-border/60 space-y-1">
             <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <UserCheck className="w-3.5 h-3.5" />
-              Статус подтверждения
+              {t("settings.account_status_label")}
             </span>
             <div className="flex items-center gap-2 pt-0.5">
               <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                 <Check className="w-3 h-3" />
-                Подтверждён
+                {t("settings.account_status_verified")}
               </span>
             </div>
           </div>

@@ -8,6 +8,8 @@ import { StaffList } from "@/components/dashboard/settings/staff/StaffList";
 import { StaffInviteModal } from "@/components/dashboard/settings/staff/StaffInviteModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TeamShiftsTab } from "@/components/dashboard/team/TeamShiftsTab";
+import { TeamVacationsTab } from "@/components/dashboard/team/TeamVacationsTab";
 import { useStaff } from "@/hooks/useStaff";
 
 type TeamTab = "roster" | "shifts" | "vacations";
@@ -64,31 +66,13 @@ export function TeamPage() {
         ]}
       />
 
-      {activeTab === "roster" && <StaffList />}
-
-      {activeTab === "shifts" && (
-        <div className="p-8 text-center border border-dashed border-border/80 rounded-2xl bg-card/40 space-y-2">
-          <CalendarCheck className="w-8 h-8 text-primary mx-auto opacity-80 mb-2" />
-          <p className="text-sm font-semibold text-foreground">
-            {t("team.shifts_placeholder_title")}
-          </p>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            {t("team.shifts_placeholder_desc")}
-          </p>
-        </div>
+      {activeTab === "roster" && (
+        <StaffList onOpenInvite={() => setIsInviteOpen(true)} />
       )}
 
-      {activeTab === "vacations" && (
-        <div className="p-8 text-center border border-dashed border-border/80 rounded-2xl bg-card/40 space-y-2">
-          <CalendarOff className="w-8 h-8 text-muted-foreground mx-auto opacity-80 mb-2" />
-          <p className="text-sm font-semibold text-foreground">
-            {t("team.vacations_placeholder_title")}
-          </p>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            {t("team.vacations_placeholder_desc")}
-          </p>
-        </div>
-      )}
+      {activeTab === "shifts" && <TeamShiftsTab />}
+
+      {activeTab === "vacations" && <TeamVacationsTab />}
 
       {/* Invite Specialist Modal */}
       <StaffInviteModal

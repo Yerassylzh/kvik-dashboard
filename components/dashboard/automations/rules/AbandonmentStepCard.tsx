@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Clock, ShieldCheck } from "lucide-react";
+import { Archive } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
-import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { AbandonmentSequenceConfig } from "@/lib/api/followUps";
 
@@ -43,8 +42,6 @@ export function AbandonmentStepCard({
     titleKey: string;
     descKey: string;
     defaultMinutes: number;
-    badgeText: string;
-    badgeVariant: BadgeVariant;
     options: Array<{ label: string; minutes: number }>;
   }> = [
     {
@@ -52,8 +49,6 @@ export function AbandonmentStepCard({
       titleKey: "automations.step_1_title",
       descKey: "automations.step_1_desc",
       defaultMinutes: 120,
-      badgeText: "AI Free-form (<24h)",
-      badgeVariant: "default",
       options: [
         { label: t("automations.delay_1h"), minutes: 60 },
         { label: t("automations.delay_2h_recommended"), minutes: 120 },
@@ -66,8 +61,6 @@ export function AbandonmentStepCard({
       titleKey: "automations.step_2_title",
       descKey: "automations.step_2_desc",
       defaultMinutes: 1200,
-      badgeText: "AI Free-form (<24h)",
-      badgeVariant: "default",
       options: [
         { label: t("automations.delay_12h"), minutes: 720 },
         { label: t("automations.delay_16h"), minutes: 960 },
@@ -80,8 +73,6 @@ export function AbandonmentStepCard({
       titleKey: "automations.step_3_title",
       descKey: "automations.step_3_desc",
       defaultMinutes: 2880,
-      badgeText: "WhatsApp HSM (>24h)",
-      badgeVariant: "warning",
       options: [
         { label: t("automations.delay_36h"), minutes: 2160 },
         { label: t("automations.delay_48h"), minutes: 2880 },
@@ -137,103 +128,102 @@ export function AbandonmentStepCard({
             onChange={handleToggle}
             className="sr-only peer"
           />
-          <div className="w-9 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+          <div className="w-9 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
         </label>
       }
     >
-      <div className="space-y-4">
-        {/* Step Cards */}
-        {stepMetadata.map((meta) => {
+      <div className="space-y-3">
+        {stepMetadata.map((meta, idx) => {
           const currentMinutes = getStepMinutes(meta.stepIndex, meta.defaultMinutes);
+          const isLast = idx === stepMetadata.length - 1;
 
           return (
-            <div
-              key={meta.stepIndex}
-              className="p-3.5 rounded-xl border border-border/70 bg-card hover:border-border transition-colors space-y-2.5"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="h-6 w-6 rounded-md bg-primary/10 text-primary flex items-center justify-center text-xs font-bold tabular-nums">
-                    {meta.stepIndex}
-                  </span>
-                  <span className="text-xs font-semibold text-foreground">
-                    {t(meta.titleKey as any)}
-                  </span>
+            <div key={meta.stepIndex} className="relative">
+              {/* Connecting line */}
+              {!isLast && (
+                <div className="absolute left-3 top-8 bottom-0 w-px bg-border/60 -mb-2" />
+              )}
+
+              {/* Step row */}
+              <div className="flex items-start gap-3">
+                <span className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold tabular-nums shrink-0 mt-0.5">
+                  {meta.stepIndex}
+                </span>
+
+                <div className="flex-1 min-w-0 pb-3 border-b border-border/40">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-foreground">
+                      {t(meta.titleKey as any)}
+                    </span>
+
+                    <select
+                      disabled={!isEnabled}
+                      value={currentMinutes}
+                      onChange={(e) =>
+                        handleStepDelayChange(meta.stepIndex, Number(e.target.value))
+                      }
+                      className="text-xs bg-background border border-border/80 rounded-md px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary disabled:opacity-50 font-medium tabular-nums shrink-0"
+                    >
+                      {meta.options.map((opt) => (
+                        <option key={opt.minutes} value={opt.minutes}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    {t(meta.descKey as any)}
+                  </p>
                 </div>
-                <Badge variant={meta.badgeVariant} className="text-[10px]">
-                  {meta.badgeText}
-                </Badge>
-              </div>
-
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t(meta.descKey as any)}
-              </p>
-
-              {/* Selector */}
-              <div className="pt-1 flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <select
-                  disabled={!isEnabled}
-                  value={currentMinutes}
-                  onChange={(e) =>
-                    handleStepDelayChange(meta.stepIndex, Number(e.target.value))
-                  }
-                  className="w-full text-xs bg-background border border-border/80 rounded-lg px-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary disabled:opacity-50 font-medium"
-                >
-                  {meta.options.map((opt) => (
-                    <option key={opt.minutes} value={opt.minutes}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
           );
         })}
 
-        {/* Auto Disqualification Callout */}
-        <div className="p-3 rounded-xl border border-border/60 bg-muted/30 flex items-start gap-3">
-          <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold text-foreground">
+        {/* Auto Archive Exit Rule */}
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <Archive className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <div>
+              <span className="font-semibold text-foreground">
                 {t("automations.autodisqualify_title")}
               </span>
-              <select
-                disabled={!isEnabled}
-                value={autoDisqualifyHours}
-                onChange={(e) => {
-                  setAutoDisqualifyHours(Number(e.target.value));
-                  setHasChanges(true);
-                }}
-                className="text-xs bg-card border border-border/80 rounded-md px-2 py-1 text-foreground font-semibold tabular-nums"
-              >
-                <option value={48}>{t("automations.hours_48")}</option>
-                <option value={72}>{t("automations.hours_72")}</option>
-                <option value={96}>{t("automations.hours_96")}</option>
-                <option value={120}>{t("automations.hours_120")}</option>
-              </select>
+              <p className="text-muted-foreground text-[11px] mt-0.5">
+                {t("automations.autodisqualify_desc")}
+              </p>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-              {t("automations.autodisqualify_desc")}
-            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0 pl-5 sm:pl-0">
+            <span className="text-[11px] text-muted-foreground">
+              {t("automations.autodisqualify_label")}
+            </span>
+            <select
+              disabled={!isEnabled}
+              value={autoDisqualifyHours}
+              onChange={(e) => {
+                setAutoDisqualifyHours(Number(e.target.value));
+                setHasChanges(true);
+              }}
+              className="text-xs bg-background border border-border/80 rounded-md px-2 py-1 text-foreground font-semibold tabular-nums"
+            >
+              <option value={48}>{t("automations.hours_48")}</option>
+              <option value={72}>{t("automations.hours_72")}</option>
+              <option value={96}>{t("automations.hours_96")}</option>
+              <option value={120}>{t("automations.hours_120")}</option>
+            </select>
           </div>
         </div>
-
-        {/* Save Button */}
-        {hasChanges && (
-          <div className="pt-2 flex justify-end">
-            <Button
-              size="sm"
-              onClick={handleSave}
-              loading={isUpdating}
-              className="text-xs"
-            >
-              {t("automations.save_changes_btn")}
-            </Button>
-          </div>
-        )}
       </div>
+
+      {hasChanges && (
+        <div className="pt-3 border-t border-border/60 mt-3 flex justify-end">
+          <Button size="sm" onClick={handleSave} loading={isUpdating} className="text-xs">
+            {t("automations.save_changes_btn")}
+          </Button>
+        </div>
+      )}
     </SectionCard>
   );
 }

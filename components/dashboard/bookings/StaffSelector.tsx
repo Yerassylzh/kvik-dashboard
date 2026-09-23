@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
-import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 import type { StaffDto } from "@/lib/api/staff";
 import clsx from "clsx";
 
@@ -48,7 +47,16 @@ export function StaffSelector({
                 : "bg-card border-border/60 text-muted-foreground hover:text-foreground"
             )}
           >
-            <EntityAvatar name={member.name} size="xs" />
+            <span
+              className={clsx(
+                "h-5 w-5 rounded-md flex items-center justify-center text-[10px] font-semibold tabular-nums",
+                isSelected
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              {member.name?.[0]?.toUpperCase() || "?"}
+            </span>
             <span>{member.name}</span>
           </button>
         );

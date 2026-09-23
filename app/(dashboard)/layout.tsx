@@ -25,10 +25,8 @@ import { notificationsApi } from '@/lib/api/notifications';
 import { useInboxRealtime } from '@/hooks/useInboxRealtime';
 import { Toaster } from '@/components/ui/sonner';
 import type { SystemRole } from '@/types/auth';
-import { HelpSupportModal } from '@/components/dashboard/layout/HelpSupportModal';
 import { DashboardTopbar } from '@/components/dashboard/layout/DashboardTopbar';
 import { DashboardSidebar, type NavCluster } from '@/components/dashboard/layout/DashboardSidebar';
-import { SettingsSheet } from '@/components/dashboard/layout/SettingsSheet';
 
 const emptySubscribe = () => () => {};
 
@@ -47,9 +45,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     () => true,
     () => false
   );
-
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Initialize Socket.IO real-time inbox events
   useInboxRealtime(user?.workspace?.id);
@@ -195,8 +190,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           navClusters={navClusters}
           systemRole={systemRole}
           mounted={mounted}
-          onOpenHelp={() => setHelpOpen(true)}
-          onOpenSettings={() => setSettingsOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -219,12 +212,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </main>
         </div>
       </div>
-
-      {/* Help & Support Modal */}
-      <HelpSupportModal isOpen={helpOpen} onOpenChange={setHelpOpen} />
-
-      {/* Settings Slide-over Sheet */}
-      <SettingsSheet isOpen={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }

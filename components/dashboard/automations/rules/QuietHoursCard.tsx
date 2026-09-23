@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Moon, Sun, Info } from "lucide-react";
+import { Moon, Sun, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { QuietHoursConfig } from "@/lib/api/followUps";
 
@@ -58,23 +57,21 @@ export function QuietHoursCard({
             onChange={handleToggle}
             className="sr-only peer"
           />
-          <div className="w-9 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+          <div className="w-9 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary" />
         </label>
       }
     >
-      <div className="space-y-3.5">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground font-medium">
-            {t("automations.quiet_hours_timezone")}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{t("automations.quiet_hours_timezone")}</span>
+          <span className="font-mono text-[11px] font-medium text-foreground bg-muted/50 px-2 py-0.5 rounded">
+            {config?.timezone || "Asia/Almaty"}
           </span>
-          <Badge variant="default" className="text-[11px] font-mono">
-            {config?.timezone || "Asia/Almaty (UTC+5)"}
-          </Badge>
         </div>
 
         {/* Time Inputs */}
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          <div className="space-y-1.5">
+        <div className="grid grid-cols-2 gap-3 pt-0.5">
+          <div className="space-y-1">
             <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
               <Moon className="w-3 h-3 text-indigo-500" />
               {t("automations.quiet_hours_start")}
@@ -91,7 +88,7 @@ export function QuietHoursCard({
             />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
               <Sun className="w-3 h-3 text-amber-500" />
               {t("automations.quiet_hours_end")}
@@ -109,15 +106,15 @@ export function QuietHoursCard({
           </div>
         </div>
 
-        {/* Reschedule Note */}
-        <div className="p-2.5 rounded-lg border border-border/60 bg-muted/20 flex items-start gap-2 text-[11px] text-muted-foreground leading-relaxed">
-          <Info className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+        {/* Note */}
+        <p className="text-[11px] text-muted-foreground leading-relaxed pt-1 flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5 text-muted-foreground/70 shrink-0" />
           <span>{t("automations.quiet_hours_note")}</span>
-        </div>
+        </p>
 
         {/* Save Button */}
         {hasChanges && (
-          <div className="pt-2 flex justify-end">
+          <div className="pt-2 border-t border-border/60 flex justify-end">
             <Button
               size="sm"
               onClick={handleSave}

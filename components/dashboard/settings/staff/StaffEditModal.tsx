@@ -31,6 +31,7 @@ export function StaffEditModal({
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [specializations, setSpecializations] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeactivating, setIsDeactivating] = useState(false);
@@ -45,6 +46,7 @@ export function StaffEditModal({
       setEmail(staff.email || '');
       setPhone(staff.phone || '');
       setSpecializations((staff.specializations || []).join(', '));
+      setAvatarUrl(staff.avatarUrl || '');
       setIsActive(staff.isActive);
       setConfirmDeactivate(false);
       setError(null);
@@ -65,6 +67,7 @@ export function StaffEditModal({
         systemRole,
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
+        avatarUrl: avatarUrl.trim() || undefined,
         specializations: specializations
           ? specializations.split(',').map((s) => s.trim()).filter(Boolean)
           : [],
@@ -176,6 +179,19 @@ export function StaffEditModal({
             value={specializations}
             onChange={(e) => setSpecializations(e.target.value)}
             placeholder={t('staff.field_specializations_placeholder')}
+            className="text-xs"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-xs font-semibold text-muted-foreground">
+            {t('staff.field_avatar')}
+          </label>
+          <Input
+            type="url"
+            value={avatarUrl}
+            onChange={(e) => setAvatarUrl(e.target.value)}
+            placeholder={t('staff.field_avatar_placeholder')}
             className="text-xs"
           />
         </div>

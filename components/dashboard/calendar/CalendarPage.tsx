@@ -6,12 +6,8 @@ import {
   CalendarDays,
   List as ListIcon,
   Clock,
-  ChevronLeft,
-  ChevronRight,
   Plus,
 } from "lucide-react";
-import { format, addDays, subDays } from "date-fns";
-import { ru } from "date-fns/locale";
 import { useTranslations } from "next-intl";
 import { DashboardPageHeader } from "@/components/dashboard/shared/DashboardPageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +29,6 @@ type CalendarTab = "matrix" | "month" | "list" | "schedule";
 export function CalendarPage() {
   const t = useTranslations("dashboard");
   const [activeTab, setActiveTab] = useState<CalendarTab>("matrix");
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedStaffId, setSelectedStaffId] = useState<string | undefined>();
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -48,49 +43,20 @@ export function CalendarPage() {
 
   return (
     <div className="space-y-4 sm:space-y-5">
-      {/* Top Header & Contextual Tabs */}
       <DashboardPageHeader
         title={t("calendar.title")}
         description={t("calendar.desc")}
         badge={<Badge variant="primary">{bookings.length}</Badge>}
         actions={
           activeTab !== "schedule" ? (
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Date navigation */}
-              <div className="flex items-center gap-0.5 bg-card border border-border/80 rounded-lg p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setSelectedDate(subDays(selectedDate, 1))}
-                  className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedDate(new Date())}
-                  className="px-2 py-1 text-xs font-medium hover:bg-muted rounded-md text-foreground cursor-pointer"
-                >
-                  {t("calendar.today")} ({format(selectedDate, "d MMM, EEE", { locale: ru })})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-                  className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Create Booking Button */}
-              <Button
-                size="sm"
-                onClick={() => setIsCreateOpen(true)}
-                leftIcon={<Plus className="w-3.5 h-3.5" />}
-                className="text-xs"
-              >
-                {t("calendar.new_booking")}
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              onClick={() => setIsCreateOpen(true)}
+              leftIcon={<Plus className="w-3.5 h-3.5" />}
+              className="text-xs"
+            >
+              {t("calendar.new_booking")}
+            </Button>
           ) : undefined
         }
         tabs={[
@@ -126,7 +92,6 @@ export function CalendarPage() {
         ]}
       />
 
-      {/* Booking Calendar Canvas Views */}
       {activeTab !== "schedule" && (
         <div className="space-y-4">
           <StaffSelector
@@ -158,7 +123,6 @@ export function CalendarPage() {
             />
           )}
 
-          {/* Booking Detail Modal / Slide-Over */}
           <BookingDetail
             bookingId={selectedBookingId}
             isOpen={Boolean(selectedBookingId)}
@@ -167,7 +131,6 @@ export function CalendarPage() {
             onOpenReschedule={(b) => setRescheduleBooking(b)}
           />
 
-          {/* Create Booking Modal */}
           <CreateBookingModal
             isOpen={isCreateOpen}
             onClose={() => setIsCreateOpen(false)}
@@ -175,7 +138,6 @@ export function CalendarPage() {
             onCreate={createBooking}
           />
 
-          {/* Reschedule Modal */}
           {rescheduleBooking && (
             <RescheduleModal
               booking={rescheduleBooking}
@@ -189,7 +151,6 @@ export function CalendarPage() {
         </div>
       )}
 
-      {/* Tab 4: Clinic Operating Hours & Schedule */}
       {activeTab === "schedule" && <SchedulePage />}
     </div>
   );

@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Clock, CalendarOff, Save } from "lucide-react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Clock, CalendarOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DashboardPageHeader } from "@/components/dashboard/shared/DashboardPageHeader";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useWorkspaceSchedule } from "@/hooks/useWorkspaceSchedule";
 import { toast } from "sonner";
 import { WeeklyScheduleTab, type DaySchedule } from "./WeeklyScheduleTab";
@@ -33,38 +31,40 @@ export function SchedulePage() {
   const [newHolidayDate, setNewHolidayDate] = useState("");
   const [newHolidayReason, setNewHolidayReason] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
   const [isAddingHoliday, setIsAddingHoliday] = useState(false);
+  const [hasUserChanges, setHasUserChanges] = useState(false);
 
-  // Sync with fetched templates
-  useEffect(() => {
-    if (templates && templates.length > 0) {
-      setScheduleState((prev) =>
-        prev.map((d) => {
-          const match = templates.find((t) => t.dayOfWeek === d.dayOfWeek);
-          if (match) {
-            return {
-              ...d,
-              isOpen: match.isOpen,
-              startTime: match.startTime?.slice(0, 5) || "09:00",
-              endTime: match.endTime?.slice(0, 5) || "19:00",
-            };
+  const displayedSchedule = useMemo(() => {
+    if (hasUserChanges || templates.length === 0) return schedule;
+
+    return schedule.map((day) => {
+      const template = templates.find((item) => item.dayOfWeek === day.dayOfWeek);
+      return template
+        ? {
+            ...day,
+            isOpen: template.isOpen,
+            startTime: template.startTime?.slice(0, 5) || day.startTime,
+            endTime: template.endTime?.slice(0, 5) || day.endTime,
           }
-          return d;
-        })
-      );
-      if (templates[0]?.slotDuration) {
-        setSlotDuration(templates[0].slotDuration);
-      }
-    }
-  }, [templates]);
+        : day;
+    });
+  }, [hasUserChanges, schedule, templates]);
+
+  const displayedSlotDuration =
+    hasUserChanges || !templates[0]?.slotDuration
+      ? slotDuration
+      : templates[0].slotDuration;
 
   const toggleDay = (index: number) => {
+    setHasUserChanges(true);
     setScheduleState((prev) =>
       prev.map((d, i) => (i === index ? { ...d, isOpen: !d.isOpen } : d))
     );
   };
 
   const updateTime = (index: number, field: "startTime" | "endTime", value: string) => {
+    setHasUserChanges(true);
     setScheduleState((prev) =>
       prev.map((d, i) => (i === index ? { ...d, [field]: value } : d))
     );
@@ -100,23 +100,40 @@ export function SchedulePage() {
     }
   };
 
-  const handleSave = async () => {
+  const saveChanges = useCallback(async () => {
     setIsSaving(true);
+    setSaveStatus("saving");
     try {
-      const payload = schedule.map((d) => ({
+      const payload = displayedSchedule.map((d) => ({
         dayOfWeek: d.dayOfWeek,
         startTime: d.startTime,
         endTime: d.endTime,
         isOpen: d.isOpen,
-        slotDuration,
+        slotDuration: displayedSlotDuration,
       }));
       await setSchedule(payload);
-      toast.success(t("schedule.saved_success"));
+      setHasUserChanges(false);
+      setSaveStatus("saved");
     } catch {
-      // Handled by API error interceptor
+      setSaveStatus("error");
     } finally {
       setIsSaving(false);
     }
+  }, [displayedSchedule, displayedSlotDuration, setSchedule]);
+
+  useEffect(() => {
+    if (!hasUserChanges || isLoading) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void saveChanges();
+    }, 500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [hasUserChanges, isLoading, saveChanges]);
+
+  const handleScheduleChange = (update: () => void) => {
+    setHasUserChanges(true);
+    update();
   };
 
   return (
@@ -124,18 +141,20 @@ export function SchedulePage() {
       <DashboardPageHeader
         title={t("schedule.title")}
         description={t("schedule.desc")}
-        badge={<Badge variant="success">{t("schedule.badge_synced")}</Badge>}
-        actions={
-          <Button
-            size="sm"
-            onClick={handleSave}
-            loading={isSaving}
-            disabled={isLoading}
-            leftIcon={<Save className="w-4 h-4" />}
-            className="text-xs rounded-xl"
+        badge={
+          <span
+            className={
+              saveStatus === "error"
+                ? "text-xs font-medium text-destructive"
+                : "text-xs font-medium text-muted-foreground"
+            }
           >
-            {t("schedule.save_btn")}
-          </Button>
+            {isSaving
+              ? t("schedule.status_saving")
+              : saveStatus === "error"
+              ? t("schedule.status_error")
+              : t("schedule.status_saved")}
+          </span>
         }
         tabs={[
           {
@@ -167,13 +186,17 @@ export function SchedulePage() {
         </div>
       ) : activeTab === "weekly" ? (
         <WeeklyScheduleTab
-          schedule={schedule}
-          slotDuration={slotDuration}
+          schedule={displayedSchedule}
+          slotDuration={displayedSlotDuration}
           bufferTime={bufferTime}
           onToggleDay={toggleDay}
           onUpdateTime={updateTime}
-          onUpdateSlotDuration={setSlotDuration}
-          onUpdateBufferTime={setBufferTime}
+          onUpdateSlotDuration={(value) =>
+            handleScheduleChange(() => setSlotDuration(value))
+          }
+          onUpdateBufferTime={(value) =>
+            handleScheduleChange(() => setBufferTime(value))
+          }
         />
       ) : (
         <HolidaysScheduleTab

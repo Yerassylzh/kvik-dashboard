@@ -36,16 +36,42 @@ export function AutomationsPage() {
       <DashboardPageHeader
         title={t("automations.title")}
         description={t("automations.desc")}
-        badge={<Badge variant="success">{t("automations.badge_engine")}</Badge>}
         actions={
-          <Button
-            size="sm"
-            onClick={() => setIsTestModalOpen(true)}
-            leftIcon={<PlayCircle className="w-3.5 h-3.5" />}
-            className="text-xs"
-          >
-            {t("automations.test_btn")}
-          </Button>
+          <div className="flex items-center gap-2.5">
+            {/* Master Toggle Pill */}
+            <label
+              title={
+                config?.enabled !== false
+                  ? t("automations.master_switch_active_desc")
+                  : t("automations.master_switch_paused_desc")
+              }
+              className="inline-flex items-center gap-2 cursor-pointer select-none px-3 py-1.5 rounded-lg border border-border/80 bg-card hover:bg-muted/40 transition-colors"
+            >
+              <span className="text-xs font-medium text-foreground">
+                {config?.enabled !== false
+                  ? t("automations.switch_active_label")
+                  : t("automations.switch_paused_label")}
+              </span>
+              <input
+                type="checkbox"
+                checked={config?.enabled !== false}
+                onChange={(e) => toggleMasterSwitch(e.target.checked)}
+                disabled={isUpdating}
+                className="sr-only peer"
+              />
+              <div className="w-8 h-4 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-border after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-primary" />
+            </label>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsTestModalOpen(true)}
+              leftIcon={<PlayCircle className="w-3.5 h-3.5 text-primary" />}
+              className="text-xs"
+            >
+              {t("automations.test_btn")}
+            </Button>
+          </div>
         }
         tabs={[
           {
@@ -84,7 +110,6 @@ export function AutomationsPage() {
               <FollowUpRulesTab
                 config={config}
                 updateConfig={updateConfig}
-                toggleMasterSwitch={toggleMasterSwitch}
                 isUpdating={isUpdating}
               />
             ) : null}

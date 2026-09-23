@@ -70,7 +70,7 @@ export function WorkspaceForm() {
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-6 max-w-4xl">
+    <form onSubmit={handleSave} className="space-y-6">
       {/* Card: Company Profile */}
       <SectionCard
         title={t("settings.company_profile_title")}
@@ -86,7 +86,7 @@ export function WorkspaceForm() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Название бизнеса..."
+              placeholder={t("settings.company_name_placeholder")}
               className="text-xs"
             />
           </div>

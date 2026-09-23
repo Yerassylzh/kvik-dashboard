@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, User, Calendar, Plus, AlertCircle, Check } from "lucide-react";
+import { Clock, User, Calendar, AlertCircle, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -287,7 +287,6 @@ export function CreateBookingModal({
             size="sm"
             disabled={!clientName.trim() || !clientPhone.trim() || !selectedSlot || isSubmitting}
             loading={isSubmitting}
-            leftIcon={<Plus className="w-4 h-4" />}
           >
             {t("bookings.create_booking_btn")}
           </Button>

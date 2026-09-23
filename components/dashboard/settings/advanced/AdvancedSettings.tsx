@@ -2,13 +2,10 @@
 
 import React, { useState } from "react";
 import {
-  SlidersHorizontal,
   Server,
   Activity,
   Copy,
   Check,
-  Code2,
-  Cpu,
   Radio,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -30,14 +27,12 @@ export function AdvancedSettings() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isDev = process.env.NODE_ENV === "development";
-
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6">
       {/* Dev Mode toggle card */}
       <DevOptionsCard />
 
-      {/* Environment & Diagnostics Card */}
+      {/* System Status Card */}
       <SectionCard
         title={t("settings.adv_env_title")}
         description={t("settings.adv_env_desc")}
@@ -50,9 +45,9 @@ export function AdvancedSettings() {
                 <Activity className="w-3.5 h-3.5 text-emerald-500" />
                 <span>{t("settings.adv_system_status")}</span>
               </span>
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
             </div>
-            <p className="text-xs font-bold text-foreground">
+            <p className="text-xs font-semibold text-foreground">
               {t("settings.adv_system_status_ok")}
             </p>
           </div>
@@ -64,12 +59,12 @@ export function AdvancedSettings() {
                 <Server className="w-3.5 h-3.5 text-primary" />
                 <span>{t("settings.adv_api_endpoint")}</span>
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                {isDev ? "LOCAL" : "PROD"}
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                {t("settings.adv_status_active")}
               </span>
             </div>
-            <p className="text-xs font-mono font-semibold text-foreground truncate">
-              {process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}
+            <p className="text-xs font-semibold text-foreground">
+              {t("settings.adv_connected")}
             </p>
           </div>
 
@@ -77,22 +72,22 @@ export function AdvancedSettings() {
           <div className="p-3.5 rounded-xl bg-card border border-border/60 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-                <Radio className="w-3.5 h-3.5 text-sky-500" />
+                <Radio className="w-3.5 h-3.5 text-primary" />
                 <span>{t("settings.adv_socket_status")}</span>
               </span>
-              <span className="h-2 w-2 rounded-full bg-sky-500" />
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
             </div>
             <p className="text-xs font-semibold text-foreground">
-              {t("settings.adv_connected")} (v4.x)
+              {t("settings.adv_connected")}
             </p>
           </div>
         </div>
       </SectionCard>
 
-      {/* Raw Business Context JSON Inspector */}
+      {/* Business Context Data Inspector */}
       <SectionCard
         title={t("settings.adv_raw_json")}
-        description="Актуальный снимок макро-контекста Layer 2, передаваемый в системный промпт ИИ"
+        description={t("settings.adv_raw_json_desc")}
         action={
           <Button
             type="button"

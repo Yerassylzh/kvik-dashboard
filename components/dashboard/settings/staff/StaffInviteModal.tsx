@@ -23,6 +23,7 @@ export function StaffInviteModal({ isOpen, onClose, onSubmit }: StaffInviteModal
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [specializations, setSpecializations] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +43,7 @@ export function StaffInviteModal({ isOpen, onClose, onSubmit }: StaffInviteModal
         systemRole,
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
+        avatarUrl: avatarUrl.trim() || undefined,
         specializations: specializations
           ? specializations
               .split(',')
@@ -58,6 +60,7 @@ export function StaffInviteModal({ isOpen, onClose, onSubmit }: StaffInviteModal
       setEmail('');
       setPhone('');
       setSpecializations('');
+      setAvatarUrl('');
       onClose();
     } catch (err: any) {
       setError(err?.message || t('staff.error_create_fallback'));
@@ -166,6 +169,20 @@ export function StaffInviteModal({ isOpen, onClose, onSubmit }: StaffInviteModal
             value={specializations}
             onChange={(e) => setSpecializations(e.target.value)}
             placeholder={t('staff.field_specializations_placeholder')}
+            className="text-xs"
+          />
+        </div>
+
+        {/* Avatar URL */}
+        <div className="space-y-1">
+          <label className="text-xs font-semibold text-muted-foreground">
+            {t('staff.field_avatar')}
+          </label>
+          <Input
+            type="url"
+            value={avatarUrl}
+            onChange={(e) => setAvatarUrl(e.target.value)}
+            placeholder={t('staff.field_avatar_placeholder')}
             className="text-xs"
           />
         </div>

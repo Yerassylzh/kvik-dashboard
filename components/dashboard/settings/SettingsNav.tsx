@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Building2,
-  Users,
+  Shuffle,
   Shield,
   Bell,
   SlidersHorizontal,
@@ -14,14 +14,14 @@ import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import { useRBAC } from "@/hooks/useRBAC";
 
-interface NavItem {
+export interface SettingsNavItem {
   href: string;
   labelKey: string;
   icon: React.ComponentType<{ className?: string }>;
   roles: string[];
 }
 
-const settingsNavItems: NavItem[] = [
+export const settingsNavItems: SettingsNavItem[] = [
   {
     href: "/settings/workspace",
     labelKey: "settings.nav_workspace",
@@ -31,7 +31,7 @@ const settingsNavItems: NavItem[] = [
   {
     href: "/settings/staff",
     labelKey: "settings.nav_staff",
-    icon: Users,
+    icon: Shuffle,
     roles: ["OWNER", "ADMIN_MANAGER"],
   },
   {
