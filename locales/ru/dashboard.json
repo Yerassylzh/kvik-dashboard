@@ -595,7 +595,8 @@
     "loading": "Загрузка...",
     "error_retry": "Ошибка загрузки. Попробовать снова",
     "currency": "₸",
-    "minutes_short": "мин"
+    "minutes_short": "мин",
+    "actions": "Действия"
   },
   "billing": {
     "title": "Тариф и подписка",

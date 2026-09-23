@@ -15,9 +15,10 @@ interface SettingsPageWrapperProps {
 export function SettingsPageWrapper({ children }: SettingsPageWrapperProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
-  const { systemRole } = useRBAC();
+  const { systemRole, isMounted } = useRBAC();
 
   const tabs: DashboardTabItem[] = useMemo(() => {
+    if (!isMounted) return [];
     return settingsNavItems
       .filter((item) => item.roles.includes(systemRole))
       .map((item) => ({
@@ -27,7 +28,7 @@ export function SettingsPageWrapper({ children }: SettingsPageWrapperProps) {
         active: pathname === item.href,
         icon: item.icon,
       }));
-  }, [pathname, systemRole, t]);
+  }, [isMounted, pathname, systemRole, t]);
 
   return (
     <FadeIn direction="up" distance={8} duration={0.2} className="space-y-6 max-w-4xl">

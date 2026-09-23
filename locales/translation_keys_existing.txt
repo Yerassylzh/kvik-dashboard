@@ -597,6 +597,7 @@ dashboard.clients.desc
 dashboard.clients.title
 dashboard.clients.view_kanban
 dashboard.clients.view_table
+dashboard.common.actions
 dashboard.common.currency
 dashboard.common.empty_data
 dashboard.common.error_retry

@@ -1,16 +1,24 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { useAuthStore, getCachedSystemRole } from '@/store/auth.store';
 import { SystemRole } from '@/types/auth';
 
+const emptySubscribe = () => () => {};
+
 export function useRBAC() {
   const user = useAuthStore((state) => state.user);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
-  // Synchronously resolve system role from active user, cached role in localStorage/cookie, or safe fallback
+  // Synchronously resolve system role from active user, cached role in localStorage/cookie (after mount), or safe fallback
   const systemRole: SystemRole =
     user?.role ||
     user?.staffProfile?.systemRole ||
-    getCachedSystemRole() ||
+    (isMounted ? getCachedSystemRole() : null) ||
     'SPECIALIST';
 
   const isOwner = systemRole === 'OWNER';
@@ -50,6 +58,7 @@ export function useRBAC() {
 
   return {
     systemRole,
+    isMounted,
     isOwner,
     isAdminManager,
     isSpecialist,

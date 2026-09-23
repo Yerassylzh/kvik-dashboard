@@ -8,7 +8,6 @@ import {
   Shuffle,
   Shield,
   Bell,
-  SlidersHorizontal,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
@@ -46,22 +45,16 @@ export const settingsNavItems: SettingsNavItem[] = [
     icon: Bell,
     roles: ["OWNER", "ADMIN_MANAGER"],
   },
-  {
-    href: "/settings/advanced",
-    labelKey: "settings.nav_advanced",
-    icon: SlidersHorizontal,
-    roles: ["OWNER", "ADMIN_MANAGER"],
-  },
 ];
 
 export function SettingsNav() {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
-  const { systemRole } = useRBAC();
+  const { systemRole, isMounted } = useRBAC();
 
-  const visibleItems = settingsNavItems.filter((item) =>
-    item.roles.includes(systemRole)
-  );
+  const visibleItems = isMounted
+    ? settingsNavItems.filter((item) => item.roles.includes(systemRole))
+    : [];
 
   return (
     <div className="w-full border-b border-border/70 pb-0">

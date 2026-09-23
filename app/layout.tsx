@@ -17,8 +17,11 @@ export const metadata: Metadata = {
   description:
     "Verticalized AI Sales Agent for appointments and client communication",
   icons: {
-    icon: "/tab-logo.png",
-    apple: "/tab-logo.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: "/logo.png",
   },
 };
 

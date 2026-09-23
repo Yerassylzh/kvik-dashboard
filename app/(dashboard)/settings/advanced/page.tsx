@@ -1,15 +1,5 @@
-import type { Metadata } from "next";
-import { SettingsPageWrapper } from "@/components/dashboard/settings/SettingsPageWrapper";
-import { AdvancedSettings } from "@/components/dashboard/settings/advanced/AdvancedSettings";
-
-export const metadata: Metadata = {
-  title: "Продвинутые настройки — Kvik.ai",
-};
+import { redirect } from "next/navigation";
 
 export default function AdvancedSettingsPage() {
-  return (
-    <SettingsPageWrapper>
-      <AdvancedSettings />
-    </SettingsPageWrapper>
-  );
+  redirect("/settings/workspace");
 }
