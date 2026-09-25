@@ -4,6 +4,31 @@ import { User, SystemRole, StaffProfileSummary } from '@/types/auth';
 const SESSION_KEY = 'kvik_pending_verification_email';
 const ROLE_COOKIE_KEY = 'kvik_role';
 const ROLE_STORAGE_KEY = 'kvik_user_role';
+const TOKEN_STORAGE_KEY = 'kvik_access_token';
+
+function loadInitialAccessToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveCachedAccessToken(token: string | null) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      document.cookie = `kvik_token=${token}; path=/; max-age=2592000; SameSite=Lax`;
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      document.cookie = `kvik_token=; path=/; max-age=0; SameSite=Lax`;
+    }
+  } catch {
+    // ignore
+  }
+}
 
 export function getCachedSystemRole(): SystemRole | null {
   if (typeof window === 'undefined') return null;
@@ -45,6 +70,7 @@ interface AuthState {
   /** Email awaiting OTP verification after registration. Persisted in sessionStorage. */
   pendingVerificationEmail: string | null;
   setAccessToken: (token: string | null) => void;
+  setTokens: (accessToken: string, refreshToken?: string) => void;
   setUser: (user: User | null) => void;
   setAuth: (user: User, accessToken: string) => void;
   updateWorkspaceContext: (params: {
@@ -82,16 +108,34 @@ function savePendingEmail(email: string | null) {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  accessToken: null,
+  accessToken: loadInitialAccessToken(),
   isLoading: true,
-  isAuthenticated: false,
+  isAuthenticated: Boolean(loadInitialAccessToken()),
   pendingVerificationEmail: loadPendingEmail(),
 
-  setAccessToken: (token: string | null) =>
+  setAccessToken: (token: string | null) => {
+    saveCachedAccessToken(token);
     set((state) => ({
       accessToken: token,
       isAuthenticated: Boolean(token || state.user),
-    })),
+    }));
+  },
+
+  setTokens: (accessToken: string, refreshToken?: string) => {
+    saveCachedAccessToken(accessToken);
+    if (typeof window !== 'undefined' && refreshToken) {
+      try {
+        document.cookie = `refresh_token=${refreshToken}; path=/; max-age=2592000; SameSite=Lax`;
+      } catch {
+        // ignore
+      }
+    }
+    set({
+      accessToken,
+      isAuthenticated: true,
+      isLoading: false,
+    });
+  },
 
   setUser: (user: User | null) => {
     const role = user?.role || user?.staffProfile?.systemRole || null;
@@ -105,6 +149,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: (user: User, accessToken: string) => {
     const role = user?.role || user?.staffProfile?.systemRole || null;
     saveCachedSystemRole(role);
+    saveCachedAccessToken(accessToken);
     set({
       user,
       accessToken,
@@ -115,6 +160,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   updateWorkspaceContext: ({ workspace, role, staffProfile, accessToken }) => {
     saveCachedSystemRole(role);
+    saveCachedAccessToken(accessToken);
     set((state) => {
       const updatedUser: User | null = state.user
         ? {
@@ -146,6 +192,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   clearAuth: () => {
     saveCachedSystemRole(null);
+    saveCachedAccessToken(null);
     set({
       user: null,
       accessToken: null,

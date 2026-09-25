@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/register'];
+const REDIRECT_IF_AUTHENTICATED_PATHS = ['/login', '/register'];
+const PUBLIC_PATHS = [
+  '/login',
+  '/register',
+  '/register-staff',
+  '/verify-email',
+  '/forgot-password',
+  '/claim-workspace',
+  '/auth/handoff',
+];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -47,13 +56,17 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 5. Public Auth Pages: /login and /register
+  // 5. Public Auth Pages
   const isPublicAuthPage = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
-  const hasRefreshCookie = request.cookies.has('refresh_token');
+  const isRedirectIfAuthPage = REDIRECT_IF_AUTHENTICATED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const hasRefreshCookie =
+    request.cookies.has('refresh_token') ||
+    request.cookies.has('access_token') ||
+    request.cookies.has('kvik_token');
 
   if (isPublicAuthPage) {
     // If the user is already authenticated, redirect away from /login or /register
-    if (hasRefreshCookie) {
+    if (isRedirectIfAuthPage && hasRefreshCookie) {
       const from = request.nextUrl.searchParams.get('from');
       return NextResponse.redirect(new URL(from || '/onboarding', request.url));
     }

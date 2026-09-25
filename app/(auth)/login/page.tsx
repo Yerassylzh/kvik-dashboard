@@ -26,7 +26,8 @@ function LoginForm() {
       if (user && !user.isEmailVerified) {
         router.replace('/verify-email');
       } else {
-        router.replace(from || '/onboarding');
+        const dest = from && from !== '/onboarding' ? from : '/overview';
+        router.replace(dest);
       }
     }
   }, [isAuthenticated, user, from, router]);
@@ -42,12 +43,12 @@ function LoginForm() {
       try {
         const stateRes = await getOnboardingState();
         if (stateRes.step === 'DONE') {
-          router.replace(from || '/');
+          router.replace(from && from !== '/onboarding' ? from : '/overview');
         } else {
           router.replace('/onboarding');
         }
       } catch {
-        router.replace(from || '/onboarding');
+        router.replace(from && from !== '/onboarding' ? from : '/onboarding');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('login.error_fallback'));

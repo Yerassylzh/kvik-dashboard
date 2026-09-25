@@ -7,12 +7,20 @@ import {
   loginApi,
   registerApi,
   registerStaffApi,
+  claimWorkspaceApi,
   switchWorkspaceApi,
   logoutApi,
   getMeApi,
 } from "@/lib/api/auth";
 import { getOrRefreshToken } from "@/lib/api/client";
-import { LoginDto, RegisterDto, RegisterStaffDto, SwitchWorkspaceDto } from "@/types/auth";
+import {
+  LoginDto,
+  RegisterDto,
+  RegisterStaffDto,
+  ClaimWorkspaceDto,
+  SwitchWorkspaceDto,
+  User,
+} from "@/types/auth";
 
 /**
  * App-level singleton refresh promise.
@@ -92,6 +100,33 @@ export function useAuth() {
     [setAuth, clearAuth, setLoading],
   );
 
+  const claimWorkspace = useCallback(
+    async (dto: ClaimWorkspaceDto) => {
+      setLoading(true);
+      try {
+        const res = await claimWorkspaceApi(dto);
+        useOnboardingStore.getState().resetOnboarding();
+        const token = res.tokens?.access_token || res.access_token || '';
+        setAuth(res.user, token);
+        if (res.workspace && res.role) {
+          useAuthStore.getState().updateWorkspaceContext({
+            workspace: res.workspace,
+            role: res.role,
+            staffProfile: res.user.staffProfile,
+            accessToken: token,
+          });
+        }
+        return res;
+      } catch (error) {
+        clearAuth();
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setAuth, clearAuth, setLoading],
+  );
+
   const switchWorkspace = useCallback(
     async (dto: SwitchWorkspaceDto) => {
       setLoading(true);
@@ -134,10 +169,12 @@ export function useAuth() {
   }, [clearAuth, setLoading, setPendingVerificationEmail]);
 
   const checkAuth = useCallback(async () => {
-    // Exempt OAuth popup callbacks — they don't need an auth check
+    // Exempt OAuth popup callbacks, auth handoff, and claim workspace — they manage their own auth lifecycle
     if (
       typeof window !== "undefined" &&
-      window.location.pathname.includes("callback")
+      (window.location.pathname.includes("callback") ||
+        window.location.pathname.startsWith("/auth/handoff") ||
+        window.location.pathname.startsWith("/claim-workspace"))
     ) {
       setLoading(false);
       return;
@@ -167,10 +204,25 @@ export function useAuth() {
     checkAuthPromise = (async () => {
       setLoading(true);
       try {
-        const token = await getOrRefreshToken();
-        useAuthStore.getState().setAccessToken(token);
-        const userData = await getMeApi();
-        useAuthStore.getState().setUser(userData);
+        let token = useAuthStore.getState().accessToken;
+        let userData: User;
+
+        if (token) {
+          try {
+            userData = await getMeApi();
+            useAuthStore.getState().setUser(userData);
+          } catch {
+            token = await getOrRefreshToken();
+            useAuthStore.getState().setAccessToken(token);
+            userData = await getMeApi();
+            useAuthStore.getState().setUser(userData);
+          }
+        } else {
+          token = await getOrRefreshToken();
+          useAuthStore.getState().setAccessToken(token);
+          userData = await getMeApi();
+          useAuthStore.getState().setUser(userData);
+        }
 
         // Enforce email verification gate for onboarding and pending verification
         if (userData.isEmailVerified === false) {
@@ -197,6 +249,8 @@ export function useAuth() {
             pathname.startsWith("/register-staff") ||
             pathname.startsWith("/forgot-password") ||
             pathname.startsWith("/verify-email") ||
+            pathname.startsWith("/claim-workspace") ||
+            pathname.startsWith("/auth/handoff") ||
             pathname.includes("callback");
 
           if (!isPublicPath) {
@@ -224,6 +278,7 @@ export function useAuth() {
     login,
     register,
     registerStaff,
+    claimWorkspace,
     switchWorkspace,
     logout,
     checkAuth,

@@ -3,6 +3,8 @@ import {
   AccessibleWorkspaceDto,
   AuthResponse,
   ChangePasswordDto,
+  ClaimWorkspaceDto,
+  ClaimWorkspaceResponse,
   ForgotPasswordDto,
   LoginDto,
   RegisterDto,
@@ -12,6 +14,7 @@ import {
   SwitchWorkspaceDto,
   SwitchWorkspaceResponseDto,
   User,
+  ValidateClaimWorkspaceResponse,
   ValidateStaffInviteResponse,
   VerifyEmailDto,
 } from '@/types/auth';
@@ -88,4 +91,17 @@ export async function changePasswordApi(dto: ChangePasswordDto): Promise<{ code:
   const { data } = await apiClient.post('/auth/change-password', dto);
   return data;
 }
+
+export async function validateClaimWorkspaceApi(token: string): Promise<ValidateClaimWorkspaceResponse> {
+  const { data } = await apiClient.get<ValidateClaimWorkspaceResponse>('/auth/claim-workspace', {
+    params: { token },
+  });
+  return data;
+}
+
+export async function claimWorkspaceApi(dto: ClaimWorkspaceDto): Promise<ClaimWorkspaceResponse> {
+  const { data } = await apiClient.post<ClaimWorkspaceResponse>('/auth/claim-workspace', dto);
+  return data;
+}
+
 

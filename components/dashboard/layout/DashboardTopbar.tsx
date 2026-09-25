@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Search, Settings } from 'lucide-react';
 import { NotificationPopover } from '@/components/dashboard/notifications/NotificationPopover';
+import { ImpersonationBadge } from '@/components/admin/ImpersonationBadge';
 import type { User } from '@/types/auth';
 
 interface DashboardTopbarProps {
@@ -60,6 +61,9 @@ export function DashboardTopbar({ title, user }: DashboardTopbarProps) {
             {user?.staffProfile?.name || user?.email?.split('@')[0] || 'Admin'}
           </span>
         </Link>
+
+        {/* Superadmin Impersonation God-Mode Indicator */}
+        <ImpersonationBadge />
       </div>
     </header>
   );

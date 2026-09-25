@@ -180,7 +180,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [navClusters, pathname]);
 
   return (
-    <div className="h-screen w-screen bg-background text-foreground flex flex-col overflow-hidden antialiased">
+    <div className="h-full flex-1 w-full bg-background text-foreground flex flex-col overflow-hidden antialiased min-h-0">
       <Toaster />
 
       <div className="flex-1 flex min-h-0 overflow-hidden">

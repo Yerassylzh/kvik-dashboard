@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { ImpersonationBadge } from "@/components/admin/ImpersonationBadge";
 
 export default function OnboardingLayout({
   children,
@@ -23,7 +24,7 @@ export default function OnboardingLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
+    <div className="min-h-full flex-1 w-full bg-background text-foreground flex flex-col relative overflow-hidden">
       {/* Subtle Background Glows */}
       <div className="absolute top-10 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 blur-[140px] rounded-full pointer-events-none" />
       <div className="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 blur-[140px] rounded-full pointer-events-none" />
@@ -45,6 +46,7 @@ export default function OnboardingLayout({
         </div>
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <ImpersonationBadge />
           <a
             href="https://t.me/kvik_support"
             target="_blank"

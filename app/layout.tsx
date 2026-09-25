@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       lang={locale}
       className={`${inter.variable} h-full antialiased font-sans`}
     >
-      <body className="min-h-full flex flex-col antialiased">
+      <body className="h-full min-h-full flex flex-col antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ToastProvider>
             <AuthProvider>{children}</AuthProvider>

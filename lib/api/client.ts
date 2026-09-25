@@ -76,6 +76,11 @@ apiClient.interceptors.request.use(
       const isPublicPath =
         pathname.startsWith('/login') ||
         pathname.startsWith('/register') ||
+        pathname.startsWith('/register-staff') ||
+        pathname.startsWith('/forgot-password') ||
+        pathname.startsWith('/verify-email') ||
+        pathname.startsWith('/claim-workspace') ||
+        pathname.startsWith('/auth/handoff') ||
         pathname.includes('callback');
 
       if (!isPublicPath) {
@@ -129,6 +134,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
+        useAuthStore.getState().setAccessToken(null);
         const newAccessToken = await getOrRefreshToken();
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
@@ -140,6 +146,11 @@ apiClient.interceptors.response.use(
           const isPublicPath =
             pathname.startsWith('/login') ||
             pathname.startsWith('/register') ||
+            pathname.startsWith('/register-staff') ||
+            pathname.startsWith('/forgot-password') ||
+            pathname.startsWith('/verify-email') ||
+            pathname.startsWith('/claim-workspace') ||
+            pathname.startsWith('/auth/handoff') ||
             pathname.includes('callback');
 
           if (!isPublicPath) {

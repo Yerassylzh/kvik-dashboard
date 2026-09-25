@@ -12,6 +12,9 @@ export interface Workspace {
   vipRequested: boolean;
   plan: Plan;
   metadata?: Record<string, unknown> | null;
+  owner?: { id: string; email: string; name?: string } | null;
+  ownerEmail?: string;
+  ownerName?: string;
 }
 
 export type SystemRole = 'OWNER' | 'ADMIN_MANAGER' | 'SPECIALIST';
@@ -61,6 +64,7 @@ export interface User {
   id: string;
   email: string;
   isEmailVerified: boolean;
+  isSuperAdmin?: boolean;
   role?: SystemRole;
   staffProfile?: StaffProfileSummary | null;
   createdAt: string;
@@ -143,4 +147,34 @@ export interface RegisterStaffDto {
 export interface SwitchWorkspaceDto {
   workspaceId: string;
 }
+
+export interface ValidateClaimWorkspaceResponse {
+  valid: boolean;
+  workspaceId: string;
+  workspaceName: string;
+  businessName?: string;
+  email: string;
+  userExists: boolean;
+}
+
+export interface ClaimWorkspaceDto {
+  token: string;
+  password?: string;
+}
+
+export interface ClaimWorkspaceResponse {
+  user: User;
+  workspace: {
+    id: string;
+    name: string;
+  };
+  role: SystemRole;
+  tokens?: {
+    access_token: string;
+    refresh_token?: string;
+  };
+  access_token?: string;
+  refresh_token?: string;
+}
+
 

@@ -27,5 +27,26 @@
   "status_pending": "В очереди",
   "status_failed": "Ошибка",
   "close": "Закрыть",
-  "loading": "Загрузка..."
+  "loading": "Загрузка...",
+  "god_mode": {
+    "badge": "РЕЖИМ СУПЕРАДМИНИСТРАТОРА",
+    "operating_in": "Вход в",
+    "workspace_fallback": "рабочее пространство",
+    "with_owner_privileges": "с правами Владельца",
+    "exit_btn": "В админ-панель ↗",
+    "workspace_label": "Рабочее пространство",
+    "owner_label": "Владелец",
+    "owner_not_specified": "Не назначен",
+    "tooltip_title": "Режим суперадминистратора",
+    "tooltip_desc": "Просмотр рабочего пространства с правами Владельца"
+  },
+  "superadmin": {
+    "badge": "SuperAdmin",
+    "tooltip_title": "Суперадминистратор",
+    "tooltip_desc": "Управление рабочим пространством",
+    "workspace_name": "Название компании",
+    "workspace_id": "ID пространства",
+    "exit_btn": "В админ-панель ↗",
+    "copied": "Скопировано!"
+  }
 }

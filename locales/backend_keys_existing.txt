@@ -6,6 +6,8 @@ api.analytics.invalid_date_format
 api.analytics.invalid_date_range
 api.auth.access_denied
 api.auth.authentication_required
+api.auth.claim_token_expired
+api.auth.claim_token_invalid
 api.auth.email_already_exists
 api.auth.email_already_verified
 api.auth.email_not_verified
