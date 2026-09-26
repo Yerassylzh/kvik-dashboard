@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Building2,
   Shuffle,
-  Shield,
+  User,
   Bell,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -36,7 +36,7 @@ export const settingsNavItems: SettingsNavItem[] = [
   {
     href: "/settings/account",
     labelKey: "settings.nav_account",
-    icon: Shield,
+    icon: User,
     roles: ["OWNER", "ADMIN_MANAGER", "SPECIALIST"],
   },
   {

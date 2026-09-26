@@ -13,6 +13,8 @@ import {
   SelectNicheDto,
   TwoGisScrapingDto,
   WebsiteScrapingDto,
+  GenerateTelegramAlertsCodeResponse,
+  TelegramAlertsStatusResponse,
 } from '@/types/niche';
 
 // --- State ---
@@ -121,7 +123,17 @@ export async function confirmDataPreview(): Promise<OnboardingStateResponse> {
   return data;
 }
 
-// --- Step 4: Channel ---
+// --- Step 4: Qualification rules (Moved before channels) ---
+
+export async function submitQualification(dto: QualificationDto): Promise<OnboardingStateResponse> {
+  const { data } = await apiClient.post<OnboardingStateResponse>(
+    '/onboarding/step/qualification',
+    dto
+  );
+  return data;
+}
+
+// --- Step 5: Channel connection ---
 
 export async function submitChannel(dto: ChannelDto): Promise<OnboardingStateResponse> {
   const { data } = await apiClient.post<OnboardingStateResponse>('/onboarding/step/channel', dto);
@@ -138,17 +150,37 @@ export async function skipChannelStep(): Promise<OnboardingStateResponse> {
   return data;
 }
 
-// --- Step 5: Qualification rules ---
+// --- Step 6: Telegram alert notifications ---
 
-export async function submitQualification(dto: QualificationDto): Promise<OnboardingStateResponse> {
-  const { data } = await apiClient.post<OnboardingStateResponse>(
-    '/onboarding/step/qualification',
-    dto
+export async function generateTelegramAlertsCode(): Promise<GenerateTelegramAlertsCodeResponse> {
+  const { data } = await apiClient.post<GenerateTelegramAlertsCodeResponse>(
+    '/onboarding/step/telegram-alerts/generate-code'
   );
   return data;
 }
 
-// --- Step 6: Complete ---
+export async function getTelegramAlertsStatus(): Promise<TelegramAlertsStatusResponse> {
+  const { data } = await apiClient.get<TelegramAlertsStatusResponse>(
+    '/onboarding/step/telegram-alerts/status'
+  );
+  return data;
+}
+
+export async function confirmTelegramAlertsStep(): Promise<OnboardingStateResponse> {
+  const { data } = await apiClient.post<OnboardingStateResponse>(
+    '/onboarding/step/telegram-alerts/confirm'
+  );
+  return data;
+}
+
+export async function skipTelegramAlertsStep(): Promise<OnboardingStateResponse> {
+  const { data } = await apiClient.post<OnboardingStateResponse>(
+    '/onboarding/step/telegram-alerts/skip'
+  );
+  return data;
+}
+
+// --- Step 7: Complete ---
 
 export async function completeOnboarding(): Promise<OnboardingStateResponse> {
   const { data } = await apiClient.post<OnboardingStateResponse>('/onboarding/step/complete');

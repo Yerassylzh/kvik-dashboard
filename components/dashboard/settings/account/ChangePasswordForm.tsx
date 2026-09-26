@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { KeyRound, ShieldCheck, Check, Lock, Mail, UserCheck } from "lucide-react";
+import { KeyRound, ShieldCheck, Check, Lock, Mail, UserCheck, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { changePasswordApi } from "@/lib/api/auth";
 
 export function ChangePasswordForm() {
   const t = useTranslations("dashboard");
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -163,6 +163,25 @@ export function ChangePasswordForm() {
           </div>
         </SectionCard>
       </form>
+
+      {/* Session & Sign Out Card */}
+      <SectionCard
+        title={t("settings.account_session_title")}
+        description={t("settings.account_session_desc")}
+      >
+        <div className="pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => logout()}
+            className="gap-2 text-xs font-semibold text-destructive hover:text-destructive hover:bg-destructive/10 border-border/80"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>{t("settings.account_logout_btn")}</span>
+          </Button>
+        </div>
+      </SectionCard>
     </div>
   );
 }

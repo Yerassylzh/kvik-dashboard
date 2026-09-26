@@ -22,10 +22,11 @@ export type OnboardingStepState =
   | "BUSINESS_PROFILE"
   | "DATA_SOURCE"
   | "DATA_PREVIEW"
-  | "CONNECT_CHANNEL"
   | "QUALIFICATION"
-  | "COMPLETE_TEST"
-  | "DONE";
+  | "CONNECT_CHANNEL"
+  | "TELEGRAM_ALERTS"
+  | "DONE"
+  | "COMPLETE_TEST";
 
 export type ParsingStatus =
   | "IDLE"
@@ -196,6 +197,30 @@ export interface QualificationDto {
   mortgage?: boolean;
   district?: string;
   urgency?: "low" | "medium" | "high";
+}
+
+// ---------------------------------------------------------------------------
+// Step 6: Telegram Alert Bot Connection (Notifications)
+// ---------------------------------------------------------------------------
+
+export interface GenerateTelegramAlertsCodeResponse {
+  deepLink: string;
+  code: string;
+  expiresAt: string;
+}
+
+export interface TelegramAlertRecipientDto {
+  id: string;
+  displayName: string;
+  telegramChatId: string;
+  notificationTypes: string[];
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface TelegramAlertsStatusResponse {
+  connected: boolean;
+  recipients: TelegramAlertRecipientDto[];
 }
 
 // ---------------------------------------------------------------------------

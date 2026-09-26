@@ -103,7 +103,7 @@ export function StageInstagram({
               type="button"
               onClick={onNext}
               whileTap={{ scale: 0.98 }}
-              className="w-full sm:flex-1 py-3.5 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 hover:from-purple-700 hover:to-rose-700 shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full sm:flex-1 py-3.5 rounded-2xl font-bold text-sm text-primary-foreground bg-primary hover:bg-primary/90 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <span>{t("btn_next_telegram")}</span>
             </motion.button>

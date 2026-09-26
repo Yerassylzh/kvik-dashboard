@@ -220,7 +220,7 @@ export function StageChannelSummary({
         onClick={onContinue}
         disabled={connectedCount === 0 || continueLoading}
         whileTap={connectedCount > 0 ? { scale: 0.98 } : undefined}
-        className="w-full py-3.5 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 hover:from-indigo-700 hover:to-violet-700 shadow-lg shadow-indigo-500/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+        className="w-full py-3.5 rounded-2xl font-bold text-sm text-primary-foreground bg-primary hover:bg-primary/90 shadow-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
       >
         {continueLoading ? (
           <>
@@ -229,7 +229,7 @@ export function StageChannelSummary({
           </>
         ) : (
           <>
-            <span>{t("btn_finish_to_qualification")}</span>
+            <span>{t("btn_finish_to_alerts")}</span>
           </>
         )}
       </motion.button>

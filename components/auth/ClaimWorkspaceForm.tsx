@@ -97,7 +97,7 @@ export function ClaimWorkspaceForm() {
         password: password.trim(),
       });
 
-      // Route to onboarding (derived state will directly land on Step 4: CONNECT_CHANNEL)
+      // Route to onboarding (derived state will directly land on Step 5: CONNECT_CHANNEL)
       router.replace('/onboarding');
     } catch (err: any) {
       setSubmitError(

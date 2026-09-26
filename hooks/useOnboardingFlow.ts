@@ -9,6 +9,8 @@ import {
   confirmDataPreview,
   confirmChannelStep,
   submitQualification,
+  confirmTelegramAlertsStep,
+  skipTelegramAlertsStep,
   completeOnboarding,
 } from '@/lib/api/onboarding';
 // Note: completeOnboarding is called automatically after qualification — the test step is removed.
@@ -266,8 +268,42 @@ export function useOnboardingFlow() {
     }
   };
 
-  // handleComplete removed — completeOnboarding() is called automatically in applyState
-  // when backend transitions to COMPLETE_TEST, skipping the test UI step.
+  const handleConfirmTelegramAlerts = async () => {
+    try {
+      setActionLoading(true);
+      setError(null);
+      const res = await confirmTelegramAlertsStep();
+      applyState(res);
+      toast.success('Telegram-оповещения успешно подключены');
+    } catch (err) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Ошибка подключения Telegram-оповещений';
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleSkipTelegramAlerts = async () => {
+    try {
+      setActionLoading(true);
+      setError(null);
+      const res = await skipTelegramAlertsStep();
+      applyState(res);
+    } catch (err) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Ошибка пропуска шага оповещений';
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return {
     currentStep,
@@ -286,5 +322,7 @@ export function useOnboardingFlow() {
     handleConfirmDataPreview,
     handleChannelStepContinue,
     handleSubmitQualification,
+    handleConfirmTelegramAlerts,
+    handleSkipTelegramAlerts,
   };
 }

@@ -29,30 +29,35 @@ export const STEP_META: Record<
     titleKey: "stepper.data_preview_title",
     subtitleKey: "stepper.data_preview_subtitle",
   },
-  CONNECT_CHANNEL: {
+  QUALIFICATION: {
     index: 4,
+    titleKey: "stepper.qualification_title",
+    subtitleKey: "stepper.qualification_subtitle",
+  },
+  CONNECT_CHANNEL: {
+    index: 5,
     titleKey: "stepper.channel_title",
     subtitleKey: "stepper.channel_subtitle",
   },
-  QUALIFICATION: {
-    index: 5,
-    titleKey: "stepper.qualification_title",
-    subtitleKey: "stepper.qualification_subtitle",
+  TELEGRAM_ALERTS: {
+    index: 6,
+    titleKey: "stepper.telegram_alerts_title",
+    subtitleKey: "stepper.telegram_alerts_subtitle",
   },
   DONE: {
-    index: 6,
+    index: 7,
     titleKey: "stepper.done_title",
     subtitleKey: "stepper.done_subtitle",
   },
-  // COMPLETE_TEST is handled transparently (auto-completes) — not shown as a step
+  // Legacy alias fallback
   COMPLETE_TEST: {
-    index: 5,
-    titleKey: "stepper.qualification_title",
-    subtitleKey: "stepper.qualification_subtitle",
+    index: 6,
+    titleKey: "stepper.telegram_alerts_title",
+    subtitleKey: "stepper.telegram_alerts_subtitle",
   },
 };
 
-export const TOTAL_STEPS = 6;
+export const TOTAL_STEPS = 7;
 
 interface OnboardingHeaderProps {
   currentStep: OnboardingStepState;
@@ -77,19 +82,19 @@ export function OnboardingHeader({
       {/* Progress Bar Header */}
       <FadeIn delay={0.05} className="w-full mb-8">
         <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground mb-2">
-          <span>
+          <span className="tabular-nums">
             {t("stepper.step_of", {
               current: currentStepIdx + 1,
               total: TOTAL_STEPS,
             })}
           </span>
-          <span className="text-accent-brand font-bold">
+          <span className="text-primary font-bold tabular-nums">
             {t("stepper.completed", { percent: progressPercent })}
           </span>
         </div>
-        <div className="w-full h-2 bg-muted rounded-full overflow-hidden border border-border">
+        <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden border border-border/80">
           <div
-            className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 transition-all duration-500 ease-out"
+            className="h-full bg-primary transition-all duration-300 ease-out rounded-full"
             style={{ width: `${progressPercent}%` }}
           />
         </div>

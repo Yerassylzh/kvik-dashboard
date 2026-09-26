@@ -3,9 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { LayoutDashboard, HelpCircle, Settings2 } from 'lucide-react';
+import { LayoutDashboard, HelpCircle, Settings2, LogOut } from 'lucide-react';
 import clsx from 'clsx';
 import { WorkspaceSwitcher } from '@/components/dashboard/shared/WorkspaceSwitcher';
+import { useAuth } from '@/hooks/useAuth';
 import type { SystemRole } from '@/types/auth';
 
 export interface NavItem {
@@ -35,6 +36,7 @@ export function DashboardSidebar({
   mounted,
 }: DashboardSidebarProps) {
   const t = useTranslations('dashboard');
+  const { logout } = useAuth();
 
   return (
     <aside className="w-[210px] h-full border-r border-border/70 bg-[#F8F9FA] p-3 flex flex-col justify-between hidden md:flex shrink-0 overflow-y-auto themed-scroll select-none">
@@ -138,19 +140,28 @@ export function DashboardSidebar({
         </nav>
       </div>
 
-      {/* Sidebar Footer: Telegram Support link */}
-      <div className="pt-2 border-t border-border/60">
+      {/* Sidebar Footer: Support link & Logout */}
+      <div className="pt-2 border-t border-border/60 space-y-0.5">
         <a
           href="https://t.me/yerazh4"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 transition-colors group cursor-pointer"
+          className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:text-foreground hover:bg-zinc-200/50 transition-colors group cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
             <HelpCircle className="w-4 h-4 text-zinc-500 group-hover:text-foreground transition-colors shrink-0" />
             <span>{t('sidebar.get_help')}</span>
           </div>
         </a>
+
+        <button
+          type="button"
+          onClick={() => logout()}
+          className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+        >
+          <LogOut className="w-4 h-4 text-zinc-500 group-hover:text-destructive transition-colors shrink-0" />
+          <span>{t('sidebar.logout_title')}</span>
+        </button>
       </div>
     </aside>
   );

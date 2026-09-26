@@ -427,7 +427,7 @@
     "adv_raw_json": "Данные компании для ассистента",
     "adv_copy_json": "Копировать данные",
     "adv_copied": "Скопировано!",
-    "nav_account": "Безопасность",
+    "nav_account": "Аккаунт",
     "account_title": "Учетная запись",
     "account_desc": "Данные текущего пользователя",
     "change_password_title": "Смена пароля",
@@ -534,7 +534,10 @@
     "account_status_label": "Статус аккаунта",
     "account_status_verified": "Подтверждён",
     "adv_status_active": "Активен",
-    "adv_raw_json_desc": "Сводная информация об услугах, графике и правилах, используемая при ответах клиентам"
+    "adv_raw_json_desc": "Сводная информация об услугах, графике и правилах, используемая при ответах клиентам",
+    "account_session_title": "Сессия",
+    "account_session_desc": "Завершить текущую сессию на этом устройстве",
+    "account_logout_btn": "Выйти из системы"
   },
   "dev_messaging": {
     "nav_label": "Dev: Мессенджер",
