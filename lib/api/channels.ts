@@ -52,7 +52,7 @@ export async function connectWhatsApp(
   return data;
 }
 
-/** Connects Instagram via Facebook Login for Business OAuth. */
+/** Connects Instagram via Direct Instagram Business Login OAuth. */
 export async function connectInstagram(
   dto: ConnectInstagramDto
 ): Promise<ChannelConnectResponse> {

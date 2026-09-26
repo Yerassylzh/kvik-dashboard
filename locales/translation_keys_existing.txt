@@ -1703,7 +1703,9 @@ onboarding.channel.instagram_btn
 onboarding.channel.instagram_connect_btn
 onboarding.channel.instagram_desc
 onboarding.channel.instagram_flow_btn
+onboarding.channel.instagram_flow_cancelled
 onboarding.channel.instagram_flow_connecting
+onboarding.channel.instagram_flow_desc
 onboarding.channel.instagram_flow_error
 onboarding.channel.instagram_flow_hint
 onboarding.channel.instagram_flow_popup_open

@@ -30,27 +30,45 @@ export function OAuthCallbackView({
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, "?"));
 
-    const code = urlParams.get("code") || hashParams.get("code");
-    const error =
+    const rawCode = urlParams.get("code") || hashParams.get("code");
+    const code = rawCode ? rawCode.replace(/#_$/, "").split("#")[0] : null;
+
+    const rawError =
       urlParams.get("error") ||
       urlParams.get("error_description") ||
+      urlParams.get("error_reason") ||
       hashParams.get("error") ||
-      hashParams.get("error_description");
+      hashParams.get("error_description") ||
+      hashParams.get("error_reason");
+
+    const errorReason =
+      urlParams.get("error_reason") ||
+      urlParams.get("error") ||
+      hashParams.get("error_reason") ||
+      hashParams.get("error");
 
     const codeType = channelType === "WHATSAPP" ? "WHATSAPP_OAUTH_CODE" : "INSTAGRAM_OAUTH_CODE";
     const connectedType = channelType === "WHATSAPP" ? "WHATSAPP_CONNECTED" : "INSTAGRAM_CONNECTED";
     const errorType = channelType === "WHATSAPP" ? "WHATSAPP_OAUTH_ERROR" : "INSTAGRAM_OAUTH_ERROR";
 
-    if (error) {
+    const isCancelled =
+      errorReason === "user_denied" ||
+      rawError === "access_denied" ||
+      (rawError && (rawError.includes("user_denied") || rawError.includes("disallowed")));
+
+    if (rawError || isCancelled) {
+      const friendlyError = isCancelled
+        ? `Авторизация ${channelName} была отменена`
+        : (rawError || `Ошибка авторизации ${channelName}`);
       setStatus("error");
-      setErrorMessage(error);
-      notifyOpener({ type: errorType, error });
+      setErrorMessage(friendlyError);
+      notifyOpener({ type: errorType, error: friendlyError });
       return;
     }
 
     if (!code) {
       setStatus("error");
-      setErrorMessage("Код авторизации не найден в URL перенаправления Meta");
+      setErrorMessage(`Код авторизации не найден в ответе ${channelName}`);
       return;
     }
 
@@ -149,7 +167,7 @@ export function OAuthCallbackView({
             <div
               className={`w-12 h-12 border-4 rounded-full animate-spin ${
                 isPurple
-                  ? "border-purple-500/20 border-t-purple-500"
+                  ? "border-primary/20 border-t-primary"
                   : "border-emerald-500/20 border-t-emerald-500"
               }`}
             />
@@ -167,7 +185,7 @@ export function OAuthCallbackView({
             <div
               className={`w-14 h-14 rounded-2xl border flex items-center justify-center text-2xl font-bold ${
                 isPurple
-                  ? "bg-purple-500/10 border-purple-500/20 text-purple-600 dark:text-purple-400"
+                  ? "bg-primary/10 border-primary/20 text-primary"
                   : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
               }`}
             >
@@ -187,10 +205,10 @@ export function OAuthCallbackView({
             <button
               type="button"
               onClick={() => window.close()}
-              className={`mt-2 px-6 py-2.5 rounded-xl text-white text-xs font-bold transition-colors cursor-pointer shadow-md ${
+              className={`mt-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-xs ${
                 isPurple
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  : "bg-emerald-600 hover:bg-emerald-700"
+                  ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white"
               }`}
             >
               Закрыть окно

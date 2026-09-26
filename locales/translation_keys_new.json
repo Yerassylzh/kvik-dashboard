@@ -261,5 +261,12 @@
   "onboarding.qualification.btn_submit": "Сохранить и подключить каналы →",
   "onboarding.channel.btn_finish_to_qualification": "Далее: Оповещения в Telegram →",
   "onboarding.channel.btn_finish_to_alerts": "Далее: Оповещения в Telegram →",
-  "onboarding.telegram_alerts.feature_cancellations": "Отмены и переносы"
+  "onboarding.telegram_alerts.feature_cancellations": "Отмены и переносы",
+  "onboarding.channel.instagram_btn": "Войти через Instagram",
+  "onboarding.channel.instagram_flow_btn": "Войти через Instagram →",
+  "onboarding.channel.instagram_flow_hint": "Откроется окно авторизации Instagram",
+  "onboarding.channel.instagram_flow_prereq1": "Instagram-аккаунт должен быть профессиональным (бизнес или автор)",
+  "onboarding.channel.instagram_flow_cancelled": "Авторизация Instagram была отменена",
+  "onboarding.channel.instagram_benefit3": "Прямое подключение без страницы Facebook",
+  "onboarding.channel.instagram_flow_desc": "Войдите в ваш Instagram-аккаунт и разрешите доступ к сообщениям. Привязка к странице Facebook не требуется."
 }

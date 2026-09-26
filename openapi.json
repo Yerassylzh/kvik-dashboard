@@ -708,6 +708,48 @@
         "tags": ["Auth"]
       }
     },
+    "/auth/claim-workspace": {
+      "get": {
+        "description": "Validates whether the claim token is valid, unexpired, and checks if the client user already exists.",
+        "operationId": "AuthController_validateClaimToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Claim token is valid"
+          },
+          "400": {
+            "description": "Invalid or expired claim token"
+          }
+        },
+        "summary": "Validate workspace claim token and get metadata",
+        "tags": ["Auth"]
+      },
+      "post": {
+        "description": "Claims the pre-configured workspace, binds it to the client user account, and logs in with OWNER tokens.",
+        "operationId": "AuthController_claimWorkspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimWorkspaceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workspace claimed successfully"
+          },
+          "400": {
+            "description": "Invalid or expired claim token"
+          }
+        },
+        "summary": "Claim pre-configured workspace, set password, and log in",
+        "tags": ["Auth"]
+      }
+    },
     "/auth/switch-workspace": {
       "post": {
         "operationId": "AuthController_switchWorkspace",
@@ -2798,159 +2840,6 @@
         "tags": ["Onboarding"]
       }
     },
-    "/onboarding/step/channel": {
-      "post": {
-        "operationId": "OnboardingWizardController_connectChannel",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConnectChannelDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation failed"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Step 4: Connect a messaging channel",
-        "tags": ["Onboarding"]
-      }
-    },
-    "/onboarding/step/channel-confirm": {
-      "post": {
-        "operationId": "OnboardingWizardController_confirmChannel",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Step 4: Confirm channel connection step",
-        "tags": ["Onboarding"]
-      }
-    },
-    "/onboarding/step/channel/confirm": {
-      "post": {
-        "operationId": "OnboardingWizardController_confirmChannelAlias",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Step 4: Confirm channel connection step (alias)",
-        "tags": ["Onboarding"]
-      }
-    },
-    "/onboarding/step/channel-skip": {
-      "post": {
-        "operationId": "OnboardingWizardController_skipChannel",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Step 4: Skip channel connection step",
-        "tags": ["Onboarding"]
-      }
-    },
-    "/onboarding/step/channel/skip": {
-      "post": {
-        "operationId": "OnboardingWizardController_skipChannelAlias",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Step 4: Skip channel connection step (alias)",
-        "tags": ["Onboarding"]
-      }
-    },
     "/onboarding/step/qualification": {
       "post": {
         "operationId": "OnboardingWizardController_saveQualification",
@@ -2988,7 +2877,7 @@
             "bearer": []
           }
         ],
-        "summary": "Step 5: Save lead qualification rules",
+        "summary": "Step 4: Save lead qualification rules",
         "tags": ["Onboarding"]
       }
     },
@@ -3029,7 +2918,7 @@
             "bearer": []
           }
         ],
-        "summary": "Step 5: Save lead qualification rules (alias)",
+        "summary": "Step 4: Save lead qualification rules (alias)",
         "tags": ["Onboarding"]
       },
       "get": {
@@ -3046,6 +2935,271 @@
           }
         ],
         "summary": "Get current qualification rules",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/channel": {
+      "post": {
+        "operationId": "OnboardingWizardController_connectChannel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectChannelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Connect a messaging channel",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/channel-confirm": {
+      "post": {
+        "operationId": "OnboardingWizardController_confirmChannel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Confirm channel connection step",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/channel/confirm": {
+      "post": {
+        "operationId": "OnboardingWizardController_confirmChannelAlias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Confirm channel connection step (alias)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/channel-skip": {
+      "post": {
+        "operationId": "OnboardingWizardController_skipChannel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Skip channel connection step",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/channel/skip": {
+      "post": {
+        "operationId": "OnboardingWizardController_skipChannelAlias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 5: Skip channel connection step (alias)",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/telegram-alerts/generate-code": {
+      "post": {
+        "operationId": "OnboardingWizardController_generateTelegramAlertsCode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateTelegramCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 6: Generate one-time code and deep link for Telegram alerts",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/telegram-alerts/status": {
+      "get": {
+        "operationId": "OnboardingWizardController_getTelegramAlertsStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramAlertsStatusResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 6: Check Telegram alerts connection status for workspace",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/telegram-alerts/confirm": {
+      "post": {
+        "operationId": "OnboardingWizardController_confirmTelegramAlerts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 6: Confirm Telegram alerts step",
+        "tags": ["Onboarding"]
+      }
+    },
+    "/onboarding/step/telegram-alerts/skip": {
+      "post": {
+        "operationId": "OnboardingWizardController_skipTelegramAlerts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingStateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 6: Skip Telegram alerts step",
         "tags": ["Onboarding"]
       }
     },
@@ -3073,7 +3227,7 @@
             "bearer": []
           }
         ],
-        "summary": "Step 6: Complete onboarding and activate bot",
+        "summary": "Step 7: Complete onboarding and activate bot",
         "tags": ["Onboarding"]
       }
     },
@@ -3922,6 +4076,243 @@
         ],
         "summary": "Check channel health and webhook status",
         "tags": ["Channels"]
+      }
+    },
+    "/notifications/recipients": {
+      "get": {
+        "operationId": "NotificationsController_listRecipients",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Array of notification recipients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationRecipientResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List Telegram notification recipients for workspace",
+        "tags": ["Notifications"]
+      }
+    },
+    "/notifications/recipients/telegram/generate-code": {
+      "post": {
+        "operationId": "NotificationsController_generateCode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Connection deep link and code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateTelegramCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Telegram connection deep link and one-time code",
+        "tags": ["Notifications"]
+      }
+    },
+    "/notifications/recipients/{id}": {
+      "patch": {
+        "operationId": "NotificationsController_updateRecipient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationRecipientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification recipient updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          },
+          "404": {
+            "description": "Recipient not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update notification recipient preferences",
+        "tags": ["Notifications"]
+      },
+      "delete": {
+        "operationId": "NotificationsController_removeRecipient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipient removed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden: insufficient permissions"
+          },
+          "404": {
+            "description": "Recipient not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a notification recipient",
+        "tags": ["Notifications"]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_listNotifications",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated notifications with unread count"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List in-app notifications for workspace",
+        "tags": ["Notifications"]
+      }
+    },
+    "/notifications/read-all": {
+      "patch": {
+        "operationId": "NotificationsController_markAllRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All notifications marked as read"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark all notifications as read",
+        "tags": ["Notifications"]
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked as read"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Notification not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a notification as read",
+        "tags": ["Notifications"]
       }
     },
     "/webhooks/meta": {
@@ -4892,243 +5283,6 @@
         ],
         "summary": "Release takeover lock from a conversation",
         "tags": ["Conversations"]
-      }
-    },
-    "/notifications/recipients": {
-      "get": {
-        "operationId": "NotificationsController_listRecipients",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Array of notification recipients",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/NotificationRecipientResponseDto"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden: insufficient permissions"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List Telegram notification recipients for workspace",
-        "tags": ["Notifications"]
-      }
-    },
-    "/notifications/recipients/telegram/generate-code": {
-      "post": {
-        "operationId": "NotificationsController_generateCode",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Connection deep link and code",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenerateTelegramCodeResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden: insufficient permissions"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Generate Telegram connection deep link and one-time code",
-        "tags": ["Notifications"]
-      }
-    },
-    "/notifications/recipients/{id}": {
-      "patch": {
-        "operationId": "NotificationsController_updateRecipient",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateNotificationRecipientDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Notification recipient updated"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden: insufficient permissions"
-          },
-          "404": {
-            "description": "Recipient not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update notification recipient preferences",
-        "tags": ["Notifications"]
-      },
-      "delete": {
-        "operationId": "NotificationsController_removeRecipient",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Recipient removed"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden: insufficient permissions"
-          },
-          "404": {
-            "description": "Recipient not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Remove a notification recipient",
-        "tags": ["Notifications"]
-      }
-    },
-    "/notifications": {
-      "get": {
-        "operationId": "NotificationsController_listNotifications",
-        "parameters": [
-          {
-            "name": "page",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Paginated notifications with unread count"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List in-app notifications for workspace",
-        "tags": ["Notifications"]
-      }
-    },
-    "/notifications/read-all": {
-      "patch": {
-        "operationId": "NotificationsController_markAllRead",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "All notifications marked as read"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Mark all notifications as read",
-        "tags": ["Notifications"]
-      }
-    },
-    "/notifications/{id}/read": {
-      "patch": {
-        "operationId": "NotificationsController_markRead",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Notification marked as read"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Notification not found"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Mark a notification as read",
-        "tags": ["Notifications"]
       }
     },
     "/bookings": {
@@ -6232,6 +6386,370 @@
         "summary": "[DEV] Reset conversation to BOT_ACTIVE",
         "tags": ["Dev Messaging (simulator)"]
       }
+    },
+    "/admin/auth/request-code": {
+      "post": {
+        "description": "Dispatches an OTP verification code strictly to the platform SUPERADMIN_MASTER_EMAIL.",
+        "operationId": "AdminAuthController_requestCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestSuperAdminCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminSuccessResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Master email not configured"
+          }
+        },
+        "summary": "Request 6-digit verification code to register as superadmin",
+        "tags": ["Admin / Auth"]
+      }
+    },
+    "/admin/auth/register": {
+      "post": {
+        "description": "Validates the 6-digit code received on SUPERADMIN_MASTER_EMAIL and grants superadmin privileges.",
+        "operationId": "AdminAuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterSuperAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired verification code"
+          }
+        },
+        "summary": "Register or activate Superadmin using master verification code",
+        "tags": ["Admin / Auth"]
+      }
+    },
+    "/admin/auth/login": {
+      "post": {
+        "description": "Authenticates credentials and ensures user has platform superadmin privileges.",
+        "operationId": "AdminAuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "403": {
+            "description": "User is not a superadmin"
+          }
+        },
+        "summary": "Superadmin login",
+        "tags": ["Admin / Auth"]
+      }
+    },
+    "/admin/workspaces": {
+      "post": {
+        "description": "Creates a workspace owned temporarily by superadmin with pendingOwnerEmail set. Does NOT create a staff_members row.",
+        "operationId": "AdminWorkspacesController_createWorkspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateWorkspaceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workspace created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Superadmin privileges required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a pre-configured concierge workspace for a client",
+        "tags": ["Admin / Workspaces"]
+      },
+      "get": {
+        "description": "Returns paginated list of all workspaces with owner emails, pending owner emails, channel counts, and derived onboarding progress.",
+        "operationId": "AdminWorkspacesController_listWorkspaces",
+        "parameters": [
+          {
+            "name": "niche",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "BEAUTY",
+              "type": "string",
+              "enum": [
+                "REALTY",
+                "AUTO_SALES",
+                "AUTO_SERVICE",
+                "BEAUTY",
+                "CLINIC",
+                "FITNESS",
+                "CONSULTING",
+                "OTHER_CALENDAR"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminWorkspaceListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Superadmin privileges required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all workspaces on the platform (Admin God-Mode view)",
+        "tags": ["Admin / Workspaces"]
+      }
+    },
+    "/admin/workspaces/{id}": {
+      "get": {
+        "operationId": "AdminWorkspacesController_getWorkspace",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workspace details"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Workspace not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get single workspace details with stats and derived onboarding state",
+        "tags": ["Admin / Workspaces"]
+      }
+    },
+    "/admin/workspaces/{id}/impersonate": {
+      "post": {
+        "description": "Issues standard JWT tokens with role=OWNER and target workspaceId, bypassing tenant membership checks.",
+        "operationId": "AdminWorkspacesController_impersonate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminImpersonateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Superadmin privileges required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Impersonate / switch into any client workspace (God-Mode)",
+        "tags": ["Admin / Workspaces"]
+      }
+    },
+    "/admin/workspaces/{id}/assign-owner": {
+      "post": {
+        "description": "Generates a claimToken, updates pendingOwnerEmail, and emails a claim link directly to the client.",
+        "operationId": "AdminWorkspacesController_assignOwner",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignWorkspaceOwnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAssignOwnerResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Workspace not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign workspace to client email and dispatch onboarding claim link",
+        "tags": ["Admin / Workspaces"]
+      }
+    },
+    "/admin/workspaces/{id}/transfer-ownership": {
+      "post": {
+        "operationId": "AdminWorkspacesController_transferOwnership",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferWorkspaceOwnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminTransferOwnerResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User or workspace not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Transfer workspace ownership immediately to an existing registered user",
+        "tags": ["Admin / Workspaces"]
+      }
     }
   },
   "info": {
@@ -6777,6 +7295,10 @@
         "properties": {}
       },
       "RegisterStaffDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ClaimWorkspaceDto": {
         "type": "object",
         "properties": {}
       },
@@ -7519,8 +8041,9 @@
               "BUSINESS_PROFILE",
               "DATA_SOURCE",
               "DATA_PREVIEW",
-              "CONNECT_CHANNEL",
               "QUALIFICATION",
+              "CONNECT_CHANNEL",
+              "TELEGRAM_ALERTS",
               "DONE"
             ],
             "example": "DATA_PREVIEW"
@@ -7528,7 +8051,7 @@
           "stepIndex": {
             "type": "number",
             "example": 3,
-            "description": "0..6"
+            "description": "0..7"
           },
           "completed": {
             "type": "boolean",
@@ -7595,8 +8118,9 @@
               "BUSINESS_PROFILE",
               "DATA_SOURCE",
               "DATA_PREVIEW",
-              "CONNECT_CHANNEL",
               "QUALIFICATION",
+              "CONNECT_CHANNEL",
+              "TELEGRAM_ALERTS",
               "DONE"
             ],
             "example": "DATA_PREVIEW"
@@ -7604,7 +8128,7 @@
           "stepIndex": {
             "type": "number",
             "example": 3,
-            "description": "0..6"
+            "description": "0..7"
           },
           "completed": {
             "type": "boolean",
@@ -7699,6 +8223,94 @@
         },
         "required": ["type"]
       },
+      "GenerateTelegramCodeResponseDto": {
+        "type": "object",
+        "properties": {
+          "deepLink": {
+            "type": "string",
+            "example": "https://t.me/kvik_notify_bot?start=KVIK-8F3A2",
+            "description": "Direct Telegram deep link with pre-filled code. Opens Telegram with a big START button."
+          },
+          "code": {
+            "type": "string",
+            "example": "KVIK-8F3A2",
+            "description": "One-time connection code (valid for 15 minutes)"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T14:15:00.000Z",
+            "description": "Expiration ISO timestamp of the code"
+          }
+        },
+        "required": ["deepLink", "code", "expiresAt"]
+      },
+      "NotificationRecipientResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "description": "Unique recipient ID"
+          },
+          "telegramChatId": {
+            "type": "string",
+            "example": "123456789",
+            "description": "Telegram chat ID"
+          },
+          "displayName": {
+            "type": "object",
+            "example": "Асем (владелец)",
+            "description": "Display name for the recipient in the dashboard",
+            "nullable": true
+          },
+          "notificationTypes": {
+            "example": ["escalation", "new_booking", "booking_cancelled"],
+            "description": "Event types this recipient is subscribed to",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether this recipient is active"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T14:00:00.000Z",
+            "description": "When the recipient was added"
+          }
+        },
+        "required": [
+          "id",
+          "telegramChatId",
+          "displayName",
+          "notificationTypes",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "TelegramAlertsStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "connected": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether at least one Telegram alert recipient is connected"
+          },
+          "recipients": {
+            "description": "Active Telegram alert recipients for the workspace",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationRecipientResponseDto"
+            }
+          }
+        },
+        "required": ["connected", "recipients"]
+      },
       "WebsiteScrapingDto": {
         "type": "object",
         "properties": {}
@@ -7715,6 +8327,11 @@
             "nullable": true,
             "example": "123456789012345"
           },
+          "instagramAppId": {
+            "type": "string",
+            "nullable": true,
+            "example": "1013621005086662"
+          },
           "whatsappConfigId": {
             "type": "string",
             "nullable": true,
@@ -7726,11 +8343,9 @@
           },
           "instagramScopes": {
             "example": [
-              "instagram_basic",
-              "instagram_manage_messages",
-              "pages_show_list",
-              "pages_read_engagement",
-              "pages_manage_metadata"
+              "instagram_business_basic",
+              "instagram_business_manage_messages",
+              "instagram_business_manage_comments"
             ],
             "type": "array",
             "items": {
@@ -7896,6 +8511,10 @@
           }
         },
         "required": ["type", "status", "isHealthy"]
+      },
+      "UpdateNotificationRecipientDto": {
+        "type": "object",
+        "properties": {}
       },
       "AiConfigResponseDto": {
         "type": "object",
@@ -8757,80 +9376,6 @@
           "resolvedByStaffId"
         ]
       },
-      "NotificationRecipientResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "123e4567-e89b-12d3-a456-426614174000",
-            "description": "Unique recipient ID"
-          },
-          "telegramChatId": {
-            "type": "string",
-            "example": "123456789",
-            "description": "Telegram chat ID"
-          },
-          "displayName": {
-            "type": "object",
-            "example": "Асем (владелец)",
-            "description": "Display name for the recipient in the dashboard",
-            "nullable": true
-          },
-          "notificationTypes": {
-            "example": ["escalation", "new_booking", "booking_cancelled"],
-            "description": "Event types this recipient is subscribed to",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true,
-            "description": "Whether this recipient is active"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-09-19T14:00:00.000Z",
-            "description": "When the recipient was added"
-          }
-        },
-        "required": [
-          "id",
-          "telegramChatId",
-          "displayName",
-          "notificationTypes",
-          "isActive",
-          "createdAt"
-        ]
-      },
-      "GenerateTelegramCodeResponseDto": {
-        "type": "object",
-        "properties": {
-          "deepLink": {
-            "type": "string",
-            "example": "https://t.me/kvik_notify_bot?start=KVIK-8F3A2",
-            "description": "Direct Telegram deep link with pre-filled code. Opens Telegram with a big START button."
-          },
-          "code": {
-            "type": "string",
-            "example": "KVIK-8F3A2",
-            "description": "One-time connection code (valid for 15 minutes)"
-          },
-          "expiresAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-09-19T14:15:00.000Z",
-            "description": "Expiration ISO timestamp of the code"
-          }
-        },
-        "required": ["deepLink", "code", "expiresAt"]
-      },
-      "UpdateNotificationRecipientDto": {
-        "type": "object",
-        "properties": {}
-      },
       "PreviewAssignmentDto": {
         "type": "object",
         "properties": {}
@@ -9393,6 +9938,342 @@
           }
         },
         "required": ["channelType"]
+      },
+      "RequestSuperAdminCodeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminSuccessResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "code": {
+            "type": "string",
+            "example": "admin.verification_code_sent"
+          },
+          "message": {
+            "type": "string",
+            "example": "Verification code dispatched to platform master email."
+          }
+        },
+        "required": ["success", "code", "message"]
+      },
+      "RegisterSuperAdminDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminUserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "email": {
+            "type": "string",
+            "example": "operator@kvik.io"
+          },
+          "isSuperAdmin": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": ["id", "email", "isSuperAdmin"]
+      },
+      "AdminTokensDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1Ni..."
+          },
+          "refresh_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1Ni..."
+          }
+        },
+        "required": ["access_token", "refresh_token"]
+      },
+      "AdminAuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AdminUserResponseDto"
+          },
+          "tokens": {
+            "$ref": "#/components/schemas/AdminTokensDto"
+          }
+        },
+        "required": ["user", "tokens"]
+      },
+      "AdminCreateWorkspaceDto": {
+        "type": "object",
+        "properties": {
+          "nicheProfile": {
+            "type": "string",
+            "enum": [
+              "REALTY",
+              "AUTO_SALES",
+              "AUTO_SERVICE",
+              "BEAUTY",
+              "CLINIC",
+              "FITNESS",
+              "CONSULTING",
+              "OTHER_CALENDAR"
+            ],
+            "example": "BEAUTY"
+          },
+          "plan": {
+            "type": "string",
+            "enum": ["STARTER", "PRO", "VIP"],
+            "example": "STARTER"
+          }
+        }
+      },
+      "AdminWorkspaceOwnerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "owner-uuid"
+          },
+          "email": {
+            "type": "string",
+            "example": "admin@kvik.io"
+          }
+        },
+        "required": ["id", "email"]
+      },
+      "AdminWorkspaceItemCountsDto": {
+        "type": "object",
+        "properties": {
+          "knowledgeEntries": {
+            "type": "number",
+            "example": 12
+          },
+          "channels": {
+            "type": "number",
+            "example": 1
+          },
+          "leads": {
+            "type": "number",
+            "example": 45
+          },
+          "staffMembers": {
+            "type": "number",
+            "example": 2
+          }
+        },
+        "required": ["knowledgeEntries", "channels", "leads", "staffMembers"]
+      },
+      "AdminWorkspaceListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "ws-uuid"
+          },
+          "name": {
+            "type": "string",
+            "example": "Salon Elite Almaty"
+          },
+          "businessName": {
+            "type": "object",
+            "example": "Salon Elite",
+            "nullable": true
+          },
+          "owner": {
+            "$ref": "#/components/schemas/AdminWorkspaceOwnerDto"
+          },
+          "pendingOwnerEmail": {
+            "type": "object",
+            "example": "owner@salon.kz",
+            "nullable": true
+          },
+          "nicheProfile": {
+            "type": "string",
+            "enum": [
+              "REALTY",
+              "AUTO_SALES",
+              "AUTO_SERVICE",
+              "BEAUTY",
+              "CLINIC",
+              "FITNESS",
+              "CONSULTING",
+              "OTHER_CALENDAR"
+            ],
+            "nullable": true
+          },
+          "subSegment": {
+            "type": "object",
+            "example": "salon",
+            "nullable": true
+          },
+          "derivedStep": {
+            "type": "string",
+            "example": "CONNECT_CHANNEL"
+          },
+          "knowledgeConfirmed": {
+            "type": "boolean",
+            "example": true
+          },
+          "channelConfirmed": {
+            "type": "boolean",
+            "example": false
+          },
+          "telegramAlertsConfirmed": {
+            "type": "boolean",
+            "example": false
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": false
+          },
+          "plan": {
+            "type": "string",
+            "enum": ["STARTER", "PRO", "VIP"]
+          },
+          "counts": {
+            "$ref": "#/components/schemas/AdminWorkspaceItemCountsDto"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-24T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "businessName",
+          "owner",
+          "pendingOwnerEmail",
+          "nicheProfile",
+          "subSegment",
+          "derivedStep",
+          "knowledgeConfirmed",
+          "channelConfirmed",
+          "telegramAlertsConfirmed",
+          "isActive",
+          "plan",
+          "counts",
+          "createdAt"
+        ]
+      },
+      "AdminWorkspaceListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminWorkspaceListItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 3
+          }
+        },
+        "required": ["items", "total", "page", "limit", "totalPages"]
+      },
+      "AdminImpersonateResponseDto": {
+        "type": "object",
+        "properties": {
+          "workspace": {
+            "type": "object",
+            "example": {
+              "id": "ws-uuid",
+              "name": "Salon Elite Almaty"
+            }
+          },
+          "role": {
+            "type": "string",
+            "enum": ["OWNER", "ADMIN_MANAGER", "SPECIALIST"],
+            "example": "OWNER"
+          },
+          "tokens": {
+            "$ref": "#/components/schemas/AdminTokensDto"
+          }
+        },
+        "required": ["workspace", "role", "tokens"]
+      },
+      "AssignWorkspaceOwnerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminAssignOwnerResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "workspaceId": {
+            "type": "string",
+            "example": "ws-uuid"
+          },
+          "pendingOwnerEmail": {
+            "type": "string",
+            "example": "owner@salon.kz"
+          },
+          "claimUrl": {
+            "type": "string",
+            "example": "http://localhost:3000/claim-workspace?token=abc-123"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-10-01T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "success",
+          "workspaceId",
+          "pendingOwnerEmail",
+          "claimUrl",
+          "expiresAt"
+        ]
+      },
+      "TransferWorkspaceOwnerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminTransferOwnerResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "workspaceId": {
+            "type": "string",
+            "example": "ws-uuid"
+          },
+          "newOwnerId": {
+            "type": "string",
+            "example": "user-uuid"
+          },
+          "newOwnerEmail": {
+            "type": "string",
+            "example": "owner@salon.kz"
+          }
+        },
+        "required": ["success", "workspaceId", "newOwnerId", "newOwnerEmail"]
       }
     }
   }

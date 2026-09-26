@@ -68,8 +68,8 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     try {
       const redirectUri = getCallbackUri();
       const params = new URLSearchParams({
-        client_id: metaConfigRef.current.appId,
-        config_id: metaConfigRef.current.whatsappConfigId,
+        client_id: metaConfigRef.current.appId || "",
+        config_id: metaConfigRef.current.whatsappConfigId || "",
         response_type: "code",
         override_default_response_type: "true",
       });

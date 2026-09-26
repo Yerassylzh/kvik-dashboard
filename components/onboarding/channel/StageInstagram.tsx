@@ -39,9 +39,9 @@ export function StageInstagram({
   return (
     <div className="space-y-6">
       {/* Top Banner / Channel Hero */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-500/[0.06] via-pink-500/[0.04] to-amber-500/[0.04] border border-purple-500/20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-primary/[0.03] border border-primary/20">
         <div className="flex items-start sm:items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-purple-500/20 border border-purple-500/20 flex items-center justify-center text-2xl shrink-0 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-2xl shrink-0">
             📸
           </div>
           <div>
@@ -49,7 +49,7 @@ export function StageInstagram({
               <h3 className="text-lg font-bold text-foreground">
                 {t("instagram_title")}
               </h3>
-              <span className="px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-extrabold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-extrabold text-primary uppercase tracking-wider">
                 {t("instagram_badge")}
               </span>
             </div>
@@ -60,7 +60,7 @@ export function StageInstagram({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-semibold text-muted-foreground bg-card/80 px-2.5 py-1 rounded-xl border border-border">
+          <span className="text-xs font-semibold text-muted-foreground bg-card px-2.5 py-1 rounded-xl border border-border">
             {t("stage_indicator", { current: 2, total: 3 })}
           </span>
         </div>
@@ -71,7 +71,7 @@ export function StageInstagram({
         {BENEFITS.map((b, idx) => (
           <div
             key={idx}
-            className="flex items-center gap-2.5 p-3 rounded-xl bg-card border border-border text-xs text-foreground font-medium"
+            className="flex items-center gap-2.5 p-3 rounded-xl bg-card border border-border/80 text-xs text-foreground font-medium"
           >
             <span className="text-base shrink-0">{b.icon}</span>
             <span className="leading-tight">{b.text}</span>

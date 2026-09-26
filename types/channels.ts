@@ -31,7 +31,7 @@ export interface WhatsAppChannelMetadata {
 }
 
 export interface InstagramChannelMetadata {
-  pageId: string;
+  pageId?: string;
   pageName?: string;
   instagramId: string;
   igUsername?: string;
@@ -70,8 +70,9 @@ export interface Channel {
 // ---------------------------------------------------------------------------
 
 export interface MetaConfig {
-  appId: string;
-  whatsappConfigId: string;
+  appId?: string;
+  instagramAppId?: string;
+  whatsappConfigId?: string;
   apiVersion: string;
   instagramScopes: string[];
 }
