@@ -261,27 +261,28 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     setConnecting(true);
 
     try {
+      // Must pass a standard synchronous Function callback to FB.login because Meta JS SDK strictly validates against [object Function]
       window.FB.login(
-        async (response: any) => {
+        function (response: any) {
           if (response?.authResponse?.code) {
             const authCode = response.authResponse.code;
             const capturedWaba = wabaDataRef.current;
 
-            try {
-              const res = await connectWhatsApp({
-                code: authCode,
-                wabaId: capturedWaba?.waba_id,
-                phoneNumberId: capturedWaba?.phone_number_id,
+            connectWhatsApp({
+              code: authCode,
+              wabaId: capturedWaba?.waba_id,
+              phoneNumberId: capturedWaba?.phone_number_id,
+            })
+              .then((res) => {
+                setConnecting(false);
+                onSuccess(res.channel.metadata as WhatsAppChannelMetadata);
+              })
+              .catch((err) => {
+                setConnecting(false);
+                setError(
+                  err instanceof Error ? err.message : t("whatsapp_flow_error")
+                );
               });
-
-              setConnecting(false);
-              onSuccess(res.channel.metadata as WhatsAppChannelMetadata);
-            } catch (err) {
-              setConnecting(false);
-              setError(
-                err instanceof Error ? err.message : t("whatsapp_flow_error")
-              );
-            }
           } else {
             // User cancelled login or closed popup
             setConnecting(false);

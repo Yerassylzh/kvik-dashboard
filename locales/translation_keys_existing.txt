@@ -1762,6 +1762,7 @@ onboarding.channel.whatsapp_flow_connecting
 onboarding.channel.whatsapp_flow_desc
 onboarding.channel.whatsapp_flow_error
 onboarding.channel.whatsapp_flow_hint
+onboarding.channel.whatsapp_flow_https_required
 onboarding.channel.whatsapp_flow_loading
 onboarding.channel.whatsapp_flow_missing_data
 onboarding.channel.whatsapp_flow_popup_open
