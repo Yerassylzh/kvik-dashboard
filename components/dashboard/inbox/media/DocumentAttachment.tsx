@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { FileText, FileSpreadsheet, FileCode, File } from "lucide-react";
+import { FileText, FileSpreadsheet, FileCode, File, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { AttachmentActions } from "./AttachmentActions";
+import { ExtractedTextPreview } from "./ExtractedTextPreview";
 import clsx from "clsx";
 
 interface DocumentAttachmentProps {
@@ -10,6 +12,8 @@ interface DocumentAttachmentProps {
   fileName?: string;
   fileSize?: number | null;
   mimeType?: string | null;
+  extractedText?: string | null;
+  aiProcessed?: boolean;
   isUserMessage?: boolean;
 }
 
@@ -18,8 +22,11 @@ export function DocumentAttachment({
   fileName = "document.pdf",
   fileSize,
   mimeType,
+  extractedText,
+  aiProcessed,
   isUserMessage = false,
 }: DocumentAttachmentProps) {
+  const t = useTranslations("dashboard");
 
   const formatFileSize = (bytes?: number | null) => {
     if (!bytes) return null;
@@ -73,26 +80,47 @@ export function DocumentAttachment({
   };
 
   return (
-    <div
-      className={clsx(
-        "flex items-center gap-3 p-2.5 rounded-xl border transition-all max-w-[320px] sm:max-w-[360px]",
-        isUserMessage
-          ? "bg-white/10 border-white/20 text-white"
-          : "bg-background/80 border-border/70 text-foreground hover:bg-background"
-      )}
-    >
-      {renderIcon()}
+    <div className="space-y-1 max-w-[320px] sm:max-w-[360px]">
+      <div
+        className={clsx(
+          "flex items-center gap-3 p-2.5 rounded-xl border transition-all",
+          isUserMessage
+            ? "bg-white/10 border-white/20 text-white"
+            : "bg-background/80 border-border/70 text-foreground hover:bg-background"
+        )}
+      >
+        {renderIcon()}
 
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold truncate leading-tight">{fileName}</p>
-        <div className="flex items-center gap-2 text-[10px] opacity-75 font-mono tabular-nums mt-0.5">
-          {ext && <span className="uppercase font-bold">{ext}</span>}
-          {sizeLabel && <span>• {sizeLabel}</span>}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs font-semibold truncate leading-tight">{fileName}</p>
+            {aiProcessed && (
+              <span
+                className="shrink-0 flex items-center gap-0.5 px-1.5 py-0.2 rounded-full bg-primary/15 text-primary text-[9px] font-bold"
+                title={t("inbox.ai_processed_tooltip")}
+              >
+                <Sparkles className="w-2.5 h-2.5" />
+                <span>AI</span>
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-[10px] opacity-75 font-mono tabular-nums mt-0.5">
+            {ext && <span className="uppercase font-bold">{ext}</span>}
+            {sizeLabel && <span>• {sizeLabel}</span>}
+          </div>
         </div>
+
+        {/* Browser preview + download to Downloads folder */}
+        <AttachmentActions mediaUrl={mediaUrl} fileName={fileName} />
       </div>
 
-      {/* Browser preview + download to Downloads folder */}
-      <AttachmentActions mediaUrl={mediaUrl} fileName={fileName} />
+      {/* Extracted Markdown/Plain-Text Table Accordion */}
+      {extractedText && (
+        <ExtractedTextPreview
+          extractedText={extractedText}
+          isUserMessage={isUserMessage}
+        />
+      )}
     </div>
   );
 }

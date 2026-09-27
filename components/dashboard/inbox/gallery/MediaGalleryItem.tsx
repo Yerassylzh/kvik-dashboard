@@ -160,12 +160,46 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
   }
 
   // 4. Document Item
-  return (
-    <div className="flex items-center justify-between gap-2.5 p-2.5 rounded-xl border border-border/70 bg-card hover:bg-muted/40 transition-colors">
-      <div className="flex items-center gap-2 min-w-0">
+  const renderDocIcon = () => {
+    if (ext === "pdf") {
+      return (
         <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center shrink-0">
           <FileText className="w-4 h-4" />
         </div>
+      );
+    }
+    if (["xlsx", "xls", "csv"].includes(ext || "")) {
+      return (
+        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shrink-0">
+          <FileSpreadsheet className="w-4 h-4" />
+        </div>
+      );
+    }
+    if (["docx", "doc", "rtf"].includes(ext || "")) {
+      return (
+        <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 border border-sky-500/20 flex items-center justify-center shrink-0">
+          <FileText className="w-4 h-4" />
+        </div>
+      );
+    }
+    if (["json", "xml", "p12", "key", "pem", "crt", "cer", "zip", "rar", "7z"].includes(ext || "")) {
+      return (
+        <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center shrink-0">
+          <FileCode className="w-4 h-4" />
+        </div>
+      );
+    }
+    return (
+      <div className="w-8 h-8 rounded-lg bg-slate-500/10 text-slate-500 border border-slate-500/20 flex items-center justify-center shrink-0">
+        <File className="w-4 h-4" />
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-2.5 p-2.5 rounded-xl border border-border/70 bg-card hover:bg-muted/40 transition-colors">
+      <div className="flex items-center gap-2 min-w-0">
+        {renderDocIcon()}
 
         <div className="min-w-0">
           <p className="text-xs font-semibold text-foreground truncate leading-tight">

@@ -720,6 +720,8 @@ dashboard.help_modal.email_title
 dashboard.help_modal.telegram_desc
 dashboard.help_modal.telegram_title
 dashboard.help_modal.title
+dashboard.inbox.ai_processed_badge
+dashboard.inbox.ai_processed_tooltip
 dashboard.inbox.attach_file
 dashboard.inbox.attach_file_too_large
 dashboard.inbox.attach_unsupported_format
@@ -743,6 +745,12 @@ dashboard.inbox.escalation_trigger_media
 dashboard.inbox.escalation_trigger_policy
 dashboard.inbox.escalation_trigger_specialist
 dashboard.inbox.escalation_trigger_unknown
+dashboard.inbox.extracted_text_toggle_hide
+dashboard.inbox.extracted_text_toggle_show
+dashboard.inbox.file_type_binary
+dashboard.inbox.file_type_doc
+dashboard.inbox.file_type_pdf
+dashboard.inbox.file_type_sheet
 dashboard.inbox.filter_all
 dashboard.inbox.filter_bot
 dashboard.inbox.filter_closed
@@ -756,6 +764,8 @@ dashboard.inbox.handoff_manager
 dashboard.inbox.handoff_media_blocked
 dashboard.inbox.handoff_return_bot
 dashboard.inbox.handoff_takeover
+dashboard.inbox.heavy_media_desc
+dashboard.inbox.heavy_media_title
 dashboard.inbox.live_overflow_alert
 dashboard.inbox.media_gallery_btn
 dashboard.inbox.media_gallery_empty
@@ -802,6 +812,8 @@ dashboard.inbox.voice_transcription_empty
 dashboard.inbox.voice_transcription_lang_kk
 dashboard.inbox.voice_transcription_lang_ru
 dashboard.inbox.voice_transcription_title
+dashboard.inbox.weird_file_desc
+dashboard.inbox.weird_file_title
 dashboard.insights.add_to_kb_btn
 dashboard.insights.desc
 dashboard.insights.dropoff_title

@@ -301,7 +301,19 @@
     "media_unavailable": "Медиафайл недоступен",
     "open_in_new_tab": "Открыть в новой вкладке",
     "outbound_media_failed": "Не удалось отправить медиафайл клиенту",
-    "takeover_locked_by": "Занято"
+    "takeover_locked_by": "Занято",
+    "ai_processed_badge": "AI проанализировано",
+    "ai_processed_tooltip": "ИИ изучил вложение и учел его в ответе",
+    "extracted_text_toggle_show": "Показать извлеченный текст",
+    "extracted_text_toggle_hide": "Скрыть текст",
+    "weird_file_title": "Системный файл получен",
+    "weird_file_desc": "Файл передан специалисту без вмешательства бота",
+    "heavy_media_title": "Объемное вложение",
+    "heavy_media_desc": "Видео или большой документ передан на проверку сотруднику",
+    "file_type_pdf": "PDF Документ",
+    "file_type_sheet": "Таблица Excel / CSV",
+    "file_type_doc": "Документ Word",
+    "file_type_binary": "Системный файл"
   },
   "bookings": {
     "title": "Журнал записей",

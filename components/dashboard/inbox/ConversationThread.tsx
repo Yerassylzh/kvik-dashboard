@@ -83,13 +83,10 @@ export function ConversationThread({
   );
 
   /**
-   * AI escalation supports text and voice notes only — any other media
-   * (images/video/documents) blocks handing the conversation back to AI.
+   * Multimodal AI engine supports visual & document processing.
+   * Managers can safely return dialogues with media back to AI.
    */
-  const canHandOffToAi = !messages.some((msg) => {
-    const metadata = msg.metadata as MessageMediaMetadata | undefined;
-    return Boolean(metadata?.mediaType && metadata.mediaType !== "AUDIO");
-  });
+  const canHandOffToAi = true;
 
   /** Track whether the user is scrolled close enough to the bottom */
   const handleScroll = useCallback(() => {

@@ -269,5 +269,17 @@
   "onboarding.channel.instagram_flow_cancelled": "Авторизация Instagram была отменена",
   "onboarding.channel.instagram_benefit3": "Прямое подключение без страницы Facebook",
   "onboarding.channel.instagram_flow_desc": "Войдите в ваш Instagram-аккаунт и разрешите доступ к сообщениям. Привязка к странице Facebook не требуется.",
-  "onboarding.channel.whatsapp_flow_https_required": "Для авторизации Meta JS SDK требуется защищенное HTTPS-соединение. Для локальной разработки запустите: npm run dev:https"
+  "onboarding.channel.whatsapp_flow_https_required": "Для авторизации Meta JS SDK требуется защищенное HTTPS-соединение. Для локальной разработки запустите: npm run dev:https",
+  "dashboard.inbox.ai_processed_badge": "AI проанализировано",
+  "dashboard.inbox.ai_processed_tooltip": "ИИ изучил вложение и учел его в ответе",
+  "dashboard.inbox.extracted_text_toggle_show": "Показать извлеченный текст",
+  "dashboard.inbox.extracted_text_toggle_hide": "Скрыть текст",
+  "dashboard.inbox.weird_file_title": "Системный файл получен",
+  "dashboard.inbox.weird_file_desc": "Файл передан специалисту без вмешательства бота",
+  "dashboard.inbox.heavy_media_title": "Объемное вложение",
+  "dashboard.inbox.heavy_media_desc": "Видео или большой документ передан на проверку сотруднику",
+  "dashboard.inbox.file_type_pdf": "PDF Документ",
+  "dashboard.inbox.file_type_sheet": "Таблица Excel / CSV",
+  "dashboard.inbox.file_type_doc": "Документ Word",
+  "dashboard.inbox.file_type_binary": "Системный файл"
 }

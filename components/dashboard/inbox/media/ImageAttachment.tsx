@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Sparkles, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MediaLightboxModal } from "./MediaLightboxModal";
 import { AttachmentActions } from "./AttachmentActions";
@@ -12,12 +12,16 @@ interface ImageAttachmentProps {
   mediaUrl: string;
   fileName?: string;
   isUserMessage?: boolean;
+  aiProcessed?: boolean;
+  aiDescription?: string;
 }
 
 export function ImageAttachment({
   mediaUrl,
   fileName,
   isUserMessage = false,
+  aiProcessed,
+  aiDescription,
 }: ImageAttachmentProps) {
   const t = useTranslations("dashboard");
   const { src, loading } = useMediaObjectSrc(mediaUrl);
@@ -58,11 +62,35 @@ export function ImageAttachment({
           />
         )}
 
+        {/* AI Analyzed Badge */}
+        {aiProcessed && (
+          <div
+            className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/90 text-white text-[10px] font-semibold backdrop-blur-xs shadow-xs z-10"
+            title={aiDescription || t("inbox.ai_processed_tooltip")}
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>{t("inbox.ai_processed_badge")}</span>
+          </div>
+        )}
+
         {/* Hover badge: browser preview + download to Downloads folder */}
         <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 rounded-full bg-black/60 text-white backdrop-blur-xs shadow-md p-0.5 [&_button]:text-white [&_button:hover]:bg-white/20">
           <AttachmentActions mediaUrl={mediaUrl} fileName={fileName} />
         </div>
       </div>
+
+      {/* AI Description Tooltip / Caption if available */}
+      {aiDescription && (
+        <div
+          className={clsx(
+            "mt-1.5 flex items-start gap-1.5 text-[11px] leading-tight max-w-[280px] sm:max-w-[320px] px-1",
+            isUserMessage ? "text-white/80" : "text-muted-foreground"
+          )}
+        >
+          <Info className="w-3 h-3 shrink-0 mt-0.5 opacity-70" />
+          <span className="italic">{aiDescription}</span>
+        </div>
+      )}
 
       <MediaLightboxModal
         isOpen={isLightboxOpen}

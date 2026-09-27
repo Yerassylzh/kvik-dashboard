@@ -9,6 +9,8 @@ import { VoiceMessagePlayer } from "./media/VoiceMessagePlayer";
 import { ImageAttachment } from "./media/ImageAttachment";
 import { VideoAttachment } from "./media/VideoAttachment";
 import { DocumentAttachment } from "./media/DocumentAttachment";
+import { WeirdFileAlertCard } from "./media/WeirdFileAlertCard";
+import { HeavyMediaEscalationCard } from "./media/HeavyMediaEscalationCard";
 
 interface MessageBubbleProps {
   message: MessageDto;
@@ -28,6 +30,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const metadata = message.metadata as MessageMediaMetadata | undefined;
   const mediaType = metadata?.mediaType;
   const mediaUrl = metadata?.mediaUrl;
+  const tier = metadata?.aiProcessingTier;
 
   // Decide whether to render separate text content (e.g. caption for media)
   const isVoice = mediaType === "AUDIO";
@@ -82,44 +85,72 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Media Attachments */}
         {mediaUrl && (
           <div className="my-1">
-            {mediaType === "AUDIO" && (
-              <VoiceMessagePlayer
-                mediaUrl={mediaUrl}
-                durationSeconds={metadata?.durationSeconds}
-                transcription={metadata?.transcription}
-                detectedLanguage={metadata?.detectedLanguage}
-                transcriptionConfidence={metadata?.transcriptionConfidence}
-                transcriptionError={metadata?.transcriptionError}
-                isUserMessage={isUser}
-              />
-            )}
-
-            {mediaType === "IMAGE" && (
-              <ImageAttachment
-                mediaUrl={mediaUrl}
-                fileName={metadata?.fileName}
-                isUserMessage={isUser}
-              />
-            )}
-
-            {mediaType === "VIDEO" && (
-              <VideoAttachment
-                mediaUrl={mediaUrl}
-                fileName={metadata?.fileName}
-                durationSeconds={metadata?.durationSeconds}
-                fileSize={metadata?.fileSize}
-                isUserMessage={isUser}
-              />
-            )}
-
-            {mediaType === "DOCUMENT" && (
-              <DocumentAttachment
+            {tier === "WEIRD_BINARY" ? (
+              <WeirdFileAlertCard
                 mediaUrl={mediaUrl}
                 fileName={metadata?.fileName}
                 fileSize={metadata?.fileSize}
                 mimeType={metadata?.mimeType}
+                escalationReason={metadata?.escalationReason}
                 isUserMessage={isUser}
               />
+            ) : tier === "HEAVY_ESCALATION" ? (
+              <HeavyMediaEscalationCard
+                mediaUrl={mediaUrl}
+                mediaType={mediaType}
+                fileName={metadata?.fileName}
+                durationSeconds={metadata?.durationSeconds}
+                fileSize={metadata?.fileSize}
+                mimeType={metadata?.mimeType}
+                escalationReason={metadata?.escalationReason}
+                isUserMessage={isUser}
+              />
+            ) : (
+              <>
+                {mediaType === "AUDIO" && (
+                  <VoiceMessagePlayer
+                    mediaUrl={mediaUrl}
+                    durationSeconds={metadata?.durationSeconds}
+                    transcription={metadata?.transcription}
+                    detectedLanguage={metadata?.detectedLanguage}
+                    transcriptionConfidence={metadata?.transcriptionConfidence}
+                    transcriptionError={metadata?.transcriptionError}
+                    isUserMessage={isUser}
+                  />
+                )}
+
+                {mediaType === "IMAGE" && (
+                  <ImageAttachment
+                    mediaUrl={mediaUrl}
+                    fileName={metadata?.fileName}
+                    aiProcessed={metadata?.aiProcessed}
+                    aiDescription={metadata?.aiDescription}
+                    isUserMessage={isUser}
+                  />
+                )}
+
+                {mediaType === "VIDEO" && (
+                  <VideoAttachment
+                    mediaUrl={mediaUrl}
+                    fileName={metadata?.fileName}
+                    durationSeconds={metadata?.durationSeconds}
+                    fileSize={metadata?.fileSize}
+                    isUserMessage={isUser}
+                  />
+                )}
+
+                {mediaType === "DOCUMENT" && (
+                  <DocumentAttachment
+                    mediaUrl={mediaUrl}
+                    fileName={metadata?.fileName}
+                    fileSize={metadata?.fileSize}
+                    mimeType={metadata?.mimeType}
+                    extractedText={metadata?.extractedText}
+                    aiProcessed={metadata?.aiProcessed}
+                    isUserMessage={isUser}
+                  />
+                )}
+              </>
             )}
           </div>
         )}

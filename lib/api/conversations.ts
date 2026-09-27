@@ -5,6 +5,13 @@ export type ChannelType = 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM';
 export type MessageRole = 'USER' | 'BOT' | 'MANAGER';
 export type MediaType = 'IMAGE' | 'AUDIO' | 'VIDEO' | 'DOCUMENT';
 
+export type FileTriageTier =
+  | 'LIGHT_IMAGE'
+  | 'LIGHT_PDF'
+  | 'LIGHT_STRUCTURED_DOC'
+  | 'WEIRD_BINARY'
+  | 'HEAVY_ESCALATION';
+
 export interface MessageMediaMetadata {
   mediaType?: MediaType;
   mediaUrl?: string;
@@ -14,13 +21,21 @@ export interface MessageMediaMetadata {
   fileName?: string;
   durationSeconds?: number;
   
-  // Voice STT Specific (Inbound)
+  // Voice STT Specific (Inbound & Outbound)
   isVoice?: boolean;
   transcription?: string;
   transcriptionConfidence?: number;
   detectedLanguage?: 'ru' | 'kk' | 'en' | string;
   transcriptionDurationMs?: number;
   transcriptionError?: string;
+
+  // AI Multimodal Processing & Semantic History Persistence
+  aiProcessed?: boolean;
+  aiProcessingTier?: FileTriageTier;
+  aiDescription?: string; // Compact visual/document summary
+  extractedText?: string; // Extracted tabular/text representation (for docx/xlsx)
+  skippedReason?: string;
+  escalationReason?: string;
   
   // Channel Context
   rawType?: string;
@@ -108,6 +123,7 @@ export interface SendManagerMessageDto {
   mimeType?: string;
   fileSize?: number;
   durationSeconds?: number | null;
+  isVoice?: boolean;
 }
 
 export interface UploadMediaResponse {

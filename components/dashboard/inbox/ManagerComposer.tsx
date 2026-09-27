@@ -227,10 +227,11 @@ export function ManagerComposer({
         duration
       );
 
-      // 2. Send outbound manager message
+      // 2. Send outbound manager message (with isVoice: true for backend transcoding to OGG Opus / MP4)
       await onSendMessage({
         mediaUrl: uploadRes.mediaUrl,
         mediaType: "AUDIO",
+        isVoice: true,
         durationSeconds: duration,
         fileName: uploadRes.fileName,
         mimeType: uploadRes.mimeType,
