@@ -5,7 +5,13 @@ import { useInboxStore } from '@/store/inbox.store';
 import { useNotificationsStore } from '@/store/notifications.store';
 import { useSWRConfig } from 'swr';
 import { getSocketBaseUrl } from '@/lib/api/socketUrl';
-import type { MessageDto, ConversationDto } from '@/lib/api/conversations';
+import type {
+  MessageDto,
+  ConversationDto,
+  ConversationStatus,
+  PaginatedConversationsResponse,
+  AssignedStaffDto,
+} from '@/lib/api/conversations';
 import type { NotificationDto } from '@/lib/api/notifications';
 import { useMessageSound } from '@/hooks/useMessageSound';
 
@@ -82,12 +88,64 @@ export function useInboxRealtime(workspaceId?: string) {
       }
     });
 
-    socket.on('conversation.updated', (payload: { id: string; status: string; lastMessageAt: string; unreadCount: number }) => {
-      setUnreadCount(payload.id, payload.unreadCount);
-      mutate((key) => Array.isArray(key) && key[0] === 'conversations');
-    });
+    socket.on(
+      'conversation.updated',
+      (payload: {
+        id: string;
+        status?: ConversationStatus;
+        lastMessageAt?: string;
+        unreadCount?: number;
+        takenOverByActorId?: string | null;
+        assignedStaffId?: string | null;
+        assignedStaff?: AssignedStaffDto | null;
+      }) => {
+        if (typeof payload.unreadCount === 'number') {
+          setUnreadCount(payload.id, payload.unreadCount);
+        }
 
-    socket.on('conversation.new', (newConv: ConversationDto) => {
+        // Real-time lock reactivity: release or mark taken
+        if (payload.status === 'BOT_ACTIVE' || payload.takenOverByActorId === null) {
+          markReleased(payload.id);
+        } else if (payload.takenOverByActorId) {
+          markTaken(payload.id);
+        }
+
+        // Optimistically update conversation list caches and revalidate
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'conversations',
+          (current: PaginatedConversationsResponse | undefined) => {
+            if (!current?.data) return current;
+            return {
+              ...current,
+              data: current.data.map((c) =>
+                c.id === payload.id
+                  ? {
+                      ...c,
+                      ...(payload.status ? { status: payload.status as ConversationStatus } : {}),
+                      ...(payload.takenOverByActorId !== undefined
+                        ? { takenOverByActorId: payload.takenOverByActorId }
+                        : {}),
+                      ...(payload.assignedStaffId !== undefined
+                        ? { assignedStaffId: payload.assignedStaffId }
+                        : {}),
+                      ...(payload.assignedStaff !== undefined
+                        ? { assignedStaff: payload.assignedStaff }
+                        : {}),
+                      ...(payload.lastMessageAt ? { lastMessageAt: payload.lastMessageAt } : {}),
+                      ...(typeof payload.unreadCount === 'number'
+                        ? { unreadCount: payload.unreadCount }
+                        : {}),
+                    }
+                  : c
+              ),
+            };
+          },
+          { revalidate: true }
+        );
+      }
+    );
+
+    socket.on('conversation.new', (_newConv: ConversationDto) => {
       mutate((key) => Array.isArray(key) && key[0] === 'conversations');
     });
 
@@ -116,7 +174,7 @@ export function useInboxRealtime(workspaceId?: string) {
 
     socket.on(
       'conversation.escalated',
-      (payload: { conversationId: string; triggerType: string; reason: string | null; triggeredAt: string }) => {
+      (_payload: { conversationId: string; triggerType: string; reason: string | null; triggeredAt: string }) => {
         // Revalidate conversation list so escalated item shows amber badge
         mutate((key) => Array.isArray(key) && key[0] === 'conversations');
       }
@@ -124,10 +182,38 @@ export function useInboxRealtime(workspaceId?: string) {
 
     socket.on(
       'conversation.takeover',
-      (payload: { conversationId: string; takenOverAt: string }) => {
+      (payload: {
+        conversationId: string;
+        takenOverAt?: string;
+        actorId?: string;
+        assignedStaff?: AssignedStaffDto | null;
+      }) => {
         // Mark as taken so TakeoverControl disables the button for other users
         markTaken(payload.conversationId);
-        mutate((key) => Array.isArray(key) && key[0] === 'conversations');
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'conversations',
+          (current: PaginatedConversationsResponse | undefined) => {
+            if (!current?.data) return current;
+            return {
+              ...current,
+              data: current.data.map((c) =>
+                c.id === payload.conversationId
+                  ? {
+                      ...c,
+                      status: 'MANAGER_INTERCEPTED' as ConversationStatus,
+                      ...(payload.actorId !== undefined
+                        ? { takenOverByActorId: payload.actorId }
+                        : {}),
+                      ...(payload.assignedStaff !== undefined
+                        ? { assignedStaff: payload.assignedStaff }
+                        : {}),
+                    }
+                  : c
+              ),
+            };
+          },
+          { revalidate: true }
+        );
       }
     );
 
@@ -136,7 +222,26 @@ export function useInboxRealtime(workspaceId?: string) {
       (payload: { conversationId: string }) => {
         // Re-enable Take Over button for all users
         markReleased(payload.conversationId);
-        mutate((key) => Array.isArray(key) && key[0] === 'conversations');
+        mutate(
+          (key) => Array.isArray(key) && key[0] === 'conversations',
+          (current: PaginatedConversationsResponse | undefined) => {
+            if (!current?.data) return current;
+            return {
+              ...current,
+              data: current.data.map((c) =>
+                c.id === payload.conversationId
+                  ? {
+                      ...c,
+                      status: 'BOT_ACTIVE' as ConversationStatus,
+                      takenOverByActorId: null,
+                      assignedStaff: null,
+                    }
+                  : c
+              ),
+            };
+          },
+          { revalidate: true }
+        );
       }
     );
 

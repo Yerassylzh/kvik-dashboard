@@ -67,7 +67,6 @@ The backend has implemented the **Multimodal Conversation Processing Engine** (`
        content?: string,
        mediaUrl: string,
        mediaType: "AUDIO" | "IMAGE" | "DOCUMENT" | "VIDEO",
-       isVoice: true,                 // <── Triggers backend ffmpeg transcoding to OGG/MP4
        durationSeconds: 14.5,
        mimeType: "audio/webm",
        fileName: "voice-recording.webm"
@@ -129,7 +128,6 @@ export interface SendManagerMessageDto {
   mimeType?: string;
   fileSize?: number;
   durationSeconds?: number | null;
-  isVoice?: boolean; // Required for backend to trigger AudioTranscoderService
 }
 ```
 

@@ -720,6 +720,8 @@ dashboard.help_modal.email_title
 dashboard.help_modal.telegram_desc
 dashboard.help_modal.telegram_title
 dashboard.help_modal.title
+dashboard.inbox.ai_description_toggle_hide
+dashboard.inbox.ai_description_toggle_show
 dashboard.inbox.ai_processed_badge
 dashboard.inbox.ai_processed_tooltip
 dashboard.inbox.attach_file

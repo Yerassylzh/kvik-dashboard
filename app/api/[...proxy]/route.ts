@@ -43,6 +43,16 @@ async function handleProxy(request: NextRequest, params: { proxy: string[] }) {
     });
 
     const resData = await backendRes.arrayBuffer();
+
+    if (backendRes.status >= 400) {
+      try {
+        const textPreview = new TextDecoder().decode(resData);
+        console.error(`[Proxy Backend Error ${backendRes.status}] ${request.method} ${targetUrl}:`, textPreview);
+      } catch {
+        // ignore decode error
+      }
+    }
+
     const response = new NextResponse(resData, {
       status: backendRes.status,
       statusText: backendRes.statusText,

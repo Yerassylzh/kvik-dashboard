@@ -16,6 +16,39 @@ interface MessageBubbleProps {
   message: MessageDto;
 }
 
+/** Helper to identify backend-generated semantic tags, file labels, or duplicate AI descriptions */
+function isSyntheticMediaPlaceholder(content?: string, metadata?: MessageMediaMetadata): boolean {
+  if (!content) return true;
+  const trimmed = content.trim();
+  if (!trimmed) return true;
+
+  // Match against metadata file names, AI descriptions, or extracted texts
+  if (metadata?.fileName && trimmed === metadata.fileName.trim()) return true;
+  if (
+    metadata?.aiDescription &&
+    (trimmed === metadata.aiDescription.trim() || trimmed.includes(metadata.aiDescription.trim()))
+  ) {
+    return true;
+  }
+  if (
+    metadata?.extractedText &&
+    (trimmed === metadata.extractedText.trim() || trimmed.includes(metadata.extractedText.trim()))
+  ) {
+    return true;
+  }
+
+  // Voice note indicator
+  if (trimmed.startsWith("🎤")) return true;
+
+  // Regex for backend semantic placeholder tags:
+  // e.g. 📷 [Фотография: ...], [📷 Фотография: ...], [Фотография: ...], 📷 [Фотография], [🎥 Видеозапись: ...], [📄 Документ: ...], [📎 Файл: ...]
+  const syntheticMediaPattern =
+    /^(\s*[-—–]?\s*\[?\s*(📷|🎥|📄|📎)?\s*\[?\s*(Фотография|Фото|Видеозапись|Видео|Документ|Файл|Голосовое сообщение)[\s\S]*?\]?\s*)+$/i;
+  if (syntheticMediaPattern.test(trimmed)) return true;
+
+  return false;
+}
+
 export function MessageBubble({ message }: MessageBubbleProps) {
   const t = useTranslations("dashboard");
   const isUser = message.role === "USER";
@@ -32,15 +65,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const mediaUrl = metadata?.mediaUrl;
   const tier = metadata?.aiProcessingTier;
 
-  // Decide whether to render separate text content (e.g. caption for media)
+  // Decide whether to render separate text content (e.g. caption for media vs pure text message)
   const isVoice = mediaType === "AUDIO";
-  const shouldRenderText =
-    message.content &&
-    !isVoice &&
-    message.content !== metadata?.fileName &&
-    !message.content.startsWith("📷 Фотография") &&
-    !message.content.startsWith("📄 Документ") &&
-    !message.content.startsWith("🎥 Видео");
+  const hasMedia = Boolean(mediaUrl || mediaType);
+  const shouldRenderText = hasMedia
+    ? !isVoice && Boolean(message.content && !isSyntheticMediaPlaceholder(message.content, metadata))
+    : Boolean(message.content && message.content.trim().length > 0);
 
   return (
     <div
@@ -111,7 +141,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                   <VoiceMessagePlayer
                     mediaUrl={mediaUrl}
                     durationSeconds={metadata?.durationSeconds}
-                    transcription={metadata?.transcription}
+                    transcription={
+                      metadata?.transcription ||
+                      (message.content?.startsWith("🎤 ") &&
+                      !message.content.includes("Голосовое сообщение")
+                        ? message.content.slice(2).trim()
+                        : undefined)
+                    }
                     detectedLanguage={metadata?.detectedLanguage}
                     transcriptionConfidence={metadata?.transcriptionConfidence}
                     transcriptionError={metadata?.transcriptionError}

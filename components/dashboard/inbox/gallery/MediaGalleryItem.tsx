@@ -137,24 +137,70 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
 
   // 3. Audio Item
   if (item.mediaType === "AUDIO") {
+    const hasTranscript = Boolean(item.transcription && item.transcription.trim().length > 0);
+    const transcriptSnippet = item.transcription?.trim();
+    const isManager = item.role === "MANAGER";
+    const isUser = item.role === "USER";
+
+    const senderBadgeLabel = isUser
+      ? t("inbox.sender_client")
+      : isManager
+      ? (item.senderName || t("inbox.sender_manager"))
+      : t("inbox.sender_bot");
+
     return (
-      <div className="flex items-center justify-between gap-2.5 p-2.5 rounded-xl border border-border/70 bg-card hover:bg-muted/40 transition-colors">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <Music className="w-4 h-4" />
+      <div className="p-3 rounded-xl border border-border/70 bg-card hover:bg-muted/30 transition-colors space-y-2">
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              className={clsx(
+                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                isManager
+                  ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                  : isUser
+                  ? "bg-primary/10 text-primary border border-primary/20"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              <Music className="w-4 h-4" />
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="text-xs font-semibold text-foreground truncate">
+                  {item.caption || item.fileName || t("inbox.media_tab_voice")}
+                </p>
+                <span
+                  className={clsx(
+                    "text-[10px] px-1.5 py-0.2 rounded font-medium shrink-0",
+                    isManager
+                      ? "bg-amber-50 text-amber-700 border border-amber-200"
+                      : isUser
+                      ? "bg-primary/10 text-primary border border-primary/20"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {senderBadgeLabel}
+                </span>
+              </div>
+              <p className="text-[10px] font-mono text-muted-foreground tabular-nums mt-0.5">
+                {timeLabel} {item.durationSeconds ? `• ${Math.round(item.durationSeconds)}с` : ""}
+                {item.detectedLanguage ? ` • ${item.detectedLanguage.toUpperCase()}` : ""}
+              </p>
+            </div>
           </div>
 
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-foreground truncate">
-              {item.caption || item.fileName || t("inbox.media_tab_voice")}
-            </p>
-            <p className="text-[10px] font-mono text-muted-foreground tabular-nums mt-0.5">
-              {timeLabel} {item.durationSeconds ? `• ${Math.round(item.durationSeconds)}с` : ""}
-            </p>
-          </div>
+          <AttachmentActions mediaUrl={item.mediaUrl} fileName={item.fileName || "voice.ogg"} />
         </div>
 
-        <AttachmentActions mediaUrl={item.mediaUrl} fileName={item.fileName || "voice.ogg"} />
+        {/* Transcribed text snippet */}
+        {hasTranscript && (
+          <div className="px-2.5 py-2 rounded-lg bg-muted/50 border border-border/40 text-[11px] leading-relaxed text-foreground">
+            <p className="line-clamp-3 text-muted-foreground italic">
+              “{transcriptSnippet}”
+            </p>
+          </div>
+        )}
       </div>
     );
   }

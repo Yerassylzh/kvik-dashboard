@@ -248,7 +248,8 @@ export function VoiceMessagePlayer({
       )}
 
       {/* Deepgram Transcription Accordion */}
-      {(transcription || transcriptionError) && (
+      {((isUserMessage && (transcription || transcriptionError)) ||
+        (!isUserMessage && Boolean(transcription && transcription.trim().length > 0))) && (
         <div
           className={clsx(
             "rounded-xl border transition-colors overflow-hidden text-xs",
@@ -297,7 +298,7 @@ export function VoiceMessagePlayer({
                 isUserMessage ? "border-white/20 text-white/90" : "border-border/50 text-muted-foreground"
               )}
             >
-              {transcription ? (
+              {transcription && transcription.trim().length > 0 ? (
                 <p className="whitespace-pre-wrap break-words">{transcription}</p>
               ) : (
                 <p className="italic opacity-80">{t("inbox.voice_transcription_empty")}</p>

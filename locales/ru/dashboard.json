@@ -313,7 +313,9 @@
     "file_type_pdf": "PDF Документ",
     "file_type_sheet": "Таблица Excel / CSV",
     "file_type_doc": "Документ Word",
-    "file_type_binary": "Системный файл"
+    "file_type_binary": "Системный файл",
+    "ai_description_toggle_show": "Описание от ИИ",
+    "ai_description_toggle_hide": "Скрыть описание"
   },
   "bookings": {
     "title": "Журнал записей",

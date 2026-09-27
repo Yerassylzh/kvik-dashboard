@@ -91,9 +91,7 @@ export async function getKnowledgeNotes(): Promise<KnowledgeNoteStatus[]> {
 export async function uploadKnowledgeDocument(file: File): Promise<void> {
   const formData = new FormData();
   formData.append('file', file);
-  await apiClient.post('/onboarding/step/knowledge-documents', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  await apiClient.post('/onboarding/step/knowledge-documents', formData);
 }
 
 export async function confirmDataSourceStep(): Promise<OnboardingStateResponse> {

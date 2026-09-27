@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Send,
-  ShieldCheck,
-  Lock,
-  Bot,
-  UserCheck,
-  AlertTriangle,
-  Mic,
-} from "lucide-react";
+import { Send, ShieldCheck, Lock, Bot, UserCheck, AlertTriangle, Mic } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -51,17 +43,12 @@ export function ManagerComposer({
   const [isSending, setIsSending] = useState(false);
   const [isTakingOver, setIsTakingOver] = useState(false);
   const [isLockedByOther, setIsLockedByOther] = useState(false);
-  // Optimistic: immediately show input after takeover without waiting for SWR revalidation
   const [isOptimisticOwner, setIsOptimisticOwner] = useState(false);
-  const [stagedMedia, setStagedMedia] = useState<{
-    file: File;
-    mediaType: MediaType;
-  } | null>(null);
+  const [stagedMedia, setStagedMedia] = useState<{ file: File; mediaType: MediaType } | null>(null);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const user = useAuthStore((s) => s.user);
-  // Mirror backend: actorId = user.staffMemberId ?? user.sub (decoded from JWT)
   const myActorId = useActorId();
   const { takenConversationIds } = useInboxStore();
 
@@ -90,6 +77,13 @@ export function ManagerComposer({
     setIsLockedByOther(false);
   }, [conversationId]);
 
+  useEffect(() => {
+    if (status === "BOT_ACTIVE" || takenOverByActorId === null) {
+      setIsOptimisticOwner(false);
+      setIsLockedByOther(false);
+    }
+  }, [status, takenOverByActorId]);
+
   const senderLabel = user?.staffProfile?.name
     ? `${user.staffProfile.name}${user.staffProfile.role ? ` (${user.staffProfile.role})` : ""}`
     : t("inbox.sender_manager");
@@ -97,15 +91,13 @@ export function ManagerComposer({
   const isAssignedToMe = isOptimisticOwner || (!!myActorId && takenOverByActorId === myActorId);
   const isLockedExternally =
     !isAssignedToMe &&
-    (Boolean(takenOverByActorId) ||
-      Boolean(conversationId && takenConversationIds.has(conversationId)));
+    (Boolean(takenOverByActorId) || Boolean(conversationId && takenConversationIds.has(conversationId)));
 
   const handleTakeoverClick = async () => {
     if (!onTakeover || isTakingOver) return;
     setIsTakingOver(true);
     try {
       await onTakeover();
-      // Optimistically unlock the composer without waiting for SWR revalidation
       setIsOptimisticOwner(true);
       setIsLockedByOther(false);
     } finally {
@@ -132,12 +124,8 @@ export function ManagerComposer({
               <Bot className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-foreground">
-                {t("inbox.composer_bot_active_title")}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                {t("inbox.composer_bot_active_desc")}
-              </p>
+              <p className="text-xs font-semibold text-foreground">{t("inbox.composer_bot_active_title")}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{t("inbox.composer_bot_active_desc")}</p>
             </div>
           </div>
 
@@ -179,12 +167,8 @@ export function ManagerComposer({
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-foreground">
-                {t("inbox.composer_unassigned_title")}
-              </p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                {t("inbox.composer_unassigned_desc")}
-              </p>
+              <p className="text-xs font-semibold text-foreground">{t("inbox.composer_unassigned_title")}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{t("inbox.composer_unassigned_desc")}</p>
             </div>
           </div>
 
@@ -219,19 +203,11 @@ export function ManagerComposer({
         return;
       }
 
-      // 1. Upload audio recording to Cloudflare R2 / local storage
-      const uploadRes = await conversationsApi.uploadMedia(
-        conversationId,
-        blob,
-        "AUDIO",
-        duration
-      );
+      const uploadRes = await conversationsApi.uploadMedia(conversationId, blob, "AUDIO", duration);
 
-      // 2. Send outbound manager message (with isVoice: true for backend transcoding to OGG Opus / MP4)
       await onSendMessage({
         mediaUrl: uploadRes.mediaUrl,
         mediaType: "AUDIO",
-        isVoice: true,
         durationSeconds: duration,
         fileName: uploadRes.fileName,
         mimeType: uploadRes.mimeType,
@@ -240,11 +216,16 @@ export function ManagerComposer({
 
       setIsLockedByOther(false);
     } catch (err: unknown) {
+      console.error("[ManagerComposer] handleSendVoice failed:", err);
       const errCode = (err as { data?: { code?: string } })?.data?.code;
       if (errCode === "conversations.taken_over_by_other") {
         setIsLockedByOther(true);
       } else {
-        toast.error(t("inbox.outbound_media_failed" as any) || "Failed to send voice note");
+        const errMsg =
+          (err as { message?: string })?.message ||
+          t("inbox.outbound_media_failed" as any) ||
+          "Failed to send voice note";
+        toast.error(errMsg);
       }
     } finally {
       setIsUploadingMedia(false);
@@ -262,14 +243,12 @@ export function ManagerComposer({
     try {
       if (mediaToUpload) {
         setIsUploadingMedia(true);
-        // Upload staged media attachment
         const uploadRes = await conversationsApi.uploadMedia(
           conversationId,
           mediaToUpload.file,
           mediaToUpload.mediaType
         );
 
-        // Send message with media payload and optional caption
         await onSendMessage({
           content: textToSend || undefined,
           mediaUrl: uploadRes.mediaUrl,
@@ -281,17 +260,22 @@ export function ManagerComposer({
 
         setStagedMedia(null);
       } else {
-        // Send regular text message
         await onSendMessage(textToSend);
       }
 
       setContent("");
       setIsLockedByOther(false);
     } catch (err: unknown) {
+      console.error("[ManagerComposer] handleSend failed:", err);
       const errCode = (err as { data?: { code?: string } })?.data?.code;
       if (errCode === "conversations.taken_over_by_other") {
         setIsLockedByOther(true);
       } else {
+        const errMsg =
+          (err as { message?: string })?.message ||
+          t("inbox.outbound_media_failed" as any) ||
+          "Failed to send message";
+        toast.error(errMsg);
         setContent(textToSend);
       }
     } finally {
@@ -339,29 +323,22 @@ export function ManagerComposer({
         />
       ) : (
         <div className="flex items-end gap-1.5 bg-muted/40 border border-border/60 rounded-2xl p-1.5 focus-within:border-primary/60 transition-colors">
-          {/* Attachment Paperclip Picker */}
           <AttachmentPicker
             disabled={isBusy}
             onFileSelected={(file, mediaType) => setStagedMedia({ file, mediaType })}
           />
 
-          {/* Text / Caption Area */}
           <textarea
             ref={textareaRef}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={
-              stagedMedia
-                ? t("inbox.caption_placeholder")
-                : t("inbox.composer_placeholder")
-            }
+            placeholder={stagedMedia ? t("inbox.caption_placeholder") : t("inbox.composer_placeholder")}
             rows={1}
             disabled={isBusy}
             className="flex-1 bg-transparent resize-none px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none max-h-32 min-h-[38px]"
           />
 
-          {/* Voice Record Mic Trigger */}
           <button
             type="button"
             disabled={isBusy || !!stagedMedia}
@@ -372,7 +349,6 @@ export function ManagerComposer({
             <Mic className="w-4 h-4" />
           </button>
 
-          {/* Send Button */}
           <Button
             type="button"
             size="sm"

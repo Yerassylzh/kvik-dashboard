@@ -57,6 +57,11 @@ apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     if (config.headers) {
       config.headers['Accept-Language'] = getCurrentLocale();
+
+      // For FormData payloads, remove manual Content-Type to allow browser/Axios to set multipart boundary
+      if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+      }
     }
 
     const isAuthRoute =
@@ -164,6 +169,18 @@ apiClient.interceptors.response.use(
         );
       }
     }
+
+    console.error(
+      '[apiClient Error]',
+      error.config?.method?.toUpperCase(),
+      error.config?.url,
+      'Status:',
+      error.response?.status,
+      'Response Body:',
+      error.response?.data,
+      'Request Payload:',
+      error.config?.data
+    );
 
     const message =
       (error.response?.data as { message?: string })?.message ||

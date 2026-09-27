@@ -98,7 +98,7 @@ export function useConversationMessages(conversationId: string | null) {
               mimeType: (payload as SendManagerMessageDto).mimeType,
               fileSize: (payload as SendManagerMessageDto).fileSize,
               durationSeconds: (payload as SendManagerMessageDto).durationSeconds ?? undefined,
-              isVoice: (payload as SendManagerMessageDto).isVoice ?? ((payload as SendManagerMessageDto).mediaType === 'AUDIO'),
+              isVoice: (payload as SendManagerMessageDto).mediaType === 'AUDIO',
             }
           : null,
         createdAt: new Date().toISOString(),

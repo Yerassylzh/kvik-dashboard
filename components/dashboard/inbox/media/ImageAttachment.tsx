@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ImageOff, Sparkles, Info } from "lucide-react";
+import { ImageOff, Sparkles, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MediaLightboxModal } from "./MediaLightboxModal";
 import { AttachmentActions } from "./AttachmentActions";
@@ -28,6 +28,7 @@ export function ImageAttachment({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
   if (hasError) {
     return (
@@ -79,16 +80,50 @@ export function ImageAttachment({
         </div>
       </div>
 
-      {/* AI Description Tooltip / Caption if available */}
+      {/* Collapsible AI Description Accordion */}
       {aiDescription && (
-        <div
-          className={clsx(
-            "mt-1.5 flex items-start gap-1.5 text-[11px] leading-tight max-w-[280px] sm:max-w-[320px] px-1",
-            isUserMessage ? "text-white/80" : "text-muted-foreground"
+        <div className="mt-1.5 w-full max-w-[280px] sm:max-w-[320px]">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDescriptionOpen((prev) => !prev);
+            }}
+            className={clsx(
+              "flex items-center justify-between w-full px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors cursor-pointer",
+              isUserMessage
+                ? "bg-white/10 hover:bg-white/15 text-white/90 border border-white/20"
+                : "bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/50"
+            )}
+          >
+            <div className="flex items-center gap-1.5 min-w-0">
+              <Sparkles className="w-3 h-3 shrink-0 opacity-80 text-amber-400" />
+              <span className="truncate">
+                {isDescriptionOpen
+                  ? t("inbox.ai_description_toggle_hide")
+                  : t("inbox.ai_description_toggle_show")}
+              </span>
+            </div>
+            <ChevronDown
+              className={clsx(
+                "w-3.5 h-3.5 shrink-0 transition-transform duration-200 opacity-75",
+                isDescriptionOpen && "rotate-180"
+              )}
+            />
+          </button>
+
+          {isDescriptionOpen && (
+            <div
+              className={clsx(
+                "mt-1 p-2.5 rounded-lg text-xs leading-relaxed italic border animate-in fade-in duration-150 whitespace-pre-wrap break-words",
+                isUserMessage
+                  ? "bg-black/20 border-white/15 text-white/90"
+                  : "bg-muted/40 border-border/60 text-muted-foreground"
+              )}
+            >
+              {aiDescription}
+            </div>
           )}
-        >
-          <Info className="w-3 h-3 shrink-0 mt-0.5 opacity-70" />
-          <span className="italic">{aiDescription}</span>
         </div>
       )}
 

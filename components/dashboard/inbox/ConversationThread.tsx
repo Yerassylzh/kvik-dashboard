@@ -78,6 +78,12 @@ export function ConversationThread({
     setIsOptimisticTaken(false);
   }, [conversation?.id]);
 
+  useEffect(() => {
+    if (conversation?.status === "BOT_ACTIVE" || conversation?.takenOverByActorId === null) {
+      setIsOptimisticTaken(false);
+    }
+  }, [conversation?.status, conversation?.takenOverByActorId]);
+
   const { messages, isLoading, sendMessage, updateStatus, refresh } = useConversationMessages(
     conversation?.id || null
   );

@@ -42,6 +42,12 @@ export function TakeoverControl({
     setIsOptimisticOwner(false);
   }, [conversation.id]);
 
+  React.useEffect(() => {
+    if (conversation.status === "BOT_ACTIVE" || conversation.takenOverByActorId === null) {
+      setIsOptimisticOwner(false);
+    }
+  }, [conversation.status, conversation.takenOverByActorId]);
+
   const { takenConversationIds } = useInboxStore();
   // Mirror backend exactly: actorId = user.staffMemberId ?? user.sub
   // Decoded from JWT so the owner (no staffMemberId in JWT) resolves to userId,

@@ -123,7 +123,6 @@ export interface SendManagerMessageDto {
   mimeType?: string;
   fileSize?: number;
   durationSeconds?: number | null;
-  isVoice?: boolean;
 }
 
 export interface UploadMediaResponse {
@@ -188,24 +187,28 @@ export const conversationsApi = {
     conversationId: string,
     file: File | Blob,
     mediaType?: MediaType,
-    durationSeconds?: number
+    _durationSeconds?: number
   ): Promise<UploadMediaResponse> => {
+    const rawMime =
+      file.type?.split(';')[0]?.trim() ||
+      (mediaType === 'AUDIO' ? 'audio/webm' : 'application/octet-stream');
+    const defaultExt = mediaType === 'AUDIO' ? 'webm' : mediaType === 'IMAGE' ? 'jpg' : 'bin';
+    const fileName =
+      file instanceof File ? file.name : `voice-recording-${Date.now()}.${defaultExt}`;
+    const fileToUpload =
+      file instanceof File
+        ? file
+        : new File([file], fileName, { type: rawMime });
+
     const formData = new FormData();
-    const fileName = file instanceof File ? file.name : `voice-recording-${Date.now()}.webm`;
-    formData.append('file', file, fileName);
+    formData.append('file', fileToUpload, fileName);
     if (mediaType) {
       formData.append('mediaType', mediaType);
-    }
-    if (durationSeconds !== undefined && durationSeconds !== null) {
-      formData.append('durationSeconds', String(durationSeconds));
     }
 
     const { data } = await apiClient.post<UploadMediaResponse>(
       `/conversations/${conversationId}/media/upload`,
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      }
+      formData
     );
     return data;
   },

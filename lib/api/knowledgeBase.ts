@@ -52,10 +52,7 @@ export const knowledgeBaseApi = {
     formData.append('file', file);
     const { data } = await apiClient.post<KnowledgeDocumentDto>(
       '/knowledge-base/documents',
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      }
+      formData
     );
     return data;
   },
