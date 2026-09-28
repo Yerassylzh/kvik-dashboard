@@ -283,5 +283,11 @@
   "dashboard.inbox.file_type_pdf": "PDF Документ",
   "dashboard.inbox.file_type_sheet": "Таблица Excel / CSV",
   "dashboard.inbox.file_type_doc": "Документ Word",
-  "dashboard.inbox.file_type_binary": "Системный файл"
+  "dashboard.inbox.file_type_binary": "Системный файл",
+  "dashboard.channels.token_expires_in": "Истекает через {days} дн.",
+  "dashboard.channels.token_expired": "Срок действия токена истек",
+  "dashboard.channels.token_valid_until": "Действителен до {date}",
+  "dashboard.channels.reconnect_btn": "Переподключить",
+  "dashboard.channels.extend_access_btn": "Продлить доступ",
+  "dashboard.channels.disconnect_confirm": "Вы уверены, что хотите отключить этот канал? Автоответы ИИ будут остановлены."
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
+import { ConfirmDeleteModal } from "@/components/dashboard/shared/ConfirmDeleteModal";
 import {
   listChannels,
   disconnectChannel,
@@ -41,6 +42,7 @@ export function ChannelsManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [checkingType, setCheckingType] = useState<ChannelType | null>(null);
   const [disconnectingType, setDisconnectingType] = useState<ChannelType | null>(null);
+  const [confirmDisconnectType, setConfirmDisconnectType] = useState<ChannelType | null>(null);
   const [activeConnectingType, setActiveConnectingType] = useState<ChannelType | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(
     null
@@ -92,7 +94,9 @@ export function ChannelsManager() {
     }
   };
 
-  const handleDisconnect = async (type: ChannelType) => {
+  const handleExecuteDisconnect = async () => {
+    if (!confirmDisconnectType) return;
+    const type = confirmDisconnectType;
     setDisconnectingType(type);
     try {
       await disconnectChannel(type);
@@ -106,9 +110,13 @@ export function ChannelsManager() {
         message: tChannels("channel_disconnected"),
       });
     } catch {
-      // Handled globally
+      setFeedback({
+        type: "error",
+        message: tChannels("channel_not_found"),
+      });
     } finally {
       setDisconnectingType(null);
+      setConfirmDisconnectType(null);
       setTimeout(() => setFeedback(null), 4000);
     }
   };
@@ -130,53 +138,65 @@ export function ChannelsManager() {
   };
 
   return (
-    <SectionCard
-      title={t("channels.title")}
-      description={t("channels.description")}
-      className="max-w-4xl"
-    >
-      <div className="space-y-3 pt-2">
-        {feedback && (
-          <div
-            className={`p-3 rounded-xl border text-xs flex items-center gap-2 animate-in fade-in ${
-              feedback.type === "success"
-                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                : "alert-destructive border"
-            }`}
-          >
-            {feedback.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 shrink-0" />
-            )}
-            <span>{feedback.message}</span>
-          </div>
-        )}
+    <>
+      <SectionCard
+        title={t("channels.title")}
+        description={t("channels.description")}
+        className="max-w-4xl"
+      >
+        <div className="space-y-3 pt-2">
+          {feedback && (
+            <div
+              className={`p-3 rounded-xl border text-xs flex items-center gap-2 animate-in fade-in ${
+                feedback.type === "success"
+                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                  : "alert-destructive border"
+              }`}
+            >
+              {feedback.type === "success" ? (
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 shrink-0" />
+              )}
+              <span>{feedback.message}</span>
+            </div>
+          )}
 
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 rounded-2xl bg-muted/40 animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          CHANNEL_CONFIGS.map((cfg) => (
-            <ChannelCard
-              key={cfg.type}
-              config={cfg}
-              channel={channelMap[cfg.type]}
-              isChecking={checkingType === cfg.type}
-              isDisconnecting={disconnectingType === cfg.type}
-              isConnecting={activeConnectingType === cfg.type}
-              onCheckHealth={handleCheckHealth}
-              onDisconnect={handleDisconnect}
-              onStartConnect={(type) => setActiveConnectingType(type)}
-              onCancelConnect={() => setActiveConnectingType(null)}
-              onConnectSuccess={handleConnectSuccess}
-            />
-          ))
-        )}
-      </div>
-    </SectionCard>
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-20 rounded-2xl bg-muted/40 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            CHANNEL_CONFIGS.map((cfg) => (
+              <ChannelCard
+                key={cfg.type}
+                config={cfg}
+                channel={channelMap[cfg.type]}
+                isChecking={checkingType === cfg.type}
+                isDisconnecting={disconnectingType === cfg.type}
+                isConnecting={activeConnectingType === cfg.type}
+                onCheckHealth={handleCheckHealth}
+                onDisconnect={(type) => setConfirmDisconnectType(type)}
+                onStartConnect={(type) => setActiveConnectingType(type)}
+                onCancelConnect={() => setActiveConnectingType(null)}
+                onConnectSuccess={handleConnectSuccess}
+              />
+            ))
+          )}
+        </div>
+      </SectionCard>
+
+      <ConfirmDeleteModal
+        isOpen={confirmDisconnectType !== null}
+        onClose={() => setConfirmDisconnectType(null)}
+        onConfirm={handleExecuteDisconnect}
+        isLoading={disconnectingType !== null}
+        title={t("channels.disconnect_btn")}
+        description={t("channels.disconnect_confirm")}
+        confirmLabel={t("channels.disconnect_btn")}
+      />
+    </>
   );
 }

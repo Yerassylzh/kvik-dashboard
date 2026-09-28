@@ -735,7 +735,13 @@
     "not_configured": "Канал не подключен",
     "last_synced": "Активен",
     "refresh_success": "Канал активен и работает корректно",
-    "refresh_error": "Ошибка при проверке канала"
+    "refresh_error": "Ошибка при проверке канала",
+    "token_expires_in": "Истекает через {days} дн.",
+    "token_expired": "Срок действия токена истек",
+    "token_valid_until": "Действителен до {date}",
+    "reconnect_btn": "Переподключить",
+    "extend_access_btn": "Продлить доступ",
+    "disconnect_confirm": "Вы уверены, что хотите отключить этот канал? Автоответы ИИ будут остановлены."
   },
   "knowledge": {
     "title": "База знаний и источники",

@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import { connectWhatsApp, getMetaConfig } from "@/lib/api/channels";
+import { loadMetaSdk } from "@/lib/meta-sdk";
 import { WhatsAppChannelMetadata, MetaConfig, FbLoginResponse } from "@/types/channels";
 
 interface WhatsAppFlowProps {
@@ -29,7 +30,7 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
   const metaConfigRef = useRef<MetaConfig | null>(null);
   const wabaDataRef = useRef<WabaSessionData | null>(null);
 
-  // 1. Fetch backend Meta config & initialize Meta JS SDK
+  // 1. Fetch backend Meta config & initialize Meta JS SDK via singleton loader
   useEffect(() => {
     let cancelled = false;
 
@@ -40,48 +41,21 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
         metaConfigRef.current = config;
 
         const appId = config.appId;
-        const apiVersion = config.apiVersion || "v25.0";
+        const apiVersion = config.apiVersion || "v22.0";
 
         if (!appId) {
           throw new Error("Meta App ID is not configured");
         }
 
-        if (typeof window !== "undefined") {
-          const setupInit = () => {
-            try {
-              window.FB?.init({
-                appId,
-                autoLogAppEvents: true,
-                xfbml: true,
-                version: apiVersion,
-              });
-            } catch (initErr) {
-              console.warn("FB.init error:", initErr);
-            }
-          };
+        await loadMetaSdk({
+          appId,
+          apiVersion,
+          autoLogAppEvents: true,
+          xfbml: true,
+        });
 
-          if (window.FB) {
-            setupInit();
-          } else {
-            window.fbAsyncInit = () => {
-              setupInit();
-            };
-
-            if (!document.getElementById("facebook-jssdk")) {
-              const js = document.createElement("script");
-              js.id = "facebook-jssdk";
-              js.src = "https://connect.facebook.net/en_US/sdk.js";
-              js.async = true;
-              js.defer = true;
-              js.crossOrigin = "anonymous";
-              js.onerror = () => {
-                if (!cancelled) {
-                  setError(t("whatsapp_flow_sdk_error"));
-                }
-              };
-              document.body.appendChild(js);
-            }
-          }
+        if (!cancelled) {
+          setFlowState("ready");
         }
       } catch (err) {
         if (!cancelled) {
@@ -107,8 +81,10 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     const handleMessage = (event: MessageEvent) => {
       if (
         !event.origin ||
-        (!event.origin.endsWith("facebook.com") &&
-          !event.origin.endsWith("meta.com"))
+        (event.origin !== "https://www.facebook.com" &&
+          event.origin !== "https://web.facebook.com" &&
+          !event.origin.endsWith(".facebook.com") &&
+          !event.origin.endsWith(".meta.com"))
       ) {
         return;
       }
@@ -121,10 +97,16 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
           const eventType = payload.event;
           if (
             eventType === "FINISH" ||
+            eventType === "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING" ||
             (typeof eventType === "string" && eventType.startsWith("FINISH")) ||
             payload.data
           ) {
             wabaDataRef.current = payload.data || {};
+          } else if (eventType === "CANCEL") {
+            setFlowState("ready");
+          } else if (eventType === "ERROR") {
+            setError(payload.data?.error_message || t("whatsapp_flow_error"));
+            setFlowState("ready");
           }
         }
       } catch {
@@ -136,7 +118,7 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [t]);
 
   const handleAuthResponse = useCallback(
     async (response: FbLoginResponse) => {
@@ -173,9 +155,9 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
     [onSuccess, t]
   );
 
-  // 3. Trigger FB.login popup with Embedded Signup config
+  // 3. Trigger FB.login popup with Embedded Signup v4 config
   const handleLaunchSignup = useCallback(() => {
-    if (typeof window !== "undefined" && window.location.protocol !== "https:") {
+    if (typeof window !== "undefined" && window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
       setError(t("whatsapp_flow_https_required"));
       setFlowState("ready");
       return;
@@ -207,6 +189,8 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
           override_default_response_type: true,
           extras: {
             setup: {},
+            featureType: "",
+            sessionInfoVersion: "3",
           },
         }
       );

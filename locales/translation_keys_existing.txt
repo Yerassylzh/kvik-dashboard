@@ -628,10 +628,13 @@ dashboard.channels.check_btn
 dashboard.channels.connect_btn
 dashboard.channels.description
 dashboard.channels.disconnect_btn
+dashboard.channels.disconnect_confirm
 dashboard.channels.disconnecting
+dashboard.channels.extend_access_btn
 dashboard.channels.instagram_name
 dashboard.channels.last_synced
 dashboard.channels.not_configured
+dashboard.channels.reconnect_btn
 dashboard.channels.refresh_error
 dashboard.channels.refresh_success
 dashboard.channels.status_connected
@@ -639,6 +642,9 @@ dashboard.channels.status_disconnected
 dashboard.channels.status_error
 dashboard.channels.telegram_name
 dashboard.channels.title
+dashboard.channels.token_expired
+dashboard.channels.token_expires_in
+dashboard.channels.token_valid_until
 dashboard.channels.whatsapp_name
 dashboard.clients.desc
 dashboard.clients.title

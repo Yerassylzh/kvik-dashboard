@@ -8,6 +8,7 @@ import {
   RefreshCw,
   PowerOff,
   Plus,
+  Clock,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,49 @@ export function resolveDetail(type: ChannelType, metadata: unknown): string | un
   return undefined;
 }
 
+interface ExpiryInfo {
+  text: string;
+  isExpiringSoon: boolean;
+  isExpired: boolean;
+}
+
+function resolveTokenExpiry(
+  dateStr?: string | null,
+  t?: (key: string, values?: Record<string, string | number>) => string
+): ExpiryInfo | null {
+  if (!dateStr) return null;
+  const expiryDate = new Date(dateStr);
+  if (isNaN(expiryDate.getTime())) return null;
+
+  const now = new Date();
+  const diffMs = expiryDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) {
+    return {
+      text: t ? t("channels.token_expired") : "Срок действия истек",
+      isExpiringSoon: true,
+      isExpired: true,
+    };
+  }
+  if (diffDays <= 7) {
+    return {
+      text: t ? t("channels.token_expires_in", { days: diffDays }) : `Истекает через ${diffDays} дн.`,
+      isExpiringSoon: true,
+      isExpired: false,
+    };
+  }
+  const formattedDate = expiryDate.toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "short",
+  });
+  return {
+    text: t ? t("channels.token_valid_until", { date: formattedDate }) : `Действителен до ${formattedDate}`,
+    isExpiringSoon: false,
+    isExpired: false,
+  };
+}
+
 interface ChannelCardProps {
   config: ChannelConfig;
   channel?: Channel;
@@ -78,8 +122,9 @@ export function ChannelCard({
   const tCommon = useTranslations("common");
 
   const isConnected = channel?.status === "CONNECTED";
-  const isError = channel?.status === "ERROR";
+  const isError = channel?.status === "ERROR" || channel?.status === "REVOKED";
   const detail = channel ? resolveDetail(config.type, channel.metadata) : null;
+  const expiry = isConnected ? resolveTokenExpiry(channel?.tokenExpiresAt, t) : null;
 
   return (
     <div className="flex flex-col p-4 rounded-2xl bg-card border border-border/60 hover:border-border transition-colors">
@@ -111,17 +156,42 @@ export function ChannelCard({
                   <span>{t("channels.status_disconnected")}</span>
                 </span>
               )}
+
+              {expiry && expiry.isExpiringSoon && (
+                <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                  <Clock className="w-3 h-3" />
+                  <span>{expiry.text}</span>
+                </span>
+              )}
             </div>
 
-            <p className="text-xs text-muted-foreground truncate font-mono">
-              {detail || (isConnected ? t("channels.last_synced") : t("channels.not_configured"))}
-            </p>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="truncate font-mono">
+                {detail || (isConnected ? t("channels.last_synced") : t("channels.not_configured"))}
+              </span>
+              {expiry && !expiry.isExpiringSoon && (
+                <>
+                  <span className="text-border">•</span>
+                  <span className="text-[11px] text-muted-foreground/80">{expiry.text}</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {isConnected ? (
             <>
+              {expiry?.isExpiringSoon && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onStartConnect(config.type)}
+                  className="text-xs h-8 border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10"
+                >
+                  {t("channels.extend_access_btn")}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -166,7 +236,7 @@ export function ChannelCard({
               leftIcon={<Plus className="w-3.5 h-3.5 text-primary" />}
               className="text-xs h-8 border-primary/30 text-primary hover:bg-primary/5"
             >
-              {t("channels.connect_btn")}
+              {isError ? t("channels.reconnect_btn") : t("channels.connect_btn")}
             </Button>
           )}
         </div>

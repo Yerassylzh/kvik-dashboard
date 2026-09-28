@@ -143,7 +143,12 @@ export interface FbLoginOptions {
   response_type?: string;
   override_default_response_type?: boolean;
   scope?: string;
-  extras?: Record<string, unknown>;
+  extras?: {
+    setup?: Record<string, unknown>;
+    featureType?: string;
+    sessionInfoVersion?: string | number;
+    [key: string]: unknown;
+  };
 }
 
 declare global {
