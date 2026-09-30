@@ -12,15 +12,14 @@ interface InstagramFlowProps {
   onCancel: () => void;
 }
 
-const PUBLIC_URL = process.env.NEXT_PUBLIC_APP_URL;
-
 const getCallbackUri = () => {
-  if (typeof window === "undefined")
-    return `${PUBLIC_URL || "https://kvik-dashboard.vercel.app"}/onboarding/instagram-callback`;
-  const isHttps = window.location.protocol === "https:";
-  return isHttps
-    ? `${window.location.origin}/onboarding/instagram-callback`
-    : `${PUBLIC_URL || "https://kvik-dashboard.vercel.app"}/onboarding/instagram-callback`;
+  if (typeof window === "undefined") {
+    return `${process.env.NEXT_PUBLIC_APP_URL || "https://usekvik.com"}/onboarding/instagram-callback`;
+  }
+  if (process.env.NEXT_PUBLIC_META_INSTAGRAM_REDIRECT_URI) {
+    return process.env.NEXT_PUBLIC_META_INSTAGRAM_REDIRECT_URI;
+  }
+  return `${window.location.origin}/onboarding/instagram-callback`;
 };
 
 const DEFAULT_SCOPES = [

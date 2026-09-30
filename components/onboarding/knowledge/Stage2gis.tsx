@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { MapPin, AlertCircle } from "lucide-react";
 import { start2gisScraping, getScrapingStatus } from "@/lib/api/onboarding";
 import { useToast } from "@/components/ui/toast/ToastContext";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
@@ -121,7 +122,7 @@ export function Stage2gis({
       {/* Header */}
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          <span>📍</span>
+          <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           <span>{t("knowledge.twogis.title")}</span>
         </h3>
         <p className="text-xs text-muted-foreground">
@@ -132,7 +133,7 @@ export function Stage2gis({
       {/* Error alert */}
       {error && (
         <FadeIn className="p-3 rounded-xl alert-destructive border text-xs font-medium flex items-center gap-2 shadow-xs">
-          <span>⚠️</span>
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
           <span>{error}</span>
         </FadeIn>
       )}

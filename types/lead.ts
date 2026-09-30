@@ -1,5 +1,5 @@
 ﻿export type ChannelType = 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM';
-export type LeadStatus = 'NEW' | 'QUALIFIED' | 'BOOKED' | 'WON' | 'LOST';
+export type LeadStatus = 'NEW' | 'APPOINTMENT_SET' | 'DEAL_WON' | 'DEAL_LOST' | 'QUALIFIED' | 'BOOKED' | 'WON' | 'LOST';
 export type MessageRole = 'user' | 'bot' | 'manager';
 
 export interface Channel {

@@ -28,7 +28,6 @@ interface LeadDetailProps {
 
 const statusOptions: Array<{ id: LeadStatus; labelKey: string }> = [
   { id: "NEW", labelKey: "leads.stage_new" },
-  { id: "QUALIFIED", labelKey: "leads.stage_qualified" },
   { id: "APPOINTMENT_SET", labelKey: "leads.stage_appointment" },
   { id: "DEAL_WON", labelKey: "leads.stage_won" },
   { id: "DEAL_LOST", labelKey: "leads.stage_lost" },

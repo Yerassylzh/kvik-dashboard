@@ -44,7 +44,12 @@ export function useOnboardingFlow() {
         router.replace('/');
         return true;
       }
-      // COMPLETE_TEST step is removed from UI — auto-complete immediately
+      // QUALIFICATION or COMPLETE_TEST steps are removed from UI — auto-advance
+      if (res.step === 'QUALIFICATION') {
+        const store = useOnboardingStore.getState();
+        store.setStepState('CONNECT_CHANNEL', STEP_META.CONNECT_CHANNEL.index);
+        return false;
+      }
       if (res.step === 'COMPLETE_TEST') {
         completeOnboarding()
           .then(() => router.replace('/'))

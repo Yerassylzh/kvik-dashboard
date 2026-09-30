@@ -24,11 +24,7 @@ export default function OnboardingLayout({
   }
 
   return (
-    <div className="min-h-full flex-1 w-full bg-background text-foreground flex flex-col relative overflow-hidden">
-      {/* Subtle Background Glows */}
-      <div className="absolute top-10 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-10 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 blur-[140px] rounded-full pointer-events-none" />
-
+    <div className="min-h-screen flex-1 w-full bg-background text-foreground flex flex-col relative overflow-y-auto">
       {/* Sleek Minimal Onboarding Header */}
       <header className="z-10 w-full border-b border-border/80 bg-card/60 backdrop-blur-md px-4 sm:px-8 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">

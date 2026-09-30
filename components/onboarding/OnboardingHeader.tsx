@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { OnboardingStepState } from "@/types/niche";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
@@ -29,35 +30,35 @@ export const STEP_META: Record<
     titleKey: "stepper.data_preview_title",
     subtitleKey: "stepper.data_preview_subtitle",
   },
-  QUALIFICATION: {
-    index: 4,
-    titleKey: "stepper.qualification_title",
-    subtitleKey: "stepper.qualification_subtitle",
-  },
   CONNECT_CHANNEL: {
-    index: 5,
+    index: 4,
     titleKey: "stepper.channel_title",
     subtitleKey: "stepper.channel_subtitle",
   },
   TELEGRAM_ALERTS: {
-    index: 6,
+    index: 5,
     titleKey: "stepper.telegram_alerts_title",
     subtitleKey: "stepper.telegram_alerts_subtitle",
   },
   DONE: {
-    index: 7,
+    index: 6,
     titleKey: "stepper.done_title",
     subtitleKey: "stepper.done_subtitle",
   },
-  // Legacy alias fallback
+  // Deprecated fallbacks
+  QUALIFICATION: {
+    index: 4,
+    titleKey: "stepper.channel_title",
+    subtitleKey: "stepper.channel_subtitle",
+  },
   COMPLETE_TEST: {
-    index: 6,
+    index: 5,
     titleKey: "stepper.telegram_alerts_title",
     subtitleKey: "stepper.telegram_alerts_subtitle",
   },
 };
 
-export const TOTAL_STEPS = 7;
+export const TOTAL_STEPS = 6;
 
 interface OnboardingHeaderProps {
   currentStep: OnboardingStepState;
@@ -113,7 +114,7 @@ export function OnboardingHeader({
       {/* Error Alert */}
       {error && (
         <FadeIn className="w-full max-w-2xl mb-6 p-4 rounded-xl alert-destructive border text-xs sm:text-sm font-medium flex items-start gap-3 shadow-sm">
-          <span className="text-lg">⚠️</span>
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
           <span>{error}</span>
         </FadeIn>
       )}

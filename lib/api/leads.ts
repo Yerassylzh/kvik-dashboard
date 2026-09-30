@@ -20,6 +20,7 @@ export interface LeadAssignedStaff {
   id: string;
   name: string;
   avatarUrl?: string | null;
+  role?: string | null;
 }
 
 export interface LeadDto {
@@ -66,6 +67,8 @@ export interface LeadNoteDto {
 }
 
 export interface LeadDetailDto extends LeadDto {
+  noShowCount?: number;
+  totalBookingsCount?: number;
   conversations?: Array<{
     id: string;
     channelType: ChannelType;

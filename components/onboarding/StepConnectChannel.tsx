@@ -186,8 +186,8 @@ export function StepConnectChannel({
         connectedCount={connectedCount}
       />
 
-      {/* Full-Screen Step Card Container */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border shadow-sm overflow-hidden min-h-[22rem]">
+      {/* Step Card Container */}
+      <div className="p-5 sm:p-7 rounded-3xl bg-card border border-border shadow-xs overflow-visible">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeStage}

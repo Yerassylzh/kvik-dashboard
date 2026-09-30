@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BusinessContext } from "@/types/niche";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
@@ -20,11 +21,11 @@ function ContextRow({
   const text = Array.isArray(value) ? value.join("; ") : value;
   if (!text.trim()) return null;
   return (
-    <div className="flex gap-2 text-xs">
-      <span className="font-semibold text-foreground flex-shrink-0">
+    <div className="flex flex-col sm:flex-row sm:gap-2 text-xs py-1 border-b border-border/30 last:border-none">
+      <span className="font-semibold text-foreground flex-shrink-0 sm:min-w-36">
         {label}:
       </span>
-      <span className="text-muted-foreground">{text}</span>
+      <span className="text-muted-foreground leading-relaxed">{text}</span>
     </div>
   );
 }
@@ -35,13 +36,15 @@ export function BusinessContextSummary({ context }: BusinessContextSummaryProps)
   return (
     <FadeIn
       delay={0.05}
-      className="p-4 sm:p-5 rounded-2xl bg-primary/5 border border-primary/20 space-y-2.5 shadow-xs"
+      className="p-5 rounded-2xl bg-card border border-border space-y-3 shadow-xs"
     >
-      <p className="font-bold text-foreground text-xs sm:text-sm flex items-center gap-2">
-        <span>🤖</span>
-        <span>{t("knowledge.preview.ai_summary_title")}</span>
-      </p>
-      <div className="space-y-1.5 pt-1">
+      <div className="flex items-center gap-2 pb-2 border-b border-border/60">
+        <Sparkles className="w-4 h-4 text-primary" />
+        <h3 className="font-bold text-foreground text-sm">
+          {t("knowledge.preview.ai_summary_title")}
+        </h3>
+      </div>
+      <div className="space-y-1">
         <ContextRow
           label={t("knowledge.preview.context_type")}
           value={context.businessType}

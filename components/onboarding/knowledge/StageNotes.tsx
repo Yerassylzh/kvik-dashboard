@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
+import { StickyNote } from "lucide-react";
 import {
   addKnowledgeNote,
   getKnowledgeNotes,
@@ -155,7 +156,7 @@ export function StageNotes({
       {/* Header */}
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          <span>📝</span>
+          <StickyNote className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           <span>{t("knowledge.notes.title")}</span>
         </h3>
         <p className="text-xs text-muted-foreground">

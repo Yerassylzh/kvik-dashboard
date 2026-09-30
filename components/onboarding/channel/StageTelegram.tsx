@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { Bot, Zap, Users } from "lucide-react";
+import { ChannelIcon } from "@/components/ui/channel-icon";
 import { TelegramFlow } from "./TelegramFlow";
 import { ConnectedBadgeCard } from "./ConnectedBadgeCard";
 import { TelegramChannelMetadata } from "@/types/channels";
@@ -31,22 +33,22 @@ export function StageTelegram({
   const t = useTranslations("onboarding.channel");
 
   const BENEFITS = [
-    { icon: "🤖", text: t("telegram_benefit1") },
-    { icon: "⚡", text: t("telegram_benefit2") },
-    { icon: "👥", text: t("telegram_benefit3") },
+    { icon: Bot, text: t("telegram_benefit1") },
+    { icon: Zap, text: t("telegram_benefit2") },
+    { icon: Users, text: t("telegram_benefit3") },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Top Banner / Channel Hero */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-sky-500/[0.05] border border-sky-500/20">
         <div className="flex items-start sm:items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-2xl shrink-0 shadow-xs">
-            ✈️
+          <div className="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400 shrink-0 shadow-xs">
+            <ChannelIcon type="TELEGRAM" className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-foreground">
+              <h3 className="text-base sm:text-lg font-bold text-foreground">
                 {t("telegram_title")}
               </h3>
               <span className="px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-[10px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
@@ -67,16 +69,19 @@ export function StageTelegram({
       </div>
 
       {/* 3 Key Benefits */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {BENEFITS.map((b, idx) => (
-          <div
-            key={idx}
-            className="flex items-center gap-2.5 p-3 rounded-xl bg-card border border-border text-xs text-foreground font-medium"
-          >
-            <span className="text-base shrink-0">{b.icon}</span>
-            <span className="leading-tight">{b.text}</span>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        {BENEFITS.map((b, idx) => {
+          const Icon = b.icon;
+          return (
+            <div
+              key={idx}
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-card border border-border text-xs text-foreground font-medium"
+            >
+              <Icon className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
+              <span className="leading-tight">{b.text}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Main Flow Content */}
@@ -84,7 +89,7 @@ export function StageTelegram({
         <div className="space-y-4">
           <ConnectedBadgeCard
             channelName={t("telegram_title")}
-            icon="✈️"
+            icon="TELEGRAM"
             detail={connectedDetail}
             onDisconnect={onDisconnect}
             disconnecting={disconnecting}
@@ -111,23 +116,20 @@ export function StageTelegram({
         </div>
       ) : (
         <div className="space-y-4">
-          <TelegramFlow
-            onSuccess={onSuccess}
-            onCancel={onSkip}
-          />
+          <TelegramFlow onSuccess={onSuccess} onCancel={onSkip} />
 
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-1">
             <button
               type="button"
               onClick={onBack}
-              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1 px-3"
             >
               {t("btn_back_instagram")}
             </button>
             <button
               type="button"
               onClick={onSkip}
-              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-1 px-3"
             >
               {t("btn_skip_telegram")}
             </button>

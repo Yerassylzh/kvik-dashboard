@@ -22,11 +22,11 @@ export type OnboardingStepState =
   | "BUSINESS_PROFILE"
   | "DATA_SOURCE"
   | "DATA_PREVIEW"
-  | "QUALIFICATION"
   | "CONNECT_CHANNEL"
   | "TELEGRAM_ALERTS"
   | "DONE"
-  | "COMPLETE_TEST";
+  | "QUALIFICATION" // Deprecated: qualification step removed from active funnel
+  | "COMPLETE_TEST"; // Deprecated: test step auto-completes
 
 export type ParsingStatus =
   | "IDLE"

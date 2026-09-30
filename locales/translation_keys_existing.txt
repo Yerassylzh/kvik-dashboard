@@ -600,6 +600,7 @@ dashboard.bookings.status_pending
 dashboard.bookings.title
 dashboard.bookings.view_calendar
 dashboard.bookings.view_list
+dashboard.calendar.btn_add_staff
 dashboard.calendar.day_free
 dashboard.calendar.desc
 dashboard.calendar.details_title
@@ -608,6 +609,8 @@ dashboard.calendar.empty_slots
 dashboard.calendar.filter_all_staff
 dashboard.calendar.new_booking
 dashboard.calendar.next_week
+dashboard.calendar.no_staff_desc
+dashboard.calendar.no_staff_title
 dashboard.calendar.prev_week
 dashboard.calendar.slot_conflict_warning
 dashboard.calendar.specialist_fallback
@@ -991,6 +994,7 @@ dashboard.leads.archive_btn
 dashboard.leads.archive_confirm
 dashboard.leads.assigned_staff
 dashboard.leads.conversion_rate_label
+dashboard.leads.create_booking_btn
 dashboard.leads.created_at
 dashboard.leads.desc
 dashboard.leads.detail_bookings
@@ -1048,6 +1052,7 @@ dashboard.leads.name_label
 dashboard.leads.no_staff_assigned
 dashboard.leads.noshow_btn
 dashboard.leads.noshow_confirm
+dashboard.leads.noshow_count_label
 dashboard.leads.noshow_toast
 dashboard.leads.notes_add_btn
 dashboard.leads.notes_delete_confirm
@@ -1076,6 +1081,7 @@ dashboard.leads.sort_created_at
 dashboard.leads.sort_last_activity
 dashboard.leads.sort_score
 dashboard.leads.sort_stage_changed
+dashboard.leads.specialist_with_role
 dashboard.leads.stage_appointment
 dashboard.leads.stage_appointment_set
 dashboard.leads.stage_lost
@@ -1094,6 +1100,7 @@ dashboard.leads.timeline_actor_system
 dashboard.leads.timeline_empty
 dashboard.leads.timeline_load_more
 dashboard.leads.title
+dashboard.leads.total_bookings_label
 dashboard.nav.ai_automations
 dashboard.nav.ai_studio
 dashboard.nav.analytics
@@ -1855,6 +1862,7 @@ onboarding.knowledge.preview.btn_add_more
 onboarding.knowledge.preview.btn_back_to_sources
 onboarding.knowledge.preview.btn_change
 onboarding.knowledge.preview.btn_confirm
+onboarding.knowledge.preview.btn_continue_to_channels
 onboarding.knowledge.preview.context_booking
 onboarding.knowledge.preview.context_pricing
 onboarding.knowledge.preview.context_schedule
@@ -1898,6 +1906,12 @@ onboarding.knowledge.preview.status_pending
 onboarding.knowledge.preview.status_processing
 onboarding.knowledge.preview.status_skipped
 onboarding.knowledge.preview.subtitle
+onboarding.knowledge.preview.tab_ai_summary
+onboarding.knowledge.preview.tab_all
+onboarding.knowledge.preview.tab_documents
+onboarding.knowledge.preview.tab_notes
+onboarding.knowledge.preview.tab_twogis
+onboarding.knowledge.preview.tab_website
 onboarding.knowledge.preview.title
 onboarding.knowledge.preview.twogis_catalog_label
 onboarding.knowledge.preview.website_label

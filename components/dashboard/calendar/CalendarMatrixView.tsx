@@ -1,9 +1,12 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
+import { Users, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { BookingDto } from "@/lib/api/bookings";
 import type { StaffDto } from "@/lib/api/staff";
 
@@ -22,10 +25,30 @@ export function CalendarMatrixView({
 
   if (activeStaff.length === 0) {
     return (
-      <div className="col-span-full p-8 text-center border border-dashed border-border/80 rounded-xl bg-card">
-        <p className="text-xs font-medium text-muted-foreground">
-          {t("calendar.empty_slots")}
-        </p>
+      <div className="col-span-full p-8 text-center border border-dashed border-border/80 rounded-2xl bg-card space-y-3">
+        <div className="w-10 h-10 rounded-xl bg-muted/60 border border-border flex items-center justify-center text-muted-foreground mx-auto">
+          <Users className="w-5 h-5" />
+        </div>
+        <div className="max-w-md mx-auto space-y-1">
+          <h4 className="text-sm font-bold text-foreground">
+            {t("calendar.no_staff_title")}
+          </h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t("calendar.no_staff_desc")}
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link href="/team">
+            <Button
+              size="sm"
+              variant="outline"
+              leftIcon={<Plus className="w-3.5 h-3.5" />}
+              className="text-xs font-semibold"
+            >
+              {t("calendar.btn_add_staff")}
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }

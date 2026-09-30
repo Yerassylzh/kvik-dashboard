@@ -6,6 +6,21 @@ const ROLE_COOKIE_KEY = 'kvik_role';
 const ROLE_STORAGE_KEY = 'kvik_user_role';
 const TOKEN_STORAGE_KEY = 'kvik_access_token';
 
+export function decodeJwtPayload(token: string): { role?: SystemRole; sub?: string; staffMemberId?: string } | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = payload + '='.repeat((4 - (payload.length % 4)) % 4);
+    if (typeof atob === 'function') {
+      return JSON.parse(atob(padded));
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function loadInitialAccessToken(): string | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -36,6 +51,13 @@ export function getCachedSystemRole(): SystemRole | null {
     const fromStorage = localStorage.getItem(ROLE_STORAGE_KEY) as SystemRole | null;
     if (fromStorage && ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'].includes(fromStorage)) {
       return fromStorage;
+    }
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+    if (token) {
+      const payload = decodeJwtPayload(token);
+      if (payload?.role && ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'].includes(payload.role)) {
+        return payload.role;
+      }
     }
     const match = document.cookie.match(new RegExp('(^| )' + ROLE_COOKIE_KEY + '=([^;]+)'));
     if (match && ['OWNER', 'ADMIN_MANAGER', 'SPECIALIST'].includes(match[2])) {
@@ -115,6 +137,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setAccessToken: (token: string | null) => {
     saveCachedAccessToken(token);
+    if (token) {
+      const payload = decodeJwtPayload(token);
+      if (payload?.role) {
+        saveCachedSystemRole(payload.role);
+      }
+    }
     set((state) => ({
       accessToken: token,
       isAuthenticated: Boolean(token || state.user),
@@ -123,6 +151,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setTokens: (accessToken: string, refreshToken?: string) => {
     saveCachedAccessToken(accessToken);
+    if (accessToken) {
+      const payload = decodeJwtPayload(accessToken);
+      if (payload?.role) {
+        saveCachedSystemRole(payload.role);
+      }
+    }
     if (typeof window !== 'undefined' && refreshToken) {
       try {
         document.cookie = `refresh_token=${refreshToken}; path=/; max-age=2592000; SameSite=Lax`;
@@ -138,20 +172,37 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   setUser: (user: User | null) => {
-    const role = user?.role || user?.staffProfile?.systemRole || null;
-    saveCachedSystemRole(role);
+    let role = user?.role || user?.staffProfile?.systemRole || null;
+    if (!role && user) {
+      const token = useAuthStore.getState().accessToken;
+      if (token) {
+        const payload = decodeJwtPayload(token);
+        if (payload?.role) {
+          role = payload.role;
+        }
+      }
+    }
+    const finalUser = user ? { ...user, role: role || user.role || 'OWNER' } : null;
+    saveCachedSystemRole(role || finalUser?.role || null);
     set((state) => ({
-      user,
-      isAuthenticated: Boolean(state.accessToken || user),
+      user: finalUser,
+      isAuthenticated: Boolean(state.accessToken || finalUser),
     }));
   },
 
   setAuth: (user: User, accessToken: string) => {
-    const role = user?.role || user?.staffProfile?.systemRole || null;
-    saveCachedSystemRole(role);
+    let role = user?.role || user?.staffProfile?.systemRole || null;
+    if (!role && accessToken) {
+      const payload = decodeJwtPayload(accessToken);
+      if (payload?.role) {
+        role = payload.role;
+      }
+    }
+    const finalUser = { ...user, role: role || user.role || 'OWNER' };
+    saveCachedSystemRole(role || finalUser.role);
     saveCachedAccessToken(accessToken);
     set({
-      user,
+      user: finalUser,
       accessToken,
       isAuthenticated: true,
       isLoading: false,

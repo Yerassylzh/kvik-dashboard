@@ -15,7 +15,6 @@ interface LeadsKanbanProps {
 
 const columnsConfig: Array<{ id: LeadStatus; labelKey: string; colorDot: string }> = [
   { id: "NEW", labelKey: "leads.stage_new", colorDot: "bg-blue-500" },
-  { id: "QUALIFIED", labelKey: "leads.stage_qualified", colorDot: "bg-amber-500" },
   { id: "APPOINTMENT_SET", labelKey: "leads.stage_appointment", colorDot: "bg-purple-500" },
   { id: "DEAL_WON", labelKey: "leads.stage_won", colorDot: "bg-emerald-500" },
   { id: "DEAL_LOST", labelKey: "leads.stage_lost", colorDot: "bg-rose-500" },
@@ -52,7 +51,9 @@ export function LeadsKanban({
 
       <div className="flex gap-4 overflow-x-auto pb-6 pt-1">
         {columnsConfig.map((col) => {
-          const columnLeads = leads.filter((l) => l.status === col.id);
+          const columnLeads = leads.filter((l) =>
+            col.id === "NEW" ? l.status === "NEW" || (l.status as string) === "QUALIFIED" : l.status === col.id
+          );
           const count = counts?.counts ? counts.counts[col.id] ?? columnLeads.length : columnLeads.length;
 
           return (

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { Globe, AlertCircle } from "lucide-react";
 import { startWebsiteScraping, getScrapingStatus } from "@/lib/api/onboarding";
 import { useToast } from "@/components/ui/toast/ToastContext";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
@@ -127,7 +128,7 @@ export function StageWebsite({
       {/* Header */}
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          <span>🌐</span>
+          <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           <span>{t("knowledge.website.title")}</span>
         </h3>
         <p className="text-xs text-muted-foreground">
@@ -138,7 +139,7 @@ export function StageWebsite({
       {/* Error alert */}
       {error && (
         <FadeIn className="p-3 rounded-xl alert-destructive border text-xs font-medium flex items-center gap-2 shadow-xs">
-          <span>⚠️</span>
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
           <span>{error}</span>
         </FadeIn>
       )}

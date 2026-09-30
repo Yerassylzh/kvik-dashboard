@@ -1,25 +1,29 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { useAuthStore, getCachedSystemRole } from '@/store/auth.store';
+import { useAuthStore, getCachedSystemRole, decodeJwtPayload } from '@/store/auth.store';
 import { SystemRole } from '@/types/auth';
 
 const emptySubscribe = () => () => {};
 
 export function useRBAC() {
   const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
   const isMounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
     () => false
   );
 
-  // Synchronously resolve system role from active user, cached role in localStorage/cookie (after mount), or safe fallback
+  const tokenRole = accessToken ? decodeJwtPayload(accessToken)?.role : null;
+
+  // Synchronously resolve system role from active user, JWT token payload, cached role, or default to OWNER
   const systemRole: SystemRole =
     user?.role ||
     user?.staffProfile?.systemRole ||
+    tokenRole ||
     (isMounted ? getCachedSystemRole() : null) ||
-    'SPECIALIST';
+    'OWNER';
 
   const isOwner = systemRole === 'OWNER';
   const isAdminManager = systemRole === 'ADMIN_MANAGER';

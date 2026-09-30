@@ -183,7 +183,14 @@
       "sources_processing": "Обработка...",
       "processing_entry_desc": "ИИ анализирует содержимое и формирует структурированную запись базы знаний...",
       "note_card_title": "Заметка базы знаний",
-      "extracted_content": "Извлеченная информация"
+      "extracted_content": "Извлеченная информация",
+      "tab_ai_summary": "Резюме ИИ",
+      "btn_continue_to_channels": "Далее: Подключение каналов →",
+      "tab_all": "Все записи",
+      "tab_twogis": "2ГИС",
+      "tab_website": "Веб-сайт",
+      "tab_documents": "Документы",
+      "tab_notes": "Заметки"
     },
     "global_btn_continue": "Продолжить к проверке базы знаний →",
     "global_btn_skip": "Пропустить этот шаг →"

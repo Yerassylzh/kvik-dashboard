@@ -51,10 +51,10 @@ const statusClassMap: Record<EntityStatus, string> = {
 
 // Human-readable Russian labels for each status
 const statusLabelMap: Record<EntityStatus, string> = {
-  NEW:                 "Новый",
+  NEW:                 "В диалоге",
   QUALIFIED:           "Квалифицирован",
   APPOINTMENT_SET:     "Запись создана",
-  DEAL_WON:            "Успешно",
+  DEAL_WON:            "Визит завершен",
   DEAL_LOST:           "Отказ",
   PENDING:             "Ожидает",
   CONFIRMED:           "Подтверждено",

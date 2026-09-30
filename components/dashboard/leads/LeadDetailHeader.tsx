@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { UserCheck, UserX, User, Sparkles } from "lucide-react";
+import { UserX, User, Sparkles, CalendarCheck2, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/dashboard/shared/StatusBadge";
@@ -10,16 +10,18 @@ import type { LeadDetailDto } from "@/lib/api/leads";
 
 interface LeadDetailHeaderProps {
   lead?: LeadDetailDto | null;
-  onOpenQualify: () => void;
+  onOpenQualify?: () => void;
   onOpenDisqualify: () => void;
 }
 
 export function LeadDetailHeader({
   lead,
-  onOpenQualify,
   onOpenDisqualify,
 }: LeadDetailHeaderProps) {
   const t = useTranslations("dashboard");
+
+  const totalBookings = lead?.totalBookingsCount ?? lead?.bookings?.length ?? 0;
+  const noShowCount = lead?.noShowCount ?? 0;
 
   return (
     <div className="space-y-4">
@@ -39,38 +41,47 @@ export function LeadDetailHeader({
             )}
           </div>
 
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             <StatusBadge type="lead" status={lead?.status || "NEW"} />
+
+            {/* Total Bookings Chip */}
+            {totalBookings > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-muted text-foreground border border-border/60 font-mono tabular-nums">
+                <CalendarCheck2 className="w-3 h-3 text-primary" />
+                {t("leads.total_bookings_label", { count: totalBookings })}
+              </span>
+            )}
+
+            {/* No-show Warning Chip */}
+            {noShowCount > 0 && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 font-mono tabular-nums">
+                <AlertCircle className="w-3 h-3 text-rose-500" />
+                {t("leads.noshow_count_label", { count: noShowCount })}
+              </span>
+            )}
+
             {lead?.sourceChannel && (
               <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-md font-mono">
                 {lead.sourceChannel}
               </span>
             )}
+
             {lead?.assignedStaff && (
               <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground bg-muted/80 px-2 py-0.5 rounded-md">
                 <User className="w-3 h-3 text-muted-foreground" />
-                {lead.assignedStaff.name}
+                <span>
+                  {lead.assignedStaff.role
+                    ? `${lead.assignedStaff.name} (${lead.assignedStaff.role})`
+                    : lead.assignedStaff.name}
+                </span>
               </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Quick Actions (Qualify / Disqualify) */}
+      {/* Quick Actions (Disqualify) */}
       <div className="flex items-center gap-2">
-        {(lead?.status === "NEW" || lead?.status === "DEAL_LOST") && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onOpenQualify}
-            leftIcon={<UserCheck className="w-3.5 h-3.5 text-emerald-600" />}
-            className="flex-1 text-xs font-semibold"
-          >
-            {t("leads.qualify_btn")}
-          </Button>
-        )}
-
         {lead?.status !== "DEAL_LOST" && (
           <Button
             type="button"
@@ -78,7 +89,7 @@ export function LeadDetailHeader({
             size="sm"
             onClick={onOpenDisqualify}
             leftIcon={<UserX className="w-3.5 h-3.5 text-rose-500" />}
-            className="flex-1 text-xs font-semibold"
+            className="w-full text-xs font-semibold"
           >
             {t("leads.disqualify_btn")}
           </Button>

@@ -53,11 +53,12 @@ export function LeadsFunnel() {
     }
   };
 
-  const { funnel, overallConversionRate, isLoading } = useFunnelAnalytics({
+  const { funnel: rawFunnel, overallConversionRate, isLoading } = useFunnelAnalytics({
     from: fromDate || undefined,
     to: toDate || undefined,
   });
 
+  const funnel = rawFunnel.filter((item) => (item.stage as string) !== "QUALIFIED");
   const totalLeads = funnel.length > 0 ? funnel[0].count : 0;
 
   const presetTabs = [

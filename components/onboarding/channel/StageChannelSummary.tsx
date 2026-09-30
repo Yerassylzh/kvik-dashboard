@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { AlertCircle } from "lucide-react";
+import { ChannelIcon } from "@/components/ui/channel-icon";
 import { ChannelType, ChannelStatus } from "@/types/channels";
 
 interface ConnectedChannel {
@@ -33,7 +35,6 @@ export function StageChannelSummary({
     type: ChannelType;
     stageIndex: number;
     title: string;
-    icon: string;
     badge: string;
     colorClasses: {
       bg: string;
@@ -46,7 +47,6 @@ export function StageChannelSummary({
       type: "WHATSAPP",
       stageIndex: 0,
       title: t("whatsapp_title"),
-      icon: "💬",
       badge: t("recommended_badge"),
       colorClasses: {
         bg: "bg-emerald-500/[0.03]",
@@ -59,7 +59,6 @@ export function StageChannelSummary({
       type: "INSTAGRAM",
       stageIndex: 1,
       title: t("instagram_title"),
-      icon: "📸",
       badge: t("direct_badge"),
       colorClasses: {
         bg: "bg-purple-500/[0.03]",
@@ -72,7 +71,6 @@ export function StageChannelSummary({
       type: "TELEGRAM",
       stageIndex: 2,
       title: t("telegram_title"),
-      icon: "✈️",
       badge: t("telegram_badge"),
       colorClasses: {
         bg: "bg-sky-500/[0.03]",
@@ -119,11 +117,11 @@ export function StageChannelSummary({
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div
-                    className={`w-10 h-10 rounded-xl border flex items-center justify-center text-xl shrink-0 ${
+                    className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
                       isConnected ? cfg.colorClasses.iconBg : "bg-muted border-border text-muted-foreground"
                     }`}
                   >
-                    {cfg.icon}
+                    <ChannelIcon type={cfg.type} className="w-5 h-5" />
                   </div>
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
@@ -190,7 +188,7 @@ export function StageChannelSummary({
       {/* Connected Count & Warning */}
       {connectedCount === 0 ? (
         <div className="p-4 rounded-2xl alert-warning border flex items-start gap-3 text-xs leading-relaxed">
-          <span className="text-base shrink-0 mt-0.5">⚠️</span>
+          <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-bold text-amber-900 dark:text-amber-200 mb-1">
               {t("at_least_one_hint")}
@@ -202,7 +200,7 @@ export function StageChannelSummary({
         </div>
       ) : (
         <div className="flex items-center justify-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold tabular-nums">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             {t("connected_count", { count: connectedCount })}
           </span>
@@ -228,9 +226,7 @@ export function StageChannelSummary({
             <span>{t("continue_loading")}</span>
           </>
         ) : (
-          <>
-            <span>{t("btn_finish_to_alerts")}</span>
-          </>
+          <span>{t("btn_finish_to_alerts")}</span>
         )}
       </motion.button>
     </div>

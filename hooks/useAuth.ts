@@ -48,7 +48,12 @@ export function useAuth() {
       try {
         const res = await loginApi(dto);
         useOnboardingStore.getState().resetOnboarding();
-        setAuth(res.user, res.access_token);
+        const enrichedUser: User = {
+          ...res.user,
+          role: res.user?.role || res.role || 'OWNER',
+          staffProfile: res.user?.staffProfile ?? res.staffProfile,
+        };
+        setAuth(enrichedUser, res.access_token);
         return res;
       } catch (error) {
         clearAuth();
@@ -66,7 +71,12 @@ export function useAuth() {
       try {
         const res = await registerApi(dto);
         useOnboardingStore.getState().resetOnboarding();
-        setAuth(res.user, res.access_token);
+        const enrichedUser: User = {
+          ...res.user,
+          role: res.user?.role || res.role || 'OWNER',
+          staffProfile: res.user?.staffProfile ?? res.staffProfile,
+        };
+        setAuth(enrichedUser, res.access_token);
         // Save email so verify-email page can resume after refresh
         if (!res.user.isEmailVerified) {
           setPendingVerificationEmail(res.user.email);
@@ -88,7 +98,12 @@ export function useAuth() {
       try {
         const res = await registerStaffApi(dto);
         useOnboardingStore.getState().resetOnboarding();
-        setAuth(res.user, res.access_token);
+        const enrichedUser: User = {
+          ...res.user,
+          role: res.user?.role || res.role || res.staffProfile?.systemRole || 'SPECIALIST',
+          staffProfile: res.user?.staffProfile ?? res.staffProfile,
+        };
+        setAuth(enrichedUser, res.access_token);
         return res;
       } catch (error) {
         clearAuth();
@@ -107,7 +122,12 @@ export function useAuth() {
         const res = await claimWorkspaceApi(dto);
         useOnboardingStore.getState().resetOnboarding();
         const token = res.tokens?.access_token || res.access_token || '';
-        setAuth(res.user, token);
+        const enrichedUser: User = {
+          ...res.user,
+          role: res.role || res.user?.role || 'OWNER',
+          staffProfile: res.user?.staffProfile ?? null,
+        };
+        setAuth(enrichedUser, token);
         if (res.workspace && res.role) {
           useAuthStore.getState().updateWorkspaceContext({
             workspace: res.workspace,
@@ -182,7 +202,7 @@ export function useAuth() {
 
     // Read current auth state DIRECTLY from store (not closure) to avoid stale values
     const state = useAuthStore.getState();
-    if (state.accessToken && state.user) {
+    if (state.accessToken && state.user && (state.user.role || state.user.staffProfile?.systemRole)) {
       // If user is explicitly unverified and attempting onboarding or pending verification
       if (state.user.isEmailVerified === false) {
         const pathname = typeof window !== "undefined" ? window.location.pathname : "";

@@ -1,6 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
+import {
+  MapPin,
+  Globe,
+  FileText,
+  StickyNote,
+  Layers,
+  AlertCircle,
+  Tag,
+  Phone,
+  Clock,
+  ExternalLink,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { KnowledgeEntry } from "@/types/niche";
 import { StructuredMarkdownView } from "./StructuredMarkdownView";
@@ -18,28 +30,28 @@ interface KnowledgeEntryCardProps {
 const TYPE_META: Record<
   string,
   {
-    icon: string;
+    icon: React.ElementType;
     translationKey: string;
     badgeStyle: string;
   }
 > = {
   LOCAL_LISTING: {
-    icon: "📍",
+    icon: MapPin,
     translationKey: "knowledge.preview.twogis_catalog_label",
     badgeStyle: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
   },
   WEBSITE_CONTENT: {
-    icon: "🌐",
+    icon: Globe,
     translationKey: "knowledge.preview.website_label",
     badgeStyle: "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20",
   },
   DOCUMENT: {
-    icon: "📄",
+    icon: FileText,
     translationKey: "knowledge.preview.document_label",
     badgeStyle: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20",
   },
   MANUAL_NOTE: {
-    icon: "📝",
+    icon: StickyNote,
     translationKey: "knowledge.preview.note_label",
     badgeStyle: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20",
   },
@@ -50,10 +62,11 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const typeConfig = TYPE_META[entry.type] || {
-    icon: "📦",
+    icon: Layers,
     translationKey: "knowledge.preview.note_label",
     badgeStyle: "bg-muted text-muted-foreground border-border",
   };
+  const IconComponent = typeConfig.icon;
 
   const typeLabel = t(typeConfig.translationKey as any) || entry.type;
   const default2gisTitle = t("knowledge.preview.twogis_catalog_label");
@@ -97,8 +110,8 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0 flex-1">
           {/* Type Icon Badge */}
-          <div className="h-9 w-9 rounded-xl bg-muted/60 border border-border flex items-center justify-center text-lg flex-shrink-0">
-            {typeConfig.icon}
+          <div className="h-9 w-9 rounded-xl bg-muted/60 border border-border flex items-center justify-center flex-shrink-0 text-foreground">
+            <IconComponent className="w-4 h-4 text-muted-foreground" />
           </div>
 
           <div className="min-w-0 flex-1">
@@ -121,50 +134,50 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
               )}
 
               {isProcessing && (
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary/10 text-accent-brand border border-primary/20 flex items-center gap-1.5 flex-shrink-0">
-                  <div className="h-2 w-2 border-2 border-accent-brand/40 border-t-accent-brand rounded-full animate-spin" />
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 flex items-center gap-1.5 flex-shrink-0">
+                  <div className="h-2 w-2 border-2 border-primary/40 border-t-primary rounded-full animate-spin" />
                   <span>{t("knowledge.preview.status_processing")}</span>
                 </span>
               )}
 
               {isFailed && (
                 <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-destructive/10 text-destructive border border-destructive/20 flex items-center gap-1 flex-shrink-0">
-                  <span>⚠️</span>
+                  <AlertCircle className="w-3 h-3 text-destructive" />
                   <span>{t("knowledge.preview.status_failed")}</span>
                 </span>
               )}
             </div>
 
             {/* Metadata Tags */}
-            <div className="flex items-center gap-2 flex-wrap mt-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 flex-wrap mt-1.5 text-xs text-muted-foreground">
               {category && (
                 <span className="inline-flex items-center gap-1 bg-muted/60 px-2 py-0.5 rounded text-foreground font-medium text-[11px]">
-                  🏷️ {category}
+                  <Tag className="w-3 h-3 text-muted-foreground" /> {category}
                 </span>
               )}
               {address && (
                 <span className="inline-flex items-center gap-1 text-[11px]">
-                  📍 {address}
+                  <MapPin className="w-3 h-3 text-muted-foreground" /> {address}
                 </span>
               )}
               {phone && (
                 <span className="inline-flex items-center gap-1 text-[11px]">
-                  📞 {phone}
+                  <Phone className="w-3 h-3 text-muted-foreground" /> {phone}
                 </span>
               )}
               {schedule && (
                 <span className="inline-flex items-center gap-1 text-[11px]">
-                  🕒 {schedule}
+                  <Clock className="w-3 h-3 text-muted-foreground" /> {schedule}
                 </span>
               )}
               {price && (
                 <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
-                  💰 {price}
+                  {price}
                 </span>
               )}
               {entry.fileSize && (
                 <span className="inline-flex items-center gap-1 text-[11px] bg-muted/60 px-2 py-0.5 rounded text-muted-foreground">
-                  💾 {formatBytes(entry.fileSize)}
+                  {formatBytes(entry.fileSize)}
                 </span>
               )}
             </div>
@@ -177,9 +190,10 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
             href={entry.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-accent-brand hover:underline flex-shrink-0 hidden sm:inline-flex items-center gap-1 font-medium pt-0.5"
+            className="text-xs text-primary hover:underline flex-shrink-0 hidden sm:inline-flex items-center gap-1 font-medium pt-0.5"
           >
             <span>{t("knowledge.preview.source_link")}</span>
+            <ExternalLink className="w-3 h-3" />
           </a>
         )}
       </div>
@@ -210,7 +224,7 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
               <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
-                className="text-accent-brand hover:underline cursor-pointer text-xs font-medium"
+                className="text-primary hover:underline cursor-pointer text-xs font-medium"
               >
                 {expanded
                   ? t("knowledge.preview.expand_less")
@@ -241,25 +255,18 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
               count: servicesList.length,
             })}
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto themed-scroll">
-            {servicesList.map((svc, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {servicesList.slice(0, 8).map((srv, idx) => (
               <div
-                key={i}
-                className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-xs flex items-center justify-between shadow-2xs"
+                key={idx}
+                className="p-2.5 rounded-xl bg-muted/40 border border-border/50 flex items-center justify-between gap-2 text-xs"
               >
-                <div className="min-w-0 pr-2">
-                  <p className="font-semibold text-foreground truncate">
-                    {svc.name || t("knowledge.preview.default_service_name")}
-                  </p>
-                  {svc.category && (
-                    <p className="text-[10px] text-muted-foreground">
-                      {svc.category}
-                    </p>
-                  )}
-                </div>
-                {svc.price && (
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs flex-shrink-0">
-                    {svc.price}
+                <span className="text-foreground font-medium truncate">
+                  {srv.name}
+                </span>
+                {srv.price && (
+                  <span className="font-bold text-foreground font-mono text-[11px] flex-shrink-0">
+                    {srv.price}
                   </span>
                 )}
               </div>

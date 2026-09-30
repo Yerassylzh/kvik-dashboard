@@ -217,7 +217,11 @@
     "funnel_conversion_step": "Конверсия",
     "funnel_dropoff_step": "Отвал",
     "funnel_leads_count": "лидов",
-    "funnel_visual_title": "Этапы воронки"
+    "funnel_visual_title": "Этапы воронки",
+    "total_bookings_label": "Визитов: {count}",
+    "noshow_count_label": "Неявок: {count}",
+    "create_booking_btn": "Создать запись",
+    "specialist_with_role": "{name} · {role}"
   },
   "inbox": {
     "title": "Входящие сообщения",
@@ -958,7 +962,10 @@
     "next_week": "Следующая неделя",
     "day_free": "Свободно",
     "duration_min": "{n} мин",
-    "specialist_fallback": "Специалист"
+    "specialist_fallback": "Специалист",
+    "no_staff_title": "Специалисты не добавлены",
+    "no_staff_desc": "Записи ведутся по общему расписанию филиала. Вы можете добавить сотрудников в разделе «Команда».",
+    "btn_add_staff": "Добавить специалиста"
   },
   "schedule": {
     "title": "График работы",

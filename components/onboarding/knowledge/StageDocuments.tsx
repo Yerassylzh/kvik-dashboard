@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { FileText } from "lucide-react";
 import { uploadKnowledgeDocument } from "@/lib/api/onboarding";
 import { useToast } from "@/components/ui/toast/ToastContext";
 import { FadeIn } from "@/components/ui/motion/FadeIn";
@@ -95,7 +96,7 @@ export function StageDocuments({
     <div className="space-y-5">
       <div className="space-y-1">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          <span>📄</span>
+          <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           <span>{t("knowledge.documents.title")}</span>
         </h3>
         <p className="text-xs text-muted-foreground">{t("knowledge.documents.desc")}</p>

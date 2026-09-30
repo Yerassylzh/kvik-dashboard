@@ -13,16 +13,17 @@ interface LeadFunnelChartProps {
 }
 
 const stageLabels: Record<string, string> = {
-  NEW: "Новые заявки",
-  QUALIFIED: "Квалифицированы",
+  NEW: "В диалоге",
   APPOINTMENT_SET: "Создана запись",
-  DEAL_WON: "Успешный визит",
+  DEAL_WON: "Визит завершен",
   DEAL_LOST: "Отказ",
 };
 
 export function LeadFunnelChart({ funnel, isLoading = false }: LeadFunnelChartProps) {
   const t = useTranslations("dashboard");
-  const stages: FunnelStageItem[] = funnel?.stages || [];
+  const stages: FunnelStageItem[] = (funnel?.stages || []).filter(
+    (s: FunnelStageItem) => (s.status as string) !== "QUALIFIED"
+  );
 
   const maxCount = Math.max(...stages.map((s: FunnelStageItem) => s.count || 0), 1);
 

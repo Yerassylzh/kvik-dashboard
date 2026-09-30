@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { ChannelIcon } from "@/components/ui/channel-icon";
+import { CheckCheck } from "lucide-react";
 
 interface ChannelStepperProps {
   activeStage: number;
@@ -26,32 +28,28 @@ export function ChannelStepper({
   const STAGES = [
     {
       id: 0,
-      icon: "💬",
+      type: "WHATSAPP" as const,
       label: t("tab_whatsapp"),
       connected: isWhatsAppConnected,
-      color: "emerald",
     },
     {
       id: 1,
-      icon: "📸",
+      type: "INSTAGRAM" as const,
       label: t("tab_instagram"),
       connected: isInstagramConnected,
-      color: "purple",
     },
     {
       id: 2,
-      icon: "✈️",
+      type: "TELEGRAM" as const,
       label: t("tab_telegram"),
       connected: isTelegramConnected,
-      color: "sky",
     },
     {
       id: 3,
-      icon: "✨",
+      type: "SUMMARY" as const,
       label: t("tab_summary"),
       connected: connectedCount > 0,
       badge: connectedCount > 0 ? `${connectedCount}/3` : undefined,
-      color: "indigo",
     },
   ];
 
@@ -71,12 +69,16 @@ export function ChannelStepper({
                   : "text-muted-foreground hover:text-foreground hover:bg-card/40"
               }`}
             >
-              <span className="text-sm">{stage.icon}</span>
+              {stage.type === "SUMMARY" ? (
+                <CheckCheck className="w-3.5 h-3.5 text-muted-foreground" />
+              ) : (
+                <ChannelIcon type={stage.type} className="w-3.5 h-3.5" />
+              )}
               <span className="truncate">{stage.label}</span>
 
               {stage.badge ? (
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold tabular-nums ${
                     stage.connected
                       ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
                       : "bg-muted text-muted-foreground"

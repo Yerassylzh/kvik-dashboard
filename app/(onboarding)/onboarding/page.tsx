@@ -7,7 +7,6 @@ import { StepSelectNiche } from "@/components/onboarding/StepSelectNiche";
 import { StepBusinessProfile } from "@/components/onboarding/StepBusinessProfile";
 import { StepKnowledgeSource } from "@/components/onboarding/StepKnowledgeSource";
 import { StepDataPreview } from "@/components/onboarding/StepDataPreview";
-import { StepQualification } from "@/components/onboarding/StepQualification";
 import { StepConnectChannel } from "@/components/onboarding/StepConnectChannel";
 import { StepTelegramAlerts } from "@/components/onboarding/StepTelegramAlerts";
 import { StepTransition } from "@/components/ui/motion/StepTransition";
@@ -28,7 +27,6 @@ export default function OnboardingPage() {
     handleScrapingStarted,
     handleConfirmDataSource,
     handleConfirmDataPreview,
-    handleSubmitQualification,
     handleChannelStepContinue,
     handleConfirmTelegramAlerts,
     handleSkipTelegramAlerts,
@@ -83,14 +81,6 @@ export default function OnboardingPage() {
                 <StepDataPreview
                   dataPreview={dataPreview}
                   onConfirm={handleConfirmDataPreview}
-                  loading={actionLoading}
-                />
-              </div>
-            )}
-            {currentStep === "QUALIFICATION" && (
-              <div className="max-w-2xl mx-auto">
-                <StepQualification
-                  onSubmit={handleSubmitQualification}
                   loading={actionLoading}
                 />
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { MapPin, Globe, FileText, StickyNote } from "lucide-react";
 import { ScrapingType } from "@/types/niche";
 import {
   KnowledgeSourceDraft,
@@ -23,10 +24,10 @@ interface StepKnowledgeSourceProps {
 }
 
 const SOURCES = [
-  { id: 0, key: "twogis", icon: "📍", label: "2GIS" },
-  { id: 1, key: "website", icon: "🌐", label: "Веб-сайт" },
-  { id: 2, key: "documents", icon: "📄", label: "Документы" },
-  { id: 3, key: "notes", icon: "📝", label: "Заметки" },
+  { id: 0, key: "twogis", icon: MapPin, label: "2GIS" },
+  { id: 1, key: "website", icon: Globe, label: "Веб-сайт" },
+  { id: 2, key: "documents", icon: FileText, label: "Документы" },
+  { id: 3, key: "notes", icon: StickyNote, label: "Заметки" },
 ];
 
 export function StepKnowledgeSource({
@@ -72,6 +73,7 @@ export function StepKnowledgeSource({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-muted/40 border border-border">
           {SOURCES.map((source) => {
             const isActive = activeTab === source.id;
+            const Icon = source.icon;
             let isConnected = false;
             if (source.id === 0 && is2gisConnected) isConnected = true;
             if (source.id === 1 && isWebsiteConnected) isConnected = true;
@@ -89,7 +91,7 @@ export function StepKnowledgeSource({
                     : "text-muted-foreground hover:text-foreground hover:bg-card/40"
                 }`}
               >
-                <span>{source.icon}</span>
+                <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <span className="truncate">{source.label}</span>
                 {isConnected && (
                   <span className="h-2 w-2 rounded-full bg-emerald-500 flex-shrink-0" />

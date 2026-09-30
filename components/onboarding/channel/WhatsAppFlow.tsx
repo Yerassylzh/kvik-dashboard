@@ -168,7 +168,9 @@ export function WhatsAppFlow({ onSuccess, onCancel }: WhatsAppFlowProps) {
       return;
     }
 
-    const configId = metaConfigRef.current?.whatsappConfigId;
+    const configId =
+      metaConfigRef.current?.whatsappConfigId ||
+      process.env.NEXT_PUBLIC_META_CONFIG_ID;
     if (!configId) {
       setError(t("whatsapp_flow_missing_data"));
       return;

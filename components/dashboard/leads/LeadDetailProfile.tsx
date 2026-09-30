@@ -38,15 +38,15 @@ export function LeadDetailProfile({
         <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
           Этап воронки
         </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
           {statusOptions.map((opt) => (
             <button
               key={opt.id}
               type="button"
               onClick={() => onStageClick(opt.id)}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+              className={`px-2.5 py-2 rounded-xl text-xs font-semibold border transition-all text-center ${
                 lead.status === opt.id
-                  ? "bg-primary text-primary-foreground border-primary shadow-xs"
+                  ? "bg-primary text-primary-foreground border-primary shadow-xs font-bold"
                   : "bg-card border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >

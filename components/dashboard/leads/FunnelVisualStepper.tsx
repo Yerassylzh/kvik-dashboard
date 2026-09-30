@@ -21,6 +21,7 @@ interface FunnelVisualStepperProps {
 
 export function FunnelVisualStepper({ funnel, totalLeads }: FunnelVisualStepperProps) {
   const t = useTranslations("dashboard");
+  const filteredFunnel = funnel.filter((item) => (item.stage as string) !== "QUALIFIED");
 
   const stageLabel = (stage: LeadStatus) => {
     switch (stage) {
@@ -51,11 +52,11 @@ export function FunnelVisualStepper({ funnel, totalLeads }: FunnelVisualStepperP
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {funnel.map((item, idx) => {
+        {filteredFunnel.map((item, idx) => {
           const Icon = stageIcons[item.stage] || Inbox;
           const isWon = item.stage === "DEAL_WON";
           const share = totalLeads > 0 ? ((item.count / totalLeads) * 100).toFixed(1) : "0.0";
-          const isLast = idx === funnel.length - 1;
+          const isLast = idx === filteredFunnel.length - 1;
 
           return (
             <div
