@@ -36,17 +36,17 @@ export function FollowUpRulesTab({
         <div className="lg:col-span-7 space-y-5">
           <AbandonmentStepCard
             config={config?.abandonmentSequence}
-            onSave={(abandonmentSequence) =>
-              updateConfig({ abandonmentSequence }, t("automations.save_success"))
-            }
+            onSave={async (abandonmentSequence) => {
+              await updateConfig({ abandonmentSequence }, t("automations.save_success"));
+            }}
             isUpdating={isUpdating}
           />
 
           <AdaptiveRemindersCard
             config={config?.appointmentReminders}
-            onSave={(appointmentReminders) =>
-              updateConfig({ appointmentReminders }, t("automations.save_success"))
-            }
+            onSave={async (appointmentReminders) => {
+              await updateConfig({ appointmentReminders }, t("automations.save_success"));
+            }}
             isUpdating={isUpdating}
           />
         </div>
@@ -55,17 +55,17 @@ export function FollowUpRulesTab({
         <div className="lg:col-span-5 space-y-5">
           <ReviewRetentionCard
             config={config?.postVisitRetention}
-            onSave={(postVisitRetention) =>
-              updateConfig({ postVisitRetention }, t("automations.save_success"))
-            }
+            onSave={async (postVisitRetention) => {
+              await updateConfig({ postVisitRetention }, t("automations.save_success"));
+            }}
             isUpdating={isUpdating}
           />
 
           <QuietHoursCard
             config={config?.quietHours}
-            onSave={(quietHours) =>
-              updateConfig({ quietHours }, t("automations.save_success"))
-            }
+            onSave={async (quietHours) => {
+              await updateConfig({ quietHours }, t("automations.save_success"));
+            }}
             isUpdating={isUpdating}
           />
         </div>

@@ -59,6 +59,7 @@ export function LeadsKanban({
           return (
             <KanbanColumn
               key={col.id}
+              id={col.id}
               title={t(col.labelKey as Parameters<typeof t>[0])}
               count={count}
               leads={columnLeads}

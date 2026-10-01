@@ -83,15 +83,34 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
   const structuredText = extractStructuredText(entry);
   const servicesList = extractServicesList(entry);
 
-  const address = data.address || data.city || null;
+  const address =
+    typeof data.address === "string"
+      ? data.address
+      : typeof data.city === "string"
+      ? data.city
+      : null;
   const phone =
-    data.phone || (Array.isArray(data.phones) ? data.phones.join(", ") : null);
-  const schedule = data.schedule || data.workingHours || data.hours || null;
+    typeof data.phone === "string"
+      ? data.phone
+      : Array.isArray(data.phones)
+      ? data.phones.filter(Boolean).join(", ")
+      : null;
+  const schedule =
+    typeof data.schedule === "string"
+      ? data.schedule
+      : typeof data.workingHours === "string"
+      ? data.workingHours
+      : typeof data.hours === "string"
+      ? data.hours
+      : null;
   const category =
-    data.category ||
-    (Array.isArray(data.rubrics)
-      ? data.rubrics.join(", ")
-      : data.rubric || null);
+    typeof data.category === "string"
+      ? data.category
+      : Array.isArray(data.rubrics)
+      ? data.rubrics.filter(Boolean).join(", ")
+      : typeof data.rubric === "string"
+      ? data.rubric
+      : null;
   const price = data.price ? String(data.price) : null;
 
   const isLongText = (structuredText?.length ?? 0) > 300;

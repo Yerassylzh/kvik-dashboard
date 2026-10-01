@@ -6,6 +6,7 @@ import {
   staffApi,
   type CreateStaffPayload,
   type UpdateStaffPayload,
+  type InviteStaffPayload,
   type SetScheduleTemplateItem,
   type AddOverridePayload,
 } from '@/lib/api/staff';
@@ -43,7 +44,7 @@ export function useStaff(isActive?: boolean) {
   );
 
   const inviteStaff = useCallback(
-    async (id: string, payload?: { email?: string; systemRole?: string }) => {
+    async (id: string, payload?: InviteStaffPayload) => {
       const res = await staffApi.inviteStaff(id, payload);
       mutate();
       return res;

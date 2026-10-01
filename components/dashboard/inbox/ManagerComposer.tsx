@@ -207,7 +207,7 @@ export function ManagerComposer({
         return;
       }
 
-      const uploadRes = await conversationsApi.uploadMedia(conversationId, blob, "AUDIO", duration);
+      const uploadRes = await conversationsApi.uploadMedia(conversationId, blob, "AUDIO");
 
       await onSendMessage({
         mediaUrl: uploadRes.mediaUrl,

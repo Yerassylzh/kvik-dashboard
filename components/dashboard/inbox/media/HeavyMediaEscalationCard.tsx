@@ -24,6 +24,7 @@ export function HeavyMediaEscalationCard({
   fileName,
   fileSize,
   durationSeconds,
+  mimeType,
   isUserMessage = false,
 }: HeavyMediaEscalationCardProps) {
   const t = useTranslations("dashboard");
