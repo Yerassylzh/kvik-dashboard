@@ -80,7 +80,7 @@ export function MediaGallerySheet({
                       : "bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
-                  {t(tab.labelKey as any)}
+                  {t(tab.labelKey as Parameters<typeof t>[0])}
                 </button>
               );
             })}

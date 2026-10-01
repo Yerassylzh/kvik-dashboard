@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AlertCircle, Film, FileWarning } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { VideoAttachment } from "./VideoAttachment";
 import { DocumentAttachment } from "./DocumentAttachment";
@@ -24,8 +24,6 @@ export function HeavyMediaEscalationCard({
   fileName,
   fileSize,
   durationSeconds,
-  mimeType,
-  escalationReason,
   isUserMessage = false,
 }: HeavyMediaEscalationCardProps) {
   const t = useTranslations("dashboard");

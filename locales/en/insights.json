@@ -1,0 +1,199 @@
+{
+  "title": "Business Intelligence & Insights",
+  "desc": "Automated analysis of client conversations, lost opportunity discovery, and 1-click business improvements",
+  "badge_ai": "AI Intelligence",
+  "updated_weekly_notice": "Recommendation insights are updated every Sunday",
+  "autonomous_pipeline_badge": "Autonomous Analysis 24/7",
+  "tabs": {
+    "recommendations": "Active Recommendations",
+    "demand_trends": "Demand Trends",
+    "reports_history": "Report History"
+  },
+  "kpi": {
+    "active_improvements": "Actionable Insights",
+    "lost_leads": "Potential Leads Lost",
+    "require_attention": "require attention",
+    "key_friction": "Key Friction Point",
+    "no_anomalies": "No anomalies"
+  },
+  "actions": {
+    "view_quotes": "Customer Quotes ({count})",
+    "apply_one_click": "Apply in 1-Click",
+    "dismiss": "Dismiss"
+  },
+  "cold_start": {
+    "title": "Collecting Baseline Data",
+    "desc": "Your client conversations are being analyzed in the background. Accurate recommendations will appear after 20–30 inquiries.",
+    "card_services_title": "Service Demand",
+    "card_services_desc": "AI identifies services clients ask for that are missing from your catalog.",
+    "card_peaks_title": "Demand Spikes",
+    "card_peaks_desc": "Highlights hours when clients want to book but your branch is closed.",
+    "card_faq_title": "FAQ Knowledge Gaps",
+    "card_faq_desc": "Detects common questions where the bot lacked knowledge base context."
+  },
+  "rec": {
+    "status": {
+      "new": "New",
+      "implemented": "Applied",
+      "dismissed": "Dismissed",
+      "all": "All"
+    },
+    "status_badge": {
+      "new": "New",
+      "accepted": "In Progress",
+      "implemented": "Applied",
+      "dismissed": "Dismissed"
+    },
+    "category": {
+      "all": "All Categories",
+      "service_expansion": "Services & Menu",
+      "schedule_optimization": "Hours & Schedule",
+      "pricing_and_packaging": "Pricing & Billing",
+      "knowledge_gap": "Knowledge Base (FAQ)",
+      "staff_balancing": "Staff & Capacity",
+      "marketing_insight": "Marketing & Ads"
+    },
+    "impact": {
+      "all": "Any Priority",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "impact_label": {
+      "high": "High Priority",
+      "medium": "Medium Priority",
+      "low": "Low Priority"
+    },
+    "clients_contacted": "Inquiries:",
+    "clients_unit": "clients",
+    "leads_lost": "Lost:",
+    "leads_unit": "leads",
+    "expand_diagnosis": "Detailed Problem Diagnosis",
+    "collapse_diagnosis": "Hide Details",
+    "implemented_badge": "Recommendation Applied",
+    "dismissed_text": "Dismissed",
+    "no_results_filtered": "No recommendations found matching the selected filters."
+  },
+  "quotes": {
+    "proof_badge": "Evidence of Demand",
+    "clients_count": "{count} clients",
+    "drawer_desc": "Real anonymized client quotes from WhatsApp, Instagram, and Telegram conversations",
+    "privacy_notice": "Phone numbers and personal client info are hidden for privacy",
+    "processing": "Client quotes for this recommendation are being processed",
+    "date_recent": "Recent"
+  },
+  "apply": {
+    "title": "Apply Recommendation in 1 Click",
+    "desc": "Review the parameters and confirm applying the changes to your system.",
+    "cancel": "Cancel",
+    "confirm": "Confirm & Apply",
+    "confirming": "Applying...",
+    "service": {
+      "notice": "The service will be automatically added to your catalog and knowledge base",
+      "name_label": "Service Name",
+      "name_placeholder": "e.g., Eyelash Lamination",
+      "category_label": "Category",
+      "category_placeholder": "Brows & Lashes",
+      "duration_label": "Duration (min)",
+      "price_label": "Price (₸)",
+      "description_label": "Description for AI Bot",
+      "description_placeholder": "Brief description of the procedure"
+    },
+    "schedule": {
+      "notice": "Working hours for selected days will be updated in business schedule settings",
+      "days_label": "Target Days",
+      "open_label": "Opening Time",
+      "close_label": "New Closing Time"
+    },
+    "kb": {
+      "notice": "The note will be instantly added to Knowledge Base and trained into AI context",
+      "title_label": "Topic Title",
+      "content_label": "Response Content"
+    },
+    "prompt": {
+      "notice": "This rule will be added to the AI assistant's persona and qualification guidelines",
+      "rule_label": "Bot Instruction"
+    },
+    "manual": {
+      "desc": "This recommendation requires manual action or verification outside automated presets."
+    }
+  },
+  "dismiss": {
+    "title": "Dismiss Recommendation",
+    "desc": "Your feedback trains the model and prevents similar suggestions in the future.",
+    "reason_label": "Dismissal Reason:",
+    "notes_label": "Notes (optional):",
+    "notes_placeholder": "Additional details to fine-tune the recommendation algorithm...",
+    "suppress_label": "Do not generate future recommendations on this topic",
+    "cancel": "Cancel",
+    "confirm": "Dismiss Recommendation",
+    "confirming": "Dismissing...",
+    "reason": {
+      "not_applicable": "Not applicable to our business",
+      "not_applicable_desc": "We do not offer this service and have no plans to expand here.",
+      "business_decision": "Intentional business decision",
+      "business_decision_desc": "We are aware of this demand but intentionally choose not to change.",
+      "resolved_offline": "Already resolved offline",
+      "resolved_offline_desc": "Fixed at the location (hired staff, updated pricing, etc.).",
+      "incorrect_extraction": "Incorrectly extracted by AI",
+      "incorrect_extraction_desc": "This was an isolated joke, typo, or contextual misunderstanding.",
+      "other": "Other reason",
+      "other_desc": "Provide additional feedback in the field below."
+    }
+  },
+  "reports": {
+    "weekly_snapshots": "Weekly Analytics Snapshots",
+    "count": "{count} reports",
+    "empty": "The first weekly report will be generated this coming Sunday",
+    "dialogs": "dialogs",
+    "lost": "lost",
+    "insights_found": "insights",
+    "open_btn": "Open"
+  },
+  "report_detail": {
+    "fallback_title": "Weekly Business Report",
+    "immutable_notice": "Immutable weekly analytics snapshot generated on Sunday",
+    "not_found": "Report not found or data unavailable",
+    "dialogs_label": "Conversations",
+    "lost_label": "Lost",
+    "insights_label": "Insights",
+    "high_impact_label": "High Priority",
+    "ai_briefing_title": "AI Consultant Executive Summary",
+    "recs_title": "Recommendations in this report ({count}):",
+    "clients_count": "{count} inquired clients",
+    "rec_implemented": "Applied",
+    "rec_dismissed": "Dismissed",
+    "rec_new": "New"
+  },
+  "demand": {
+    "unmet_title": "Unmet Demand",
+    "unmet_desc": "Services that clients requested but did not find in your menu",
+    "unmet_empty": "All requested services are present in your catalog",
+    "unmet_lost_suffix": "lost",
+    "objections_title": "Lost Reasons & Objections",
+    "objections_desc": "Factors that led to conversations ending without a booking",
+    "objections_empty": "No conversation objections recorded",
+    "hourly_title": "Hourly Distribution",
+    "hourly_desc": "Inbound conversation volume relative to business working hours",
+    "hourly_empty": "Hourly conversation data is being aggregated",
+    "legend_open": "Open",
+    "legend_closed": "Closed",
+    "off_hours_count": "{count} off-hours",
+    "off_hours_hint": "Clients message after closing — consider extending working hours",
+    "preset_days": "{count}d",
+    "objections": {
+      "price_too_high": "Price concern / no installment option",
+      "no_evening_slots": "No convenient evening slots",
+      "no_parking_info": "Missing info (parking, exact address)",
+      "preferred_master_busy": "Preferred specialist fully booked",
+      "competitor_chosen": "Went with a competitor"
+    }
+  },
+  "toasts": {
+    "apply_success": "Recommendation applied successfully!",
+    "apply_error": "Failed to apply recommendation",
+    "dismiss_success": "Recommendation dismissed",
+    "dismiss_error": "Failed to dismiss recommendation"
+  },
+  "loading": "Loading conversation analytics..."
+}

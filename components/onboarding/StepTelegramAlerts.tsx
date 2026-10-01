@@ -74,7 +74,9 @@ export function StepTelegramAlerts({
   }, [t]);
 
   useEffect(() => {
-    fetchCode();
+    queueMicrotask(() => {
+      fetchCode();
+    });
   }, [fetchCode]);
 
   // ---------------------------------------------------------------------------

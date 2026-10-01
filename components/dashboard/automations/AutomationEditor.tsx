@@ -29,7 +29,7 @@ export function AutomationEditor({ item, onUpdateTemplate }: AutomationEditorPro
       <div className="flex items-center justify-between border-b border-border/50 pb-3">
         <div>
           <h3 className="text-sm font-bold text-foreground">
-            {t(item.titleKey as any)}
+            {t(item.titleKey as Parameters<typeof t>[0])}
           </h3>
           <p className="text-[11px] text-muted-foreground">{item.delayText}</p>
         </div>

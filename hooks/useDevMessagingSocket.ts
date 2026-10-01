@@ -76,22 +76,22 @@ export function useDevMessagingSocket({
 
     socket.on("disconnect", () => setIsConnected(false));
 
-    socket.on(
-      "message.new",
-      (payload: { conversationId: string; message: DevMessage }) => {
-        onMessageRef.current(payload.conversationId, payload.message);
+    const handleNewMessage = (payload: { conversationId: string; message: DevMessage }) => {
+      onMessageRef.current(payload.conversationId, payload.message);
 
-        // Disarm watcher when the BOT reply we were waiting for arrives
-        if (
-          payload.conversationId === watchedConvRef.current &&
-          payload.message.role === "BOT"
-        ) {
-          setIsWaitingForBot(false);
-          watchedConvRef.current = null;
-          if (watchTimeoutRef.current) clearTimeout(watchTimeoutRef.current);
-        }
+      // Disarm watcher when the BOT reply we were waiting for arrives
+      if (
+        payload.conversationId === watchedConvRef.current &&
+        payload.message.role === "BOT"
+      ) {
+        setIsWaitingForBot(false);
+        watchedConvRef.current = null;
+        if (watchTimeoutRef.current) clearTimeout(watchTimeoutRef.current);
       }
-    );
+    };
+
+    socket.on("message.new", handleNewMessage);
+    socket.on("message:new", handleNewMessage);
 
     return () => {
       if (watchTimeoutRef.current) clearTimeout(watchTimeoutRef.current);

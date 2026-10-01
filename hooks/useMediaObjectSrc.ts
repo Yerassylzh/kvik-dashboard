@@ -33,14 +33,18 @@ export function useMediaObjectSrc(url: string | undefined | null): MediaSrcState
 
   useEffect(() => {
     if (!url) {
-      setState({ src: null, loading: false, failed: false });
+      queueMicrotask(() => {
+        setState({ src: null, loading: false, failed: false });
+      });
       return;
     }
 
     let created: string | null = null;
     let cancelled = false;
 
-    setState({ src: null, loading: true, failed: false });
+    queueMicrotask(() => {
+      setState({ src: null, loading: true, failed: false });
+    });
 
     (async () => {
       try {

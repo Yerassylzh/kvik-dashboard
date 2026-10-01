@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo, useSyncExternalStore } from 'react';
+import React, { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {

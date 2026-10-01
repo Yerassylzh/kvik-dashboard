@@ -107,7 +107,7 @@ export function useOnboardingFlow() {
     return () => {
       cancelled = true;
     };
-  }, [applyState, toast]);
+  }, [applyState, router, toast]);
 
   // Polling for parsing status during knowledge base steps (every 3 seconds)
   useEffect(() => {

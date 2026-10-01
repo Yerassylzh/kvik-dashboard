@@ -3,9 +3,12 @@ import type { Metadata } from "next";
 import { InsightsPage } from "@/components/dashboard/insights/InsightsPage";
 import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Анализ диалогов и ИИ-Инсайты — Kvik.ai",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+  return {
+    title: `${t("nav.insights")} — Kvik.ai`,
+  };
+}
 
 export default async function InsightsRoutePage() {
   const t = await getTranslations("insights");

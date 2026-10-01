@@ -39,12 +39,16 @@ export function TakeoverControl({
   const [isOptimisticOwner, setIsOptimisticOwner] = useState(false);
 
   React.useEffect(() => {
-    setIsOptimisticOwner(false);
+    queueMicrotask(() => {
+      setIsOptimisticOwner(false);
+    });
   }, [conversation.id]);
 
   React.useEffect(() => {
     if (conversation.status === "BOT_ACTIVE" || conversation.takenOverByActorId === null) {
-      setIsOptimisticOwner(false);
+      queueMicrotask(() => {
+        setIsOptimisticOwner(false);
+      });
     }
   }, [conversation.status, conversation.takenOverByActorId]);
 
@@ -117,7 +121,7 @@ export function TakeoverControl({
   const isAssignedToMe = isOptimisticOwner || (!!myActorId && takenOverByActorId === myActorId);
   const isTakenByOther =
     !isAssignedToMe &&
-    (Boolean(takenOverByActorId) || takenConversationIds.has(conversation.id));
+    (Boolean(takenOverByActorId) || takenConversationIds?.has(conversation.id));
 
   // Taken by someone else — disabled chip
   // OWNER/ADMIN_MANAGER can see the assignee name for accountability

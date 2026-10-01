@@ -43,7 +43,7 @@ export function useStaff(isActive?: boolean) {
   );
 
   const inviteStaff = useCallback(
-    async (id: string, payload?: { email?: string; systemRole?: any }) => {
+    async (id: string, payload?: { email?: string; systemRole?: string }) => {
       const res = await staffApi.inviteStaff(id, payload);
       mutate();
       return res;

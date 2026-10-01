@@ -1,0 +1,18 @@
+{
+  "whatsapp_connected": "WhatsApp connected successfully",
+  "instagram_connected": "Instagram connected successfully",
+  "telegram_connected": "Telegram bot connected successfully",
+  "channel_disconnected": "Channel disconnected successfully",
+  "channel_not_found": "Channel not found or not connected",
+  "whatsapp_code_expired": "WhatsApp authorization code expired. Please try again.",
+  "whatsapp_registration_failed": "Failed to register phone number with WhatsApp Cloud API.",
+  "whatsapp_subscription_failed": "Failed to subscribe to WhatsApp webhooks.",
+  "instagram_no_page_found": "No Facebook pages found for this account.",
+  "instagram_no_business_account": "No Instagram Business account linked to this Facebook page.",
+  "instagram_token_exchange_failed": "Failed to exchange Instagram access token.",
+  "instagram_pages_fetch_failed": "Failed to fetch Facebook pages.",
+  "instagram_subscription_failed": "Failed to subscribe to Instagram webhooks.",
+  "telegram_invalid_token": "Invalid Telegram bot token. Check your token in @BotFather.",
+  "telegram_webhook_failed": "Failed to set up Telegram bot webhook.",
+  "meta_config_missing": "Meta App ID and Secret are not configured on server."
+}

@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { BookingsPage } from "@/components/dashboard/bookings/BookingsPage";
 
-export const metadata: Metadata = {
-  title: "Запись — Kvik.ai",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+  return {
+    title: `${t("nav.bookings")} — Kvik.ai`,
+  };
+}
 
 interface Props {
   params: Promise<{ bookingId: string }>;

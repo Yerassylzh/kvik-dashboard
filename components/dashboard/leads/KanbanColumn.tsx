@@ -17,7 +17,6 @@ interface KanbanColumnProps {
 }
 
 export function KanbanColumn({
-  id,
   title,
   count,
   leads,

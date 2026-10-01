@@ -63,6 +63,7 @@ export function MediaGalleryItem({ item }: MediaGalleryItemProps) {
           onClick={() => setIsLightboxOpen(true)}
           className="group relative cursor-pointer aspect-square rounded-xl overflow-hidden border border-border/70 bg-muted/30 transition-transform active:scale-95"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src || undefined}
             alt={item.fileName || "Photo"}

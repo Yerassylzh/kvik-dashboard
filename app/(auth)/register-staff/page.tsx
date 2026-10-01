@@ -1,11 +1,15 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { RegisterStaffForm } from '@/components/auth/RegisterStaffForm';
 import { Loader2 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Регистрация сотрудника — Kvik.ai',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth');
+  return {
+    title: `${t('staff_invite.title')} — Kvik.ai`,
+  };
+}
 
 export default function RegisterStaffPage() {
   return (

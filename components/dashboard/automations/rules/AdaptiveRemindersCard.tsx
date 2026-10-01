@@ -29,10 +29,16 @@ export function AdaptiveRemindersCard({
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    setEnabled(config?.enabled ?? true);
-    setSend24h(config?.send24hReminder ?? true);
-    setSend2h(config?.send2hReminder ?? true);
-    setHasChanges(false);
+    if (!config) return;
+    const enabledVal = config.enabled ?? true;
+    const send24hVal = config.send24hReminder ?? true;
+    const send2hVal = config.send2hReminder ?? true;
+    queueMicrotask(() => {
+      setEnabled(enabledVal);
+      setSend24h(send24hVal);
+      setSend2h(send2hVal);
+      setHasChanges(false);
+    });
   }, [config]);
 
   const handleToggle = () => {

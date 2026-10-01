@@ -186,8 +186,7 @@ export const conversationsApi = {
   uploadMedia: async (
     conversationId: string,
     file: File | Blob,
-    mediaType?: MediaType,
-    _durationSeconds?: number
+    mediaType?: MediaType
   ): Promise<UploadMediaResponse> => {
     const rawMime =
       file.type?.split(';')[0]?.trim() ||

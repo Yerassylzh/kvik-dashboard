@@ -177,7 +177,7 @@ export function LeadDetail({
         isOpen={isQualifyOpen}
         onClose={() => setIsQualifyOpen(false)}
         onConfirm={handleConfirmQualify}
-        initialService={(lead?.nicheData as any)?.serviceInterest || ""}
+        initialService={(lead?.nicheData as Record<string, unknown> | null)?.serviceInterest as string || ""}
       />
     </>
   );

@@ -5,7 +5,6 @@ import { useState } from "react";
 import {
   conversationsApi,
   type MediaType,
-  type MediaItemDto,
 } from "@/lib/api/conversations";
 
 export type MediaFilterType = "ALL" | MediaType;

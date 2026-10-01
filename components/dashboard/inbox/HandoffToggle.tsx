@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bot, UserCheck, ShieldAlert } from "lucide-react";
+import { Bot, UserCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ConversationStatus } from "@/lib/api/conversations";
 

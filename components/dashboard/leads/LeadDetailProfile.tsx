@@ -50,7 +50,7 @@ export function LeadDetailProfile({
                   : "bg-card border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
-              {t(opt.labelKey as any)}
+              {t(opt.labelKey as Parameters<typeof t>[0])}
             </button>
           ))}
         </div>
@@ -64,7 +64,7 @@ export function LeadDetailProfile({
             <span>{t("leads.loss_reason_label")}</span>
           </div>
           <div className="text-xs text-foreground font-semibold">
-            {lead.lossReason ? t(`leads.loss_reason_${lead.lossReason}` as any) : "Не указана"}
+            {lead.lossReason ? t(`leads.loss_reason_${lead.lossReason}` as Parameters<typeof t>[0]) : "Не указана"}
           </div>
           {lead.lossNotes && (
             <div className="text-xs text-muted-foreground mt-1">

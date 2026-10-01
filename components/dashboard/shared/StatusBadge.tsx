@@ -2,6 +2,7 @@
 
 import React from "react";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
 // ─── Lead status ─────────────────────────────────────────────────────────────
 export type LeadStatus =
@@ -31,52 +32,71 @@ export type EntityStatus = LeadStatus | BookingStatus | ConversationStatus;
 // Maps backend enum values → CSS utility class (defined in globals.css)
 const statusClassMap: Record<EntityStatus, string> = {
   // Lead
-  NEW:                "status-new",
-  QUALIFIED:          "status-qualified",
-  APPOINTMENT_SET:    "status-appointment",
-  DEAL_WON:           "status-won",
-  DEAL_LOST:          "status-lost",
+  NEW:                 "status-new",
+  QUALIFIED:           "status-qualified",
+  APPOINTMENT_SET:     "status-appointment",
+  DEAL_WON:            "status-won",
+  DEAL_LOST:           "status-lost",
   // Booking
-  PENDING:            "status-pending",
-  CONFIRMED:          "status-confirmed",
-  COMPLETED:          "status-completed",
-  CANCELLED:          "status-cancelled",
-  DECLINED:           "status-declined",
-  NO_SHOW:            "status-declined",
+  PENDING:             "status-pending",
+  CONFIRMED:           "status-confirmed",
+  COMPLETED:           "status-completed",
+  CANCELLED:           "status-cancelled",
+  DECLINED:            "status-declined",
+  NO_SHOW:             "status-declined",
   // Conversation
-  BOT_ACTIVE:         "status-bot-active",
-  MANAGER_INTERCEPTED:"status-intercepted",
-  CLOSED:             "status-closed",
-};
-
-// Human-readable Russian labels for each status
-const statusLabelMap: Record<EntityStatus, string> = {
-  NEW:                 "В диалоге",
-  QUALIFIED:           "Квалифицирован",
-  APPOINTMENT_SET:     "Запись создана",
-  DEAL_WON:            "Визит завершен",
-  DEAL_LOST:           "Отказ",
-  PENDING:             "Ожидает",
-  CONFIRMED:           "Подтверждено",
-  COMPLETED:           "Завершено",
-  CANCELLED:           "Отменено",
-  DECLINED:            "Отклонено",
-  NO_SHOW:             "Не пришел",
-  BOT_ACTIVE:          "ИИ-агент",
-  MANAGER_INTERCEPTED: "Менеджер",
-  CLOSED:              "Закрыт",
+  BOT_ACTIVE:          "status-bot-active",
+  MANAGER_INTERCEPTED: "status-intercepted",
+  CLOSED:              "status-closed",
 };
 
 export interface StatusBadgeProps {
   status: EntityStatus;
   type?: "lead" | "booking" | "conversation" | string;
-  label?: string; // Override default Russian label
+  label?: string; // Optional manual label override
   className?: string;
 }
 
 export function StatusBadge({ status, label, className }: StatusBadgeProps) {
+  const t = useTranslations("dashboard");
   const cls = statusClassMap[status] ?? "status-closed";
-  const text = label ?? statusLabelMap[status] ?? status;
+
+  const getLocalizedLabel = (st: EntityStatus): string => {
+    switch (st) {
+      case "NEW":
+        return t("leads.stage_new");
+      case "QUALIFIED":
+        return t("leads.stage_qualified");
+      case "APPOINTMENT_SET":
+        return t("leads.stage_appointment");
+      case "DEAL_WON":
+        return t("leads.stage_won");
+      case "DEAL_LOST":
+        return t("leads.stage_lost");
+      case "PENDING":
+        return t("bookings.status_pending");
+      case "CONFIRMED":
+        return t("bookings.status_confirmed");
+      case "COMPLETED":
+        return t("bookings.status_completed");
+      case "CANCELLED":
+        return t("bookings.status_cancelled");
+      case "DECLINED":
+        return t("bookings.status_declined");
+      case "NO_SHOW":
+        return t("leads.noshow_btn");
+      case "BOT_ACTIVE":
+        return t("inbox.role_bot");
+      case "MANAGER_INTERCEPTED":
+        return t("inbox.role_manager");
+      case "CLOSED":
+        return t("inbox.status_closed");
+      default:
+        return st;
+    }
+  };
+
+  const text = label ?? getLocalizedLabel(status);
 
   return (
     <span

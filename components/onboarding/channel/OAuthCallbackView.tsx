@@ -11,6 +11,35 @@ interface OAuthCallbackViewProps {
   extractDetail: (channel: Channel) => string | undefined;
 }
 
+const notifyOpener = (payload: Record<string, unknown>) => {
+  try {
+    if (window.opener) {
+      window.opener.postMessage(payload, "*");
+    }
+  } catch {
+    // cross-origin
+  }
+
+  try {
+    if (typeof BroadcastChannel !== "undefined") {
+      const bc = new BroadcastChannel("kvik_auth_channel");
+      bc.postMessage(payload);
+      bc.close();
+    }
+  } catch {
+    // noop
+  }
+
+  try {
+    localStorage.setItem(
+      "kvik_oauth_payload",
+      JSON.stringify({ ...payload, timestamp: Date.now() })
+    );
+  } catch {
+    // noop
+  }
+};
+
 export function OAuthCallbackView({
   channelName,
   channelType,
@@ -60,15 +89,19 @@ export function OAuthCallbackView({
       const friendlyError = isCancelled
         ? `Авторизация ${channelName} была отменена`
         : (rawError || `Ошибка авторизации ${channelName}`);
-      setStatus("error");
-      setErrorMessage(friendlyError);
+      queueMicrotask(() => {
+        setStatus("error");
+        setErrorMessage(friendlyError);
+      });
       notifyOpener({ type: errorType, error: friendlyError });
       return;
     }
 
     if (!code) {
-      setStatus("error");
-      setErrorMessage(`Код авторизации не найден в ответе ${channelName}`);
+      queueMicrotask(() => {
+        setStatus("error");
+        setErrorMessage(`Код авторизации не найден в ответе ${channelName}`);
+      });
       return;
     }
 
@@ -127,35 +160,6 @@ export function OAuthCallbackView({
 
     void runConnection();
   }, [channelName, channelType, connectApi, extractDetail]);
-
-  const notifyOpener = (payload: Record<string, unknown>) => {
-    try {
-      if (window.opener) {
-        window.opener.postMessage(payload, "*");
-      }
-    } catch {
-      // cross-origin
-    }
-
-    try {
-      if (typeof BroadcastChannel !== "undefined") {
-        const bc = new BroadcastChannel("kvik_auth_channel");
-        bc.postMessage(payload);
-        bc.close();
-      }
-    } catch {
-      // noop
-    }
-
-    try {
-      localStorage.setItem(
-        "kvik_oauth_payload",
-        JSON.stringify({ ...payload, timestamp: Date.now() })
-      );
-    } catch {
-      // noop
-    }
-  };
 
   const isPurple = themeColor === "purple";
 

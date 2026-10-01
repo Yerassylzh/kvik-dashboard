@@ -1,4 +1,4 @@
-export type SupportedLocale = 'ru' | 'kk';
+export type SupportedLocale = 'ru' | 'en' | 'kk';
 
 export interface I18nPayload {
   code: string;

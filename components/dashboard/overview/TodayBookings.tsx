@@ -19,8 +19,14 @@ interface TodayBookingsProps {
 export function TodayBookings({ bookings = [], isLoading = false }: TodayBookingsProps) {
   const t = useTranslations("dashboard");
 
+  const safeBookings: BookingDto[] = Array.isArray(bookings)
+    ? bookings
+    : Array.isArray((bookings as unknown as { data?: BookingDto[] })?.data)
+    ? (bookings as unknown as { data: BookingDto[] }).data
+    : [];
+
   const todayStr = new Date().toISOString().split("T")[0];
-  const todayList = bookings.filter((b) => b.startTime?.startsWith(todayStr)).slice(0, 5);
+  const todayList = safeBookings.filter((b) => b.startTime?.startsWith(todayStr)).slice(0, 5);
 
   return (
     <SectionCard
@@ -105,7 +111,7 @@ export function TodayBookings({ bookings = [], isLoading = false }: TodayBooking
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
-                      <span className="truncate">{booking.serviceName || "Услуга"}</span>
+                      <span className="truncate">{booking.serviceName || t("overview.default_service_fallback")}</span>
                       {booking.staffName && (
                         <>
                           <span>•</span>

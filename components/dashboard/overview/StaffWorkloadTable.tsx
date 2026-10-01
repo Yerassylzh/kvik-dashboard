@@ -15,6 +15,12 @@ interface StaffWorkloadTableProps {
 export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffWorkloadTableProps) {
   const t = useTranslations("dashboard");
 
+  const safeStaffList: StaffPerformanceItem[] = Array.isArray(staffList)
+    ? staffList
+    : Array.isArray((staffList as unknown as { data?: StaffPerformanceItem[] })?.data)
+    ? (staffList as unknown as { data: StaffPerformanceItem[] }).data
+    : [];
+
   return (
     <SectionCard
       title={t("overview.staff_workload_title")}
@@ -48,14 +54,14 @@ export function StaffWorkloadTable({ staffList = [], isLoading = false }: StaffW
                   </td>
                 </tr>
               ))
-            ) : staffList.length === 0 ? (
+            ) : safeStaffList.length === 0 ? (
               <tr>
                 <td colSpan={3} className="py-8 text-center text-xs text-muted-foreground">
                   {t("common.empty_data")}
                 </td>
               </tr>
             ) : (
-              staffList.map((staff) => (
+              safeStaffList.map((staff) => (
                 <tr key={staff.staffId} className="hover:bg-muted/20 transition-colors">
                   <td className="py-2.5">
                     <div className="flex items-center gap-2.5">

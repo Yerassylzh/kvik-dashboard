@@ -5,7 +5,7 @@ import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Sparkles, Layers, FileText, AlertCircle } from "lucide-react";
+import { Search, Layers, FileText, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ChunkSearchResultDto } from "@/types/knowledgeBase";
 
@@ -15,7 +15,7 @@ interface KbSearchTesterModalProps {
   isSearching: boolean;
   results: ChunkSearchResultDto[] | null;
   error: string | null;
-  onSearch: (query: string) => Promise<any>;
+  onSearch: (query: string) => Promise<unknown>;
 }
 
 export function KbSearchTesterModal({

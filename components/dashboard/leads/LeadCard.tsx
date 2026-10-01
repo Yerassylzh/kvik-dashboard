@@ -7,12 +7,12 @@ import { InteractiveCard } from "@/components/ui/motion/InteractiveCard";
 import { StatusBadge } from "@/components/dashboard/shared/StatusBadge";
 import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 import { ChannelIcon } from "@/components/ui/channel-icon";
-import type { LeadDto } from "@/lib/api/leads";
+import type { LeadDto, LeadStatus } from "@/lib/api/leads";
 
 interface LeadCardProps {
   lead: LeadDto;
   onSelect: (lead: LeadDto) => void;
-  onMoveStage?: (leadId: string, targetStage: any) => void;
+  onMoveStage?: (leadId: string, targetStage: LeadStatus) => void;
 }
 
 const channelColors: Record<string, string> = {
@@ -75,7 +75,7 @@ export function LeadCard({ lead, onSelect }: LeadCardProps) {
 
       {lead.status === "DEAL_LOST" && lead.lossReason && (
         <div className="text-[11px] text-rose-600 dark:text-rose-400 bg-rose-50/70 dark:bg-rose-950/20 px-2 py-0.5 rounded-md border border-rose-200 dark:border-rose-900/40 truncate">
-          {t(`leads.loss_reason_${lead.lossReason}` as any)}
+          {t(`leads.loss_reason_${lead.lossReason}` as Parameters<typeof t>[0])}
         </div>
       )}
 

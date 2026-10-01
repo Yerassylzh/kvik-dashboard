@@ -19,7 +19,6 @@ interface KbWebsiteScraperTabProps {
 
 export function KbWebsiteScraperTab({
   status,
-  isLoading,
   onRefresh,
 }: KbWebsiteScraperTabProps) {
   const t = useTranslations("dashboard");

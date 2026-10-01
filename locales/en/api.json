@@ -1,0 +1,184 @@
+{
+  "auth": {
+    "login_success": "Successfully logged in",
+    "logout_success": "Successfully logged out",
+    "register_success": "Registration completed successfully",
+    "invalid_credentials": "Invalid email address or password",
+    "email_already_exists": "User with this email already exists",
+    "user_not_found": "User not found",
+    "access_denied": "Access denied",
+    "invalid_token_payload": "Invalid auth token payload",
+    "refresh_token_not_found": "Session expired, please log in again",
+    "authentication_required": "Authentication required to perform this action",
+    "email_verified": "Email verified successfully",
+    "email_already_verified": "Email is already verified",
+    "invalid_or_expired_code": "Invalid or expired verification code",
+    "verification_code_sent": "Verification code has been sent to your email",
+    "resend_cooldown": "Please wait before requesting a new code",
+    "password_reset_code_sent": "If the account exists, a reset code was sent to your email",
+    "password_reset_success": "Password changed successfully. You can now log in",
+    "invalid_current_password": "Current password is incorrect",
+    "password_changed": "Password changed successfully",
+    "email_not_verified": "Email verification required. Check your inbox and enter the 6-digit code.",
+    "invalid_or_expired_invite": "Invalid or expired invitation",
+    "invite_already_accepted": "This invitation has already been accepted",
+    "claim_token_invalid": "Ссылка приглашения недействительна или уже была использована",
+    "claim_token_expired": "Срок действия ссылки приглашения истёк"
+  },
+  "onboarding": {
+    "parsing_started": "Parsing started. Your listings will be ready in a few minutes.",
+    "user_not_found": "User ID not found on Krisha.kz. Please check the profile ID.",
+    "invalid_step": "Cannot complete onboarding from current step. Please complete previous steps first.",
+    "niche_saved": "Niche selected successfully",
+    "profile_saved": "Business profile saved successfully",
+    "data_confirmed": "Listing data confirmed successfully",
+    "channel_connected": "Channel connected successfully",
+    "qualification_saved": "Qualification rules saved",
+    "completed": "Onboarding completed successfully",
+    "niche_deprecated": "Selected niche is deprecated. Please select a calendar-based niche.",
+    "data_source_deprecated": "Listing parsing is deprecated. Use 2GIS, website, documents, or notes.",
+    "data_source_confirmed": "Data sources saved successfully"
+  },
+  "workspace": {
+    "not_found": "Workspace not found",
+    "updated": "Workspace settings updated"
+  },
+  "validation": {
+    "failed": "Please check the form for errors",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least {min} characters",
+    "required": "This field is required",
+    "invalid_format": "Invalid format"
+  },
+  "system": {
+    "internal_error": "An internal server error occurred. Please try again later.",
+    "service_unavailable": "Service temporarily unavailable",
+    "too_many_requests": "Too many requests. Please wait a moment."
+  },
+  "channels": {
+    "whatsapp_connected": "WhatsApp connected successfully",
+    "instagram_connected": "Instagram connected successfully",
+    "telegram_connected": "Telegram bot connected successfully",
+    "channel_disconnected": "Channel disconnected successfully",
+    "channel_not_found": "Channel not found or not connected",
+    "whatsapp_code_expired": "WhatsApp authorization code expired. Please try again.",
+    "whatsapp_registration_failed": "Failed to register phone number with WhatsApp Cloud API.",
+    "whatsapp_subscription_failed": "Failed to subscribe to WhatsApp webhooks.",
+    "instagram_no_page_found": "No Facebook pages found for this account.",
+    "instagram_no_business_account": "No Instagram Business account linked to this Facebook page.",
+    "instagram_token_exchange_failed": "Failed to exchange Instagram access token.",
+    "instagram_pages_fetch_failed": "Failed to fetch Facebook pages.",
+    "instagram_subscription_failed": "Failed to subscribe to Instagram webhooks.",
+    "telegram_invalid_token": "Invalid Telegram bot token. Check your token in @BotFather.",
+    "telegram_webhook_failed": "Failed to set up Telegram bot webhook.",
+    "meta_config_missing": "Meta App ID and Secret are not configured on server."
+  },
+  "leads": {
+    "not_found": "Lead not found",
+    "updated": "Lead data updated successfully",
+    "status_updated": "Lead status updated",
+    "archived": "Lead moved to archive",
+    "qualified": "Lead qualified successfully",
+    "disqualified": "Lead disqualified and marked as lost",
+    "note_created": "Note added successfully",
+    "note_deleted": "Note deleted",
+    "invalid_status_transition": "Invalid lead stage transition",
+    "loss_reason_required": "A loss reason is required to close the deal",
+    "note_not_found": "Note not found"
+  },
+  "staff": {
+    "not_found": "Staff member not found",
+    "updated": "Staff member data updated",
+    "deactivated": "Staff member deactivated",
+    "schedule_updated": "Staff schedule updated",
+    "override_added": "Schedule override added",
+    "override_removed": "Schedule override removed",
+    "email_required_for_invite": "Email is required to send an invitation",
+    "invite_sent": "Invitation sent successfully to staff email",
+    "invite_revoked": "Staff invitation revoked",
+    "invite_not_found": "Active invitation not found for this staff member",
+    "override_not_found": "Schedule override not found",
+    "schedule_reset": "Staff schedule reset to workspace default"
+  },
+  "bookings": {
+    "not_found": "Booking not found",
+    "created": "Booking created successfully",
+    "status_updated": "Booking status updated",
+    "rescheduled": "Booking rescheduled",
+    "slot_conflict": "Selected time slot is already booked",
+    "staff_not_found": "Staff member not found",
+    "missing_client_info": "Please provide client name and phone number",
+    "business_schedule_not_configured": "Please configure business working hours first",
+    "staff_not_bookable": "This staff member has an administrative role and does not take bookings",
+    "marked_no_show": "Booking marked as no-show",
+    "slot_outside_working_hours": "Компания не работает в выбранное время. Пожалуйста, выберите другое время."
+  },
+  "conversations": {
+    "not_found": "Conversation not found",
+    "status_updated": "Conversation status updated",
+    "marked_read": "Conversation marked as read",
+    "send_failed": "Failed to send message to client",
+    "channel_disconnected": "Communication channel is disconnected",
+    "invalid_status_transition": "Invalid conversation status transition",
+    "taken_over_by_other": "This conversation is already taken over by another staff member"
+  },
+  "ai_engine": {
+    "config_updated": "AI assistant settings updated",
+    "test_failed": "Failed to execute test conversation",
+    "tool_updated": "AI tool settings saved successfully"
+  },
+  "analytics": {
+    "invalid_date_format": "Invalid date format",
+    "invalid_date_range": "End date must be greater than or equal to start date",
+    "date_range_too_large": "Date range cannot exceed 365 days"
+  },
+  "dev_messaging": {
+    "channels_provisioned": "Mock channels activated successfully.",
+    "inbound_simulated": "Message sent. AI response will arrive via Socket.IO.",
+    "conversation_reset": "Conversation reset to bot mode.",
+    "disabled": "Dev messaging mode is disabled in this environment.",
+    "channel_not_provisioned": "Mock channel not created. Call POST /dev-messaging/provision first."
+  },
+  "knowledge": {
+    "business_context_regeneration_queued": "Business context generation queued",
+    "business_context_updated": "Business context updated successfully",
+    "profile_retrieved": "Business profile retrieved",
+    "profile_updated": "Business profile updated successfully",
+    "note_saved": "Note saved",
+    "note_retrieved": "Note retrieved",
+    "note_updated": "Note updated and queued for re-indexing",
+    "note_deleted": "Note deleted successfully",
+    "website_scraping_started": "Website scraping started",
+    "2gis_scraping_started": "2GIS synchronization started",
+    "scraped_data_cleared": "Scraped data cleared successfully",
+    "entry_updated": "Knowledge base entry updated successfully",
+    "bulk_deleted": "Selected knowledge base entries deleted",
+    "entry_reindexing_queued": "Entry queued for re-indexing",
+    "qualification_rules_updated": "Lead qualification rules saved successfully"
+  },
+  "workspaces": {
+    "schedule_updated": "Business schedule updated successfully",
+    "override_removed": "Schedule override removed successfully",
+    "empty_schedule_templates": "At least one working day must be specified",
+    "override_not_found": "Schedule override not found",
+    "not_found": "Workspace not found"
+  },
+  "follow_up": {
+    "config_updated": "Follow-up settings updated successfully",
+    "cancelled": "Follow-up cancelled for conversation",
+    "test_simulated": "Test message generated successfully",
+    "not_found": "Follow-up configuration not found",
+    "preview_failed": "Failed to generate message preview"
+  },
+  "insights": {
+    "recommendation_applied": "Recommendation applied successfully, changes saved",
+    "recommendation_dismissed": "Recommendation dismissed, feedback recorded",
+    "recommendation_not_found": "Recommendation not found",
+    "already_implemented": "Recommendation has already been applied",
+    "already_dismissed": "Recommendation has already been dismissed",
+    "report_not_found": "Weekly report not found",
+    "weekly_report_generated": "Weekly report generated successfully",
+    "weekly_report_email_sent": "Weekly report sent via email",
+    "analysis_triggered": "Conversation analysis triggered"
+  }
+}

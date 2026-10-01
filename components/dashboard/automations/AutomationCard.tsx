@@ -46,7 +46,7 @@ export function AutomationCard({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-foreground">
-              {t(item.titleKey as any)}
+              {t(item.titleKey as Parameters<typeof t>[0])}
             </span>
             <Badge
               variant={item.isEnabled ? "success" : "secondary"}
@@ -58,7 +58,7 @@ export function AutomationCard({
             </Badge>
           </div>
           <p className="text-[11px] text-muted-foreground leading-relaxed">
-            {t(item.descKey as any)}
+            {t(item.descKey as Parameters<typeof t>[0])}
           </p>
         </div>
 

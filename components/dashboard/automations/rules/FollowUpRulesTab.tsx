@@ -16,8 +16,8 @@ interface FollowUpRulesTabProps {
   updateConfig: (
     payload: UpdateFollowUpConfigPayload,
     successMessage?: string
-  ) => Promise<any>;
-  toggleMasterSwitch?: (enabled: boolean) => Promise<any>;
+  ) => Promise<unknown>;
+  toggleMasterSwitch?: (enabled: boolean) => Promise<unknown>;
   isUpdating?: boolean;
 }
 

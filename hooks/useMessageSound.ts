@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useCallback } from 'react';
 
 /**
  * useMessageSound
@@ -10,11 +10,6 @@ import { useRef, useCallback } from 'react';
  * The sound only plays when the user has interacted with the page at least
  * once (browser autoplay policy).  We silently swallow errors otherwise.
  */
-
-// A tiny 22kHz mono WAV — a clean single-bell chime (~3KB base64).
-// Source: generated from a 440Hz sine wave with exponential decay.
-const NOTIFICATION_SOUND_URL =
-  'https://cdn.jsdelivr.net/gh/fregante/bugsnag-build-reporter@main/test/fixtures/empty.mp3';
 
 // We use a real hosted, lightweight sound instead:
 const CHIME_URL =
@@ -37,8 +32,6 @@ function getAudio(): HTMLAudioElement {
 }
 
 export function useMessageSound() {
-  const playedRef = useRef(false);
-
   const playNotificationSound = useCallback(() => {
     if (typeof window === 'undefined') return;
 

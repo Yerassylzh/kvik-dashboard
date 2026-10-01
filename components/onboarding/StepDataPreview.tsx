@@ -93,7 +93,10 @@ export function StepDataPreview({
 
   useEffect(() => {
     if (dataPreview.entries && dataPreview.entries.length > 0) {
-      setEntries(dataPreview.entries);
+      const eList = dataPreview.entries;
+      queueMicrotask(() => {
+        setEntries(eList);
+      });
     }
   }, [dataPreview.entries]);
 

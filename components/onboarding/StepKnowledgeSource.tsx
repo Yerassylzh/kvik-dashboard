@@ -33,7 +33,6 @@ const SOURCES = [
 export function StepKnowledgeSource({
   draft,
   defaultProfileWebsite,
-  dataPreview: _dataPreview,
   onDraftChange,
   onScrapingStarted,
   onContinue,

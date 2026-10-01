@@ -64,7 +64,7 @@ export function ConversationList({
                 conversation={conv}
                 isSelected={activeId === conv.id}
                 onSelect={onSelect}
-                unreadCount={unreadCounts[conv.id] || conv.unreadCount || 0}
+                unreadCount={unreadCounts?.[conv.id] || conv.unreadCount || 0}
               />
             </StaggerItem>
           ))}

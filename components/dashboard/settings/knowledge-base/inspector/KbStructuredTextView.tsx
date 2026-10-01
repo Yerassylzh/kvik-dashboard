@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Hash, ListOrdered, CheckCircle, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { isTableStart, extractMarkdownTable, MarkdownTableData, isInlinePipeRecord, parseInlinePipeRecords, InlinePipeRecord } from "@/lib/utils/markdown-table";
 import { MarkdownTable, InlinePipeServiceCards } from "@/components/ui/MarkdownTable";
 

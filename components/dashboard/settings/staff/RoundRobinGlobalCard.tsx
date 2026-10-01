@@ -141,11 +141,11 @@ export function RoundRobinGlobalCard({
                         : 'text-foreground'
                     }`}
                   >
-                    {t(s.labelKey as any)}
+                    {t(s.labelKey as Parameters<typeof t>[0])}
                   </span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-tight">
-                  {t(s.descKey as any)}
+                  {t(s.descKey as Parameters<typeof t>[0])}
                 </p>
               </button>
             ))}

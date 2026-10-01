@@ -36,15 +36,6 @@ const channelMeta = {
   },
 };
 
-function formatRuPlural(count: number, one: string, few: string, many: string): string {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-  if (mod100 >= 11 && mod100 <= 19) return `${count} ${many}`;
-  if (mod10 === 1) return `${count} ${one}`;
-  if (mod10 >= 2 && mod10 <= 4) return `${count} ${few}`;
-  return `${count} ${many}`;
-}
-
 export function ChannelDistributionCard({
   channels,
   isLoading = false,
@@ -82,7 +73,7 @@ export function ChannelDistributionCard({
       action={
         totalMessages > 0 ? (
           <span className="text-[11px] font-mono text-muted-foreground px-2 py-0.5 rounded-full bg-muted/60">
-            {formatRuPlural(totalMessages, "сообщение", "сообщения", "сообщений")}
+            {t("overview.messages_unit", { count: totalMessages })}
           </span>
         ) : null
       }
@@ -134,8 +125,8 @@ export function ChannelDistributionCard({
             channelList.map((item) => {
               const meta = channelMeta[item.type];
               const share = totalMessages > 0 ? Math.round((item.messages / totalMessages) * 100) : 0;
-              const dialogueStr = formatRuPlural(item.conversations, "диалог", "диалога", "диалогов");
-              const messageStr = formatRuPlural(item.messages, "сообщение", "сообщения", "сообщений");
+              const dialogueStr = t("overview.dialogues_unit", { count: item.conversations });
+              const messageStr = t("overview.messages_unit", { count: item.messages });
 
               return (
                 <div

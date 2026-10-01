@@ -35,7 +35,8 @@ export function ImpersonationBadge() {
   const handleExit = (e: React.MouseEvent) => {
     e.stopPropagation();
     const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3001';
-    window.location.href = `${adminUrl}/workspaces`;
+    /* eslint-disable-next-line @next/next/no-location-assign-relative-destination */
+    window.location.assign(`${adminUrl}/workspaces`);
   };
 
   return (

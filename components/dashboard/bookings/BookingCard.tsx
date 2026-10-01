@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Clock, User, Phone, Tag } from "lucide-react";
+import { Clock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { InteractiveCard } from "@/components/ui/motion/InteractiveCard";
 import { StatusBadge } from "@/components/dashboard/shared/StatusBadge";

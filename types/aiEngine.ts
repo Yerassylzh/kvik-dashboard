@@ -26,7 +26,7 @@ export interface PromptPreviewDto {
   nicheProfile?: string;
   todayStr?: string;
   dayOfWeek?: string;
-  businessContext?: Record<string, any>;
+  businessContext?: Record<string, unknown>;
   customInstructions?: string;
   compiledSystemPrompt: string;
   totalPromptTokensEstimate?: number;
@@ -34,8 +34,8 @@ export interface PromptPreviewDto {
 
 export interface ToolCallExecution {
   name: string;
-  args: Record<string, any>;
-  result: Record<string, any>;
+  args: Record<string, unknown>;
+  result: Record<string, unknown>;
 }
 
 export interface AiTestResponseDto {

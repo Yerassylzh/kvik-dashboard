@@ -67,18 +67,21 @@ export function useAudioRecorder() {
   }, []);
 
   const monitorVolume = useCallback(() => {
-    if (!analyserRef.current) return;
-    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-    analyserRef.current.getByteFrequencyData(dataArray);
+    function loop() {
+      if (!analyserRef.current) return;
+      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+      analyserRef.current.getByteFrequencyData(dataArray);
 
-    let sum = 0;
-    for (let i = 0; i < dataArray.length; i++) {
-      sum += dataArray[i];
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        sum += dataArray[i];
+      }
+      const avg = sum / dataArray.length;
+      setVolumeLevel(Math.min(1, avg / 128));
+
+      animationFrameRef.current = requestAnimationFrame(loop);
     }
-    const avg = sum / dataArray.length;
-    setVolumeLevel(Math.min(1, avg / 128));
-
-    animationFrameRef.current = requestAnimationFrame(monitorVolume);
+    loop();
   }, []);
 
   const startRecording = useCallback(async (): Promise<boolean> => {

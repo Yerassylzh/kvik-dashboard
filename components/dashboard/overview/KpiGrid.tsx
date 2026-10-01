@@ -33,7 +33,7 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_leads")}
           value={totalLeads}
-          sublabel={totalLeads > 0 ? `${qualifiedLeads} квалифицировано` : undefined}
+          sublabel={totalLeads > 0 ? t("overview.kpi_sub_qualified", { count: qualifiedLeads }) : undefined}
           isLoading={isLoading}
           icon={<Users className="w-4.5 h-4.5" />}
         />
@@ -43,7 +43,7 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_bookings")}
           value={totalBookings}
-          sublabel={totalBookings > 0 ? `${completedBookings} выполнено` : undefined}
+          sublabel={totalBookings > 0 ? t("overview.kpi_sub_completed", { count: completedBookings }) : undefined}
           isLoading={isLoading}
           icon={<CalendarCheck className="w-4.5 h-4.5" />}
         />
@@ -53,7 +53,7 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_conversations")}
           value={totalConversations}
-          sublabel={totalConversations > 0 ? `${botHandled} обработано ИИ` : undefined}
+          sublabel={totalConversations > 0 ? t("overview.kpi_sub_bot_handled", { count: botHandled }) : undefined}
           isLoading={isLoading}
           icon={<MessageSquare className="w-4.5 h-4.5" />}
         />
@@ -63,7 +63,7 @@ export function KpiGrid({ overview, isLoading = false }: KpiGridProps) {
         <StatCard
           label={t("overview.kpi_conversion")}
           value={`${conversionRate}%`}
-          sublabel={totalLeads > 0 ? `${dealWon} успешных визитов` : undefined}
+          sublabel={totalLeads > 0 ? t("overview.kpi_sub_completed_visits", { count: dealWon }) : undefined}
           isLoading={isLoading}
           icon={<TrendingUp className="w-4.5 h-4.5" />}
         />

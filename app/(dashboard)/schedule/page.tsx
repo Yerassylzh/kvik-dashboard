@@ -1,14 +1,19 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { SchedulePage } from "@/components/dashboard/schedule/SchedulePage";
 
-export const metadata: Metadata = {
-  title: "График работы филиала — Kvik.ai",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+  return {
+    title: `${t("nav.schedule")} — Kvik.ai`,
+  };
+}
 
-export default function ScheduleRoutePage() {
+export default async function ScheduleRoutePage() {
+  const t = await getTranslations("dashboard");
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">Загрузка графика...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">{t("common.loading")}</div>}>
       <SchedulePage />
     </Suspense>
   );

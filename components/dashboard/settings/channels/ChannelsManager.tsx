@@ -65,7 +65,9 @@ export function ChannelsManager() {
   }, []);
 
   useEffect(() => {
-    fetchChannels();
+    queueMicrotask(() => {
+      fetchChannels();
+    });
   }, [fetchChannels]);
 
   const handleCheckHealth = async (type: ChannelType) => {

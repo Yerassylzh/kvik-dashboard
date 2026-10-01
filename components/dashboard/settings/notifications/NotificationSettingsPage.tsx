@@ -14,11 +14,10 @@ export function NotificationSettingsPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if ("Notification" in window) {
-        setPermission(Notification.permission);
-      } else {
-        setPermission("unsupported");
-      }
+      const perm = "Notification" in window ? Notification.permission : "unsupported";
+      queueMicrotask(() => {
+        setPermission(perm);
+      });
     }
   }, []);
 

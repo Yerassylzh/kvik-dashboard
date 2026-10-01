@@ -26,17 +26,17 @@ export const useInboxStore = create<InboxStore>((set, get) => ({
     set({ activeConversationId: id });
     if (id) {
       set((state) => ({
-        unreadCounts: { ...state.unreadCounts, [id]: 0 },
+        unreadCounts: { ...(state.unreadCounts || {}), [id]: 0 },
       }));
     }
   },
   unreadCounts: {},
   setUnreadCount: (conversationId, count) => {
     set((state) => ({
-      unreadCounts: { ...state.unreadCounts, [conversationId]: count },
+      unreadCounts: { ...(state.unreadCounts || {}), [conversationId]: count },
     }));
   },
-  setAllUnreadCounts: (counts) => set({ unreadCounts: counts }),
+  setAllUnreadCounts: (counts) => set({ unreadCounts: counts || {} }),
   filterStatus: 'ALL',
   setFilterStatus: (filterStatus) => set({ filterStatus }),
   filterChannel: 'ALL',
@@ -44,17 +44,17 @@ export const useInboxStore = create<InboxStore>((set, get) => ({
   searchQuery: '',
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   getTotalUnread: () => {
-    const counts = get().unreadCounts;
+    const counts = get().unreadCounts || {};
     return Object.values(counts).reduce((sum, n) => sum + (n || 0), 0);
   },
   takenConversationIds: new Set<string>(),
   markTaken: (conversationId) =>
     set((state) => ({
-      takenConversationIds: new Set([...state.takenConversationIds, conversationId]),
+      takenConversationIds: new Set([...(state.takenConversationIds || []), conversationId]),
     })),
   markReleased: (conversationId) =>
     set((state) => {
-      const next = new Set(state.takenConversationIds);
+      const next = new Set(state.takenConversationIds || []);
       next.delete(conversationId);
       return { takenConversationIds: next };
     }),

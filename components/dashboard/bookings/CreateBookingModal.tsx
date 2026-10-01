@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, User, Calendar, AlertCircle, Check } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useAvailableSlots } from "@/hooks/useSlots";
 import type { StaffDto } from "@/lib/api/staff";
 import type { CreateBookingPayload } from "@/lib/api/bookings";
@@ -30,7 +29,7 @@ export function CreateBookingModal({
 
   const [staffId, setStaffId] = useState<string>("");
   const [date, setDate] = useState<string>(todayStr);
-  const [durationMinutes, setDurationMinutes] = useState<number>(60);
+  const [durationMinutes] = useState<number>(60);
   const [selectedSlot, setSelectedSlot] = useState<string>("");
   const [assignedStaffId, setAssignedStaffId] = useState<string>("");
 

@@ -29,13 +29,12 @@ export function KbNoteEditModal({
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    if (note) {
-      setTitle(note.title || "");
-      setContent(note.note || "");
-    } else {
-      setTitle("");
-      setContent("");
-    }
+    const tVal = note ? note.title || "" : "";
+    const cVal = note ? note.note || "" : "";
+    queueMicrotask(() => {
+      setTitle(tVal);
+      setContent(cVal);
+    });
   }, [note, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {

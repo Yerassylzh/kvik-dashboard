@@ -31,10 +31,16 @@ export function AbandonmentStepCard({
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    setIsEnabled(config?.enabled ?? true);
-    setSteps(config?.steps || []);
-    setAutoDisqualifyHours(config?.autoDisqualifyAfterHours ?? 72);
-    setHasChanges(false);
+    if (!config) return;
+    const enabledVal = config.enabled ?? true;
+    const stepsVal = config.steps || [];
+    const hoursVal = config.autoDisqualifyAfterHours ?? 72;
+    queueMicrotask(() => {
+      setIsEnabled(enabledVal);
+      setSteps(stepsVal);
+      setAutoDisqualifyHours(hoursVal);
+      setHasChanges(false);
+    });
   }, [config]);
 
   const stepMetadata: Array<{
@@ -153,7 +159,7 @@ export function AbandonmentStepCard({
                 <div className="flex-1 min-w-0 pb-3 border-b border-border/40">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-foreground">
-                      {t(meta.titleKey as any)}
+                      {t(meta.titleKey as Parameters<typeof t>[0])}
                     </span>
 
                     <select
@@ -173,7 +179,7 @@ export function AbandonmentStepCard({
                   </div>
 
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {t(meta.descKey as any)}
+                    {t(meta.descKey as Parameters<typeof t>[0])}
                   </p>
                 </div>
               </div>

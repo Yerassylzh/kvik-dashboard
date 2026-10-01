@@ -55,7 +55,9 @@ export function KbContentInspectorModal({
 
   useEffect(() => {
     if (isOpen && entryId) {
-      setIsLoading(true);
+      queueMicrotask(() => {
+        setIsLoading(true);
+      });
       knowledgeBaseApi
         .getEntry(entryId)
         .then((data) => {
@@ -68,7 +70,10 @@ export function KbContentInspectorModal({
           setIsLoading(false);
         });
     } else if (initialEntry) {
-      setEntry(initialEntry);
+      const initEntry = initialEntry;
+      queueMicrotask(() => {
+        setEntry(initEntry);
+      });
     }
   }, [isOpen, entryId, initialEntry]);
 

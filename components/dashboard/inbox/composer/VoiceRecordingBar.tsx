@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { Trash2, Send, Mic } from "lucide-react";
+import { Trash2, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import clsx from "clsx";
 
 interface VoiceRecordingBarProps {
   durationSeconds: number;

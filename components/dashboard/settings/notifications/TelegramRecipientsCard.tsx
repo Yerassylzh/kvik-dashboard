@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import {
   Send,
   Trash2,
-  ExternalLink,
   RefreshCw,
   CheckCircle,
   Clock,

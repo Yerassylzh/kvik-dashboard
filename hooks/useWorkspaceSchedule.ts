@@ -4,8 +4,6 @@ import useSWR from 'swr';
 import { useCallback } from 'react';
 import {
   workspacesScheduleApi,
-  type WorkspaceScheduleTemplateDto,
-  type WorkspaceScheduleOverrideDto,
   type SetWorkspaceSchedulePayload,
   type AddWorkspaceOverridePayload,
 } from '@/lib/api/workspacesSchedule';

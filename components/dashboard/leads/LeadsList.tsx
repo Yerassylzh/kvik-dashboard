@@ -109,7 +109,7 @@ export function LeadsList({ leads, onSelectLead, isLoading }: LeadsListProps) {
                       <StatusBadge type="lead" status={lead.status} />
                       {lead.status === "DEAL_LOST" && lead.lossReason && (
                         <span className="text-[10px] text-rose-600 dark:text-rose-400 truncate max-w-[140px]">
-                          {t(`leads.loss_reason_${lead.lossReason}` as any)}
+                          {t(`leads.loss_reason_${lead.lossReason}` as Parameters<typeof t>[0])}
                         </span>
                       )}
                     </div>

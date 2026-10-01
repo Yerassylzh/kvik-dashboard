@@ -34,6 +34,7 @@ export function MediaLightboxModal({
         {/* Media Preview Container */}
         <div className="relative flex items-center justify-center min-h-[300px] max-h-[80vh] w-full overflow-hidden rounded-lg bg-black/40">
           {mediaType === "IMAGE" ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={mediaUrl}
               alt={fileName || "Media preview"}

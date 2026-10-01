@@ -137,7 +137,7 @@ export function ChannelCard({
           <div className="min-w-0 space-y-0.5">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-bold text-sm text-foreground truncate">
-                {t(config.titleKey as any)}
+                {t(config.titleKey as Parameters<typeof t>[0])}
               </h4>
 
               {isConnected ? (

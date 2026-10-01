@@ -41,8 +41,8 @@ export function FollowUpThreadBanner({
       setIsDismissed(true);
       toast.success(t("inbox.followup_cancelled_toast"));
       onCancelled?.();
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || err?.message || t("inbox.followup_cancel_error");
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || (err as { message?: string })?.message || t("inbox.followup_cancel_error");
       toast.error(msg);
     } finally {
       setIsCancelling(false);

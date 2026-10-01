@@ -4,7 +4,6 @@ import useSWR from 'swr';
 import { useState, useCallback } from 'react';
 import {
   bookingsApi,
-  type BookingDto,
   type BookingStatus,
   type FilterBookingsParams,
   type CreateBookingPayload,

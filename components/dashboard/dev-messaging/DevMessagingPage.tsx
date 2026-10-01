@@ -64,6 +64,25 @@ export function DevMessagingPage() {
     onMessage: handleSocketMessage,
   });
 
+  const fetchHistoryById = useCallback(async (convId: string, silent = false) => {
+    if (!convId) return;
+    if (!silent) setIsLoadingHistory(true);
+    try {
+      const data = await getDevConversationMessages(convId);
+      setConversationData(data);
+      setActiveConversationId(data.conversationId);
+      return data;
+    } catch (err: unknown) {
+      if (!silent) {
+        const msg = err instanceof Error ? err.message : "Failed to load conversation";
+        toast.error(msg);
+      }
+      return null;
+    } finally {
+      if (!silent) setIsLoadingHistory(false);
+    }
+  }, [toast]);
+
   // Hard guard for production
   if (!isDevEnvironment()) {
     return (
@@ -86,25 +105,6 @@ export function DevMessagingPage() {
       setIsProvisioning(false);
     }
   };
-
-  const fetchHistoryById = useCallback(async (convId: string, silent = false) => {
-    if (!convId) return;
-    if (!silent) setIsLoadingHistory(true);
-    try {
-      const data = await getDevConversationMessages(convId);
-      setConversationData(data);
-      setActiveConversationId(data.conversationId);
-      return data;
-    } catch (err: unknown) {
-      if (!silent) {
-        const msg = err instanceof Error ? err.message : "Failed to load conversation";
-        toast.error(msg);
-      }
-      return null;
-    } finally {
-      if (!silent) setIsLoadingHistory(false);
-    }
-  }, [toast]);
 
   const handleSimulate = async (e: React.FormEvent) => {
     e.preventDefault();

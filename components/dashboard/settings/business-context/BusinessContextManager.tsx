@@ -41,7 +41,7 @@ export function BusinessContextManager() {
   // Sync state when context is fetched
   useEffect(() => {
     if (context) {
-      setForm({
+      const nextForm = {
         businessType: context.businessType || "",
         specialization: context.specialization || "",
         keyDifferentiators: context.keyDifferentiators || [],
@@ -53,6 +53,9 @@ export function BusinessContextManager() {
         cancellationPolicy: context.cancellationPolicy || "",
         contactInfo: context.contactInfo || "",
         workingHours: context.workingHours || "",
+      };
+      queueMicrotask(() => {
+        setForm(nextForm);
       });
     }
   }, [context]);

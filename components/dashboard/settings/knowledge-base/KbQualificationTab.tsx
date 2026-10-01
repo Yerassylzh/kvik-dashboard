@@ -17,7 +17,6 @@ interface KbQualificationTabProps {
 
 export function KbQualificationTab({
   initialData,
-  isLoading,
   onRefresh,
 }: KbQualificationTabProps) {
   const t = useTranslations("dashboard");
@@ -34,11 +33,18 @@ export function KbQualificationTab({
   useEffect(() => {
     const rules = initialData?.qualificationRules;
     if (rules) {
-      setQuestions(rules.questions || []);
-      setDisqualifiers(rules.disqualifiers || []);
-      setAutoPassConditions(rules.autoPassConditions || []);
-      setBudgetMin(rules.budgetMin !== undefined ? String(rules.budgetMin) : "");
-      setBudgetMax(rules.budgetMax !== undefined ? String(rules.budgetMax) : "");
+      const qVal = rules.questions || [];
+      const dVal = rules.disqualifiers || [];
+      const aVal = rules.autoPassConditions || [];
+      const bMinVal = rules.budgetMin !== undefined ? String(rules.budgetMin) : "";
+      const bMaxVal = rules.budgetMax !== undefined ? String(rules.budgetMax) : "";
+      queueMicrotask(() => {
+        setQuestions(qVal);
+        setDisqualifiers(dVal);
+        setAutoPassConditions(aVal);
+        setBudgetMin(bMinVal);
+        setBudgetMax(bMaxVal);
+      });
     }
   }, [initialData]);
 
@@ -52,7 +58,7 @@ export function KbQualificationTab({
     setQuestions([...questions, newQ]);
   };
 
-  const handleUpdateQuestion = (index: number, key: keyof QualificationQuestion, value: any) => {
+  const handleUpdateQuestion = (index: number, key: keyof QualificationQuestion, value: unknown) => {
     const updated = [...questions];
     updated[index] = { ...updated[index], [key]: value };
     setQuestions(updated);

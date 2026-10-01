@@ -41,7 +41,7 @@ export interface KnowledgeEntryDto {
   type: KnowledgeType;
   title?: string | null;
   externalId?: string | null;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   sourceUrl?: string | null;
   fileKey?: string | null;
   fileMimeType?: string | null;
@@ -179,7 +179,7 @@ export interface ChunkSearchResultDto {
   knowledgeEntryId?: string;
   knowledgeEntryTitle?: string;
   type?: KnowledgeType;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface SearchTestResponseDto {

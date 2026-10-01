@@ -1,12 +1,16 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { ClaimWorkspaceForm } from '@/components/auth/ClaimWorkspaceForm';
 import { Loader2 } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'Активация рабочего пространства — Kvik.ai',
-  description: 'Привязка и активация преднастроенного рабочего пространства AI-ассистента',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth');
+  return {
+    title: `${t('claim_workspace.title_new')} — Kvik.ai`,
+    description: t('claim_workspace.subtitle_new'),
+  };
+}
 
 export default function ClaimWorkspacePage() {
   return (

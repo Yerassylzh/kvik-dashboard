@@ -47,7 +47,7 @@ export function FollowUpLogsTab({ workspaceId }: FollowUpLogsTabProps) {
           <select
             value={statusFilter}
             onChange={(e) => {
-              setStatusFilter(e.target.value as any);
+              setStatusFilter(e.target.value as typeof statusFilter);
               setPage(1);
             }}
             className="text-xs bg-background border border-border/80 rounded-lg px-2.5 py-1.5 text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary"
@@ -64,7 +64,7 @@ export function FollowUpLogsTab({ workspaceId }: FollowUpLogsTabProps) {
           <select
             value={channelFilter}
             onChange={(e) => {
-              setChannelFilter(e.target.value as any);
+              setChannelFilter(e.target.value as typeof channelFilter);
               setPage(1);
             }}
             className="text-xs bg-background border border-border/80 rounded-lg px-2.5 py-1.5 text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary"

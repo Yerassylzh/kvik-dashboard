@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { UserPlus, Mail } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Modal } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
@@ -62,8 +62,8 @@ export function StaffInviteModal({ isOpen, onClose, onSubmit }: StaffInviteModal
       setSpecializations('');
       setAvatarUrl('');
       onClose();
-    } catch (err: any) {
-      setError(err?.message || t('staff.error_create_fallback'));
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message || t('staff.error_create_fallback'));
     } finally {
       setIsSubmitting(false);
     }

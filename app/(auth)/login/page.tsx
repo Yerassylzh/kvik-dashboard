@@ -122,7 +122,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Загрузка...</div>}>
+    <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">Loading...</div>}>
       <LoginForm />
     </React.Suspense>
   );

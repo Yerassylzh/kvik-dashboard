@@ -1,0 +1,52 @@
+{
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "skip": "Skip",
+    "retry": "Retry",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "close": "Close"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  },
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "active": "Active",
+  "inactive": "Inactive",
+  "status_completed": "Completed",
+  "status_processing": "Processing...",
+  "status_pending": "Pending",
+  "status_failed": "Failed",
+  "close": "Close",
+  "loading": "Loading...",
+  "god_mode": {
+    "badge": "SUPERADMIN MODE",
+    "operating_in": "Operating in",
+    "workspace_fallback": "workspace",
+    "with_owner_privileges": "with Owner privileges",
+    "exit_btn": "To Admin Panel ↗",
+    "workspace_label": "Workspace",
+    "owner_label": "Owner",
+    "owner_not_specified": "Unassigned",
+    "tooltip_title": "Superadmin Mode",
+    "tooltip_desc": "Browsing workspace with full Owner privileges"
+  },
+  "superadmin": {
+    "badge": "SuperAdmin",
+    "tooltip_title": "SuperAdmin",
+    "tooltip_desc": "Workspace Management",
+    "workspace_name": "Company Name",
+    "workspace_id": "Workspace ID",
+    "exit_btn": "To Admin Panel ↗",
+    "copied": "Copied!"
+  }
+}

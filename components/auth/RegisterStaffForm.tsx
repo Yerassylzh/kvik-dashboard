@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import {
   UserCheck,
   Building2,
-  Lock,
   Eye,
   EyeOff,
   ArrowRight,
@@ -32,7 +31,6 @@ export function RegisterStaffForm() {
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -43,8 +41,10 @@ export function RegisterStaffForm() {
     let cancelled = false;
 
     if (!token) {
-      setIsValidating(false);
-      setValidationError(t('staff_invite.missing_token'));
+      queueMicrotask(() => {
+        setIsValidating(false);
+        setValidationError(t('staff_invite.missing_token'));
+      });
       return;
     }
 
@@ -57,10 +57,10 @@ export function RegisterStaffForm() {
           setInviteData(data);
           setName(data.staffName || '');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
           const msg =
-            err?.message ||
+            (err as { message?: string })?.message ||
             t('staff_invite.token_not_found');
           setValidationError(msg);
         }
@@ -98,14 +98,13 @@ export function RegisterStaffForm() {
         token,
         password,
         name: name.trim() || undefined,
-        phone: phone.trim() || undefined,
       });
 
       // Staff bypasses owner onboarding, redirect directly to dashboard overview
       router.replace('/overview');
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSubmitError(
-        err?.message || t('staff_invite.error_fallback')
+        (err as { message?: string })?.message || t('staff_invite.error_fallback')
       );
     } finally {
       setIsSubmitting(false);

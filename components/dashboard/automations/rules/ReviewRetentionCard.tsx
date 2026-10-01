@@ -37,12 +37,20 @@ export function ReviewRetentionCard({
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    setEnabled(config?.enabled ?? true);
-    setSend2Gis(config?.send2GisReviewRequest ?? true);
-    setDelayMinutes(config?.sendReviewRequestAfterMinutes ?? 120);
-    setReviewUrl(config?.direct2GisReviewUrl || "");
-    setRepeatRecallDays(config?.sendRepeatRecallAfterDays ?? 30);
-    setHasChanges(false);
+    if (!config) return;
+    const enabledVal = config.enabled ?? true;
+    const send2GisVal = config.send2GisReviewRequest ?? true;
+    const delayVal = config.sendReviewRequestAfterMinutes ?? 120;
+    const reviewUrlVal = config.direct2GisReviewUrl || "";
+    const repeatDaysVal = config.sendRepeatRecallAfterDays ?? 30;
+    queueMicrotask(() => {
+      setEnabled(enabledVal);
+      setSend2Gis(send2GisVal);
+      setDelayMinutes(delayVal);
+      setReviewUrl(reviewUrlVal);
+      setRepeatRecallDays(repeatDaysVal);
+      setHasChanges(false);
+    });
   }, [config]);
 
   const handleToggle = () => {

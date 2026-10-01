@@ -40,16 +40,26 @@ export function StaffEditModal({
 
   useEffect(() => {
     if (staff) {
-      setName(staff.name);
-      setRole(staff.role || '');
-      setSystemRole(staff.systemRole || 'SPECIALIST');
-      setEmail(staff.email || '');
-      setPhone(staff.phone || '');
-      setSpecializations((staff.specializations || []).join(', '));
-      setAvatarUrl(staff.avatarUrl || '');
-      setIsActive(staff.isActive);
-      setConfirmDeactivate(false);
-      setError(null);
+      const sName = staff.name;
+      const sRole = staff.role || '';
+      const sSysRole = staff.systemRole || 'SPECIALIST';
+      const sEmail = staff.email || '';
+      const sPhone = staff.phone || '';
+      const sSpecs = (staff.specializations || []).join(', ');
+      const sAvatar = staff.avatarUrl || '';
+      const sActive = staff.isActive;
+      queueMicrotask(() => {
+        setName(sName);
+        setRole(sRole);
+        setSystemRole(sSysRole);
+        setEmail(sEmail);
+        setPhone(sPhone);
+        setSpecializations(sSpecs);
+        setAvatarUrl(sAvatar);
+        setIsActive(sActive);
+        setConfirmDeactivate(false);
+        setError(null);
+      });
     }
   }, [staff]);
 
@@ -74,8 +84,8 @@ export function StaffEditModal({
         isActive,
       });
       onClose();
-    } catch (err: any) {
-      setError(err?.message || t('staff.error_save_fallback'));
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message || t('staff.error_save_fallback'));
     } finally {
       setIsSubmitting(false);
     }
@@ -90,8 +100,8 @@ export function StaffEditModal({
     try {
       await onDeactivate(staff.id);
       onClose();
-    } catch (err: any) {
-      setError(err?.message || t('staff.error_deactivate_fallback'));
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message || t('staff.error_deactivate_fallback'));
     } finally {
       setIsDeactivating(false);
     }

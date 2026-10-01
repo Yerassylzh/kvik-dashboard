@@ -183,7 +183,8 @@ export function useAuth() {
       setPendingVerificationEmail(null);
       clearAuth();
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        /* eslint-disable-next-line @next/next/no-location-assign-relative-destination */
+        window.location.assign("/login");
       }
     }
   }, [clearAuth, setLoading, setPendingVerificationEmail]);
@@ -208,7 +209,8 @@ export function useAuth() {
         const pathname = typeof window !== "undefined" ? window.location.pathname : "";
         if (state.pendingVerificationEmail || pathname.startsWith("/onboarding")) {
           if (!pathname.startsWith("/verify-email")) {
-            window.location.href = "/verify-email";
+            /* eslint-disable-next-line @next/next/no-location-assign-relative-destination */
+            window.location.assign("/verify-email");
           }
         }
       }
@@ -252,7 +254,8 @@ export function useAuth() {
             if (pending || pathname.startsWith("/onboarding")) {
               useAuthStore.getState().setPendingVerificationEmail(userData.email);
               if (!pathname.startsWith("/verify-email")) {
-                window.location.href = "/verify-email";
+                /* eslint-disable-next-line @next/next/no-location-assign-relative-destination */
+                window.location.assign("/verify-email");
               }
             }
           }
@@ -277,7 +280,8 @@ export function useAuth() {
             const from = encodeURIComponent(
               pathname + window.location.search,
             );
-            window.location.href = `/login?from=${from}`;
+            /* eslint-disable-next-line @next/next/no-location-assign-relative-destination */
+            window.location.assign(`/login?from=${from}`);
           }
         }
       } finally {

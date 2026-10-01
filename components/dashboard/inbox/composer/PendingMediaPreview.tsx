@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { X, FileText, Image as ImageIcon, Video, Music, Loader2 } from "lucide-react";
+import { X, FileText, Music, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { MediaType } from "@/lib/api/conversations";
 
@@ -24,7 +24,9 @@ export function PendingMediaPreview({
   useEffect(() => {
     if (mediaType === "IMAGE" || mediaType === "VIDEO") {
       const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      queueMicrotask(() => {
+        setPreviewUrl(url);
+      });
       return () => URL.revokeObjectURL(url);
     }
   }, [file, mediaType]);
@@ -39,6 +41,7 @@ export function PendingMediaPreview({
       {/* Thumbnail or Icon */}
       <div className="w-12 h-12 rounded-lg bg-card border border-border/60 overflow-hidden flex items-center justify-center shrink-0">
         {mediaType === "IMAGE" && previewUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
         ) : mediaType === "VIDEO" && previewUrl ? (
           <video src={previewUrl} className="w-full h-full object-cover" />

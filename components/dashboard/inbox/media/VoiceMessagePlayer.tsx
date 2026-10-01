@@ -124,8 +124,9 @@ export function VoiceMessagePlayer({
   };
 
   useEffect(() => {
+    const audioEl = audioRef.current;
     return () => {
-      if (activeAudio === audioRef.current) {
+      if (activeAudio === audioEl) {
         activeAudio = null;
         stopActiveAudioCallback = null;
       }

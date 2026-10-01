@@ -25,10 +25,16 @@ export function QuietHoursCard({
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    setEnabled(config?.enabled ?? true);
-    setStart(config?.start || "21:30");
-    setEnd(config?.end || "09:00");
-    setHasChanges(false);
+    if (!config) return;
+    const enabledVal = config.enabled ?? true;
+    const startVal = config.start || "21:30";
+    const endVal = config.end || "09:00";
+    queueMicrotask(() => {
+      setEnabled(enabledVal);
+      setStart(startVal);
+      setEnd(endVal);
+      setHasChanges(false);
+    });
   }, [config]);
 
   const handleToggle = () => {

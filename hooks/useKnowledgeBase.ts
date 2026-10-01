@@ -9,7 +9,6 @@ import {
   type ManualNoteDto,
   type ScrapersStatusDto,
   type QualificationRulesDto,
-  type SearchTestResponseDto,
   type ChunkSearchResultDto,
 } from '@/lib/api/knowledgeBase';
 

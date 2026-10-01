@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";

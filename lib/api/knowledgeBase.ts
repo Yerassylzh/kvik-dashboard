@@ -105,7 +105,7 @@ export const knowledgeBaseApi = {
   triggerWebsiteScrape: async (
     websiteUrl?: string,
     forceRecrawl?: boolean
-  ): Promise<any> => {
+  ): Promise<unknown> => {
     const { data } = await apiClient.post('/knowledge-base/scrapers/website', {
       websiteUrl,
       forceRecrawl,
@@ -116,7 +116,7 @@ export const knowledgeBaseApi = {
   triggerTwoGisScrape: async (
     input: string,
     forceRecrawl?: boolean
-  ): Promise<any> => {
+  ): Promise<unknown> => {
     const { data } = await apiClient.post('/knowledge-base/scrapers/2gis', {
       input,
       forceRecrawl,

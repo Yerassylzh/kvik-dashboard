@@ -68,7 +68,7 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
   };
   const IconComponent = typeConfig.icon;
 
-  const typeLabel = t(typeConfig.translationKey as any) || entry.type;
+  const typeLabel = t(typeConfig.translationKey as Parameters<typeof t>[0]) || entry.type;
   const default2gisTitle = t("knowledge.preview.twogis_catalog_label");
   const defaultNoteTitle = t("knowledge.preview.note_card_title");
   const defaultWebsiteTitle = t("knowledge.preview.website_label");
@@ -79,7 +79,7 @@ export function KnowledgeEntryCard({ entry }: KnowledgeEntryCardProps) {
     defaultWebsiteTitle
   );
 
-  const data = (entry.data || {}) as Record<string, any>;
+  const data = (entry.data || {}) as Record<string, unknown>;
   const structuredText = extractStructuredText(entry);
   const servicesList = extractServicesList(entry);
 

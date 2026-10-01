@@ -15,7 +15,7 @@ export function useNotifications() {
     return ['notifications', pageIndex + 1, PAGE_SIZE];
   };
 
-  const { data, error, isLoading, mutate, size, setSize } = useSWRInfinite(
+  const { data, error, isLoading, mutate, setSize } = useSWRInfinite(
     getKey,
     ([, page, limit]) =>
       notificationsApi.getNotifications({ page: page as number, limit: limit as number }),

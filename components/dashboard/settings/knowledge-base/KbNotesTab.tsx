@@ -16,7 +16,7 @@ interface KbNotesTabProps {
   onRefresh: () => void;
 }
 
-export function KbNotesTab({ notes, isLoading, onRefresh }: KbNotesTabProps) {
+export function KbNotesTab({ notes, onRefresh }: KbNotesTabProps) {
   const t = useTranslations("dashboard");
   const tCommon = useTranslations("common");
 

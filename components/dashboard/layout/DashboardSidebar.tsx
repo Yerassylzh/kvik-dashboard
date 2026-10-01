@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { LayoutDashboard, HelpCircle, Settings2, LogOut } from 'lucide-react';
+import { LayoutDashboard, HelpCircle, LogOut } from 'lucide-react';
 import clsx from 'clsx';
 import { WorkspaceSwitcher } from '@/components/dashboard/shared/WorkspaceSwitcher';
 import { useAuth } from '@/hooks/useAuth';

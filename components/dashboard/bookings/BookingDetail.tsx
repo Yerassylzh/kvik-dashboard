@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Clock, User, Phone, Calendar, CheckCircle2, XCircle, RefreshCw, DollarSign } from "lucide-react";
+import { User, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";

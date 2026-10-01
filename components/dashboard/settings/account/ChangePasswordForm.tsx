@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { KeyRound, ShieldCheck, Check, Lock, Mail, UserCheck, LogOut } from "lucide-react";
+import { ShieldCheck, Check, Lock, Mail, UserCheck, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
+import { LanguageSettingsCard } from "./LanguageSettingsCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
@@ -85,6 +86,9 @@ export function ChangePasswordForm() {
           </div>
         </div>
       </SectionCard>
+
+      {/* Interface Language Preference Card */}
+      <LanguageSettingsCard />
 
       {/* Change Password Form Card */}
       <form onSubmit={handleSubmit}>

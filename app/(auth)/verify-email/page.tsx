@@ -29,7 +29,9 @@ export default function VerifyEmailPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => {
+      setMounted(true);
+    });
   }, []);
 
   // If mounted and no email found → redirect to login
@@ -180,7 +182,7 @@ export default function VerifyEmailPage() {
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               onPaste={handlePaste}
-              aria-label={`Цифра ${i + 1}`}
+              aria-label={t('layout.otp_digit', { number: i + 1 })}
               className="w-11 h-14 text-center text-xl font-bold bg-card border-2 border-border rounded-xl text-foreground focus:outline-none focus:border-primary transition-colors caret-primary"
             />
           ))}

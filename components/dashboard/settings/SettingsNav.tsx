@@ -75,7 +75,7 @@ export function SettingsNav() {
               )}
             >
               <Icon className="w-3.5 h-3.5 shrink-0" />
-              <span>{t(item.labelKey as any)}</span>
+              <span>{t(item.labelKey as Parameters<typeof t>[0])}</span>
             </Link>
           );
         })}

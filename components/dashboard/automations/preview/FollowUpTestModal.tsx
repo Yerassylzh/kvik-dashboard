@@ -37,7 +37,10 @@ export function FollowUpTestModal({
   // Auto-select first conversation if available
   useEffect(() => {
     if (conversations.length > 0 && !conversationId) {
-      setConversationId(conversations[0].id);
+      const firstId = conversations[0].id;
+      queueMicrotask(() => {
+        setConversationId(firstId);
+      });
     }
   }, [conversations, conversationId]);
 

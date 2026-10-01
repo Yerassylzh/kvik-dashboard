@@ -104,10 +104,10 @@ export function OnboardingHeader({
       {/* Step Title & Subtitle */}
       <FadeIn delay={0.1} className="text-center mb-8 max-w-xl px-2">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-          {t(currentMeta.titleKey as any)}
+          {t(currentMeta.titleKey as Parameters<typeof t>[0])}
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-2 leading-relaxed">
-          {t(currentMeta.subtitleKey as any)}
+          {t(currentMeta.subtitleKey as Parameters<typeof t>[0])}
         </p>
       </FadeIn>
 

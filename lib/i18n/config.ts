@@ -1,13 +1,15 @@
 import ruApi from '@/locales/ru/api.json';
+import enApi from '@/locales/en/api.json';
 import { SupportedLocale } from '@/types/i18n';
 
 // Registry of backend API error & response dictionaries
 export const API_DICTIONARIES: Record<SupportedLocale, Record<string, unknown>> = {
   ru: ruApi as unknown as Record<string, unknown>,
+  en: enApi as unknown as Record<string, unknown>,
   kk: {}, // Placeholder for Kazakh API dictionary
 };
 
-export const SUPPORTED_LOCALES: SupportedLocale[] = ['ru', 'kk'];
+export const SUPPORTED_LOCALES: SupportedLocale[] = ['ru', 'en', 'kk'];
 export const DEFAULT_LOCALE: SupportedLocale = 'ru';
 
 let activeLocale: SupportedLocale = DEFAULT_LOCALE;
@@ -23,7 +25,7 @@ export function getCurrentLocale(): SupportedLocale {
  * Sets the active locale for translation lookups and HTTP requests.
  */
 export function setCurrentLocale(locale: SupportedLocale): void {
-  if (API_DICTIONARIES[locale]) {
+  if (SUPPORTED_LOCALES.includes(locale)) {
     activeLocale = locale;
     if (typeof document !== 'undefined') {
       document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000; SameSite=Lax`;

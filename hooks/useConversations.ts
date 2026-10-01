@@ -5,7 +5,6 @@ import { useState, useCallback } from 'react';
 import {
   conversationsApi,
   type ConversationStatus,
-  type ChannelType,
   type ListConversationsParams,
   type SendManagerMessageDto,
   type MessageDto,

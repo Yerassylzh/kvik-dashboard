@@ -35,8 +35,8 @@ export function useFollowUpConfig(workspaceId?: string) {
           toast.success(res.message);
         }
         return res;
-      } catch (err: any) {
-        const msg = err?.response?.data?.message || err?.message || 'Ошибка обновления настроек';
+      } catch (err: unknown) {
+        const msg = (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || (err as { message?: string })?.message || 'Ошибка обновления настроек';
         toast.error(msg);
         throw err;
       } finally {
@@ -131,8 +131,8 @@ export function useFollowUpPreview(workspaceId?: string) {
         const data = await followUpsApi.testPreview(workspaceId, payload);
         setResult(data);
         return data;
-      } catch (err: any) {
-        const msg = err?.response?.data?.message || err?.message || 'Не удалось сгенерировать тест';
+      } catch (err: unknown) {
+        const msg = (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message || (err as { message?: string })?.message || 'Не удалось сгенерировать тест';
         setError(msg);
         toast.error(msg);
         throw err;

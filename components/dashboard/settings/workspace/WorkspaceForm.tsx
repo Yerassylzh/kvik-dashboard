@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Building2, Globe, Check, Save, MapPin, Phone } from "lucide-react";
+import { Check, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,12 @@ export function WorkspaceForm() {
 
   useEffect(() => {
     if (user?.workspace) {
-      if (user.workspace.name) setName(user.workspace.name);
-      if (user.workspace.nicheProfile) setNiche(user.workspace.nicheProfile);
+      const wsName = user.workspace.name;
+      const wsNiche = user.workspace.nicheProfile;
+      queueMicrotask(() => {
+        if (wsName) setName(wsName);
+        if (wsNiche) setNiche(wsNiche);
+      });
     }
 
     knowledgeBaseApi

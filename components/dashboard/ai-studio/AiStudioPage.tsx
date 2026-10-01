@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Bot, Database, HelpCircle, PlayCircle, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DashboardPageHeader } from "@/components/dashboard/shared/DashboardPageHeader";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KnowledgeBaseManager } from "@/components/dashboard/settings/knowledge-base/KnowledgeBaseManager";
 import { AgentConfig } from "@/components/dashboard/settings/ai-agent/AgentConfig";
@@ -26,7 +25,6 @@ export function AiStudioPage() {
       <DashboardPageHeader
         title={t("ai_studio.title")}
         description={t("ai_studio.desc")}
-        badge={<Badge variant="success">Gemini 2.0</Badge>}
         actions={
           <Button
             size="sm"

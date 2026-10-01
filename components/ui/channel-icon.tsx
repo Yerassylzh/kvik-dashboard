@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageCircle, Send, Camera } from "lucide-react";
+import { MessageCircle, Send } from "lucide-react";
 
 export interface ChannelIconProps {
   type: "WHATSAPP" | "INSTAGRAM" | "TELEGRAM" | string;

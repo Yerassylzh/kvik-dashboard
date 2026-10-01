@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Play, VideoOff, Maximize2 } from "lucide-react";
+import { VideoOff, Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MediaLightboxModal } from "./MediaLightboxModal";
 import { AttachmentActions } from "./AttachmentActions";
 import { useMediaObjectSrc } from "@/hooks/useMediaObjectSrc";
-import clsx from "clsx";
 
 interface VideoAttachmentProps {
   mediaUrl: string;
@@ -19,9 +18,7 @@ interface VideoAttachmentProps {
 export function VideoAttachment({
   mediaUrl,
   fileName,
-  durationSeconds,
   fileSize,
-  isUserMessage = false,
 }: VideoAttachmentProps) {
   const t = useTranslations("dashboard");
   const { src } = useMediaObjectSrc(mediaUrl);

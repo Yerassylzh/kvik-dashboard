@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Zap, LineChart, Clock, PlayCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DashboardPageHeader } from "@/components/dashboard/shared/DashboardPageHeader";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useFollowUpConfig } from "@/hooks/useFollowUps";

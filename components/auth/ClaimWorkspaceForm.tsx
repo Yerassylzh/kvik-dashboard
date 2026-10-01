@@ -41,8 +41,10 @@ export function ClaimWorkspaceForm() {
     let cancelled = false;
 
     if (!token) {
-      setIsValidating(false);
-      setValidationError(t('claim_workspace.missing_token'));
+      queueMicrotask(() => {
+        setIsValidating(false);
+        setValidationError(t('claim_workspace.missing_token'));
+      });
       return;
     }
 
@@ -54,11 +56,11 @@ export function ClaimWorkspaceForm() {
         if (!cancelled) {
           setClaimData(data);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
           const msg =
-            err?.response?.data?.message ||
-            err?.message ||
+            (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message ||
+            (err as { message?: string })?.message ||
             t('claim_workspace.invalid_desc');
           setValidationError(msg);
         }
@@ -99,10 +101,10 @@ export function ClaimWorkspaceForm() {
 
       // Route to onboarding (derived state will directly land on Step 5: CONNECT_CHANNEL)
       router.replace('/onboarding');
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSubmitError(
-        err?.response?.data?.message ||
-        err?.message ||
+        (err as { response?: { data?: { message?: string } }; message?: string })?.response?.data?.message ||
+        (err as { message?: string })?.message ||
         t('claim_workspace.error_fallback')
       );
     } finally {

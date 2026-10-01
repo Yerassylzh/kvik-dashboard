@@ -23,7 +23,7 @@ export function SettingsPageWrapper({ children }: SettingsPageWrapperProps) {
       .filter((item) => item.roles.includes(systemRole))
       .map((item) => ({
         id: item.href,
-        label: t(item.labelKey as any),
+        label: t(item.labelKey as Parameters<typeof t>[0]),
         href: item.href,
         active: pathname === item.href,
         icon: item.icon,

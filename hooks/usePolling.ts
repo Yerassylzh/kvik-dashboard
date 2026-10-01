@@ -95,9 +95,13 @@ export function usePolling<T>({
     if (enabled) {
       activeRef.current = true;
       attemptsRef.current = 0;
-      void runPoll();
+      queueMicrotask(() => {
+        void runPoll();
+      });
     } else {
-      stop();
+      queueMicrotask(() => {
+        stop();
+      });
     }
 
     return () => {

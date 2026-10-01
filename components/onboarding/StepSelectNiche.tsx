@@ -93,10 +93,10 @@ export function StepSelectNiche({ onSelect, loading }: StepSelectNicheProps) {
                     )}
                   </div>
                   <h3 className="font-bold text-sm text-foreground tracking-tight">
-                    {t(niche.titleKey as any)}
+                    {t(niche.titleKey as Parameters<typeof t>[0])}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {t(niche.descKey as any)}
+                    {t(niche.descKey as Parameters<typeof t>[0])}
                   </p>
                 </div>
               </InteractiveCard>

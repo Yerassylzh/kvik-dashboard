@@ -16,7 +16,7 @@ interface KbDocumentsTabProps {
   onRefresh: () => void;
 }
 
-export function KbDocumentsTab({ documents, isLoading, onRefresh }: KbDocumentsTabProps) {
+export function KbDocumentsTab({ documents, onRefresh }: KbDocumentsTabProps) {
   const t = useTranslations("dashboard");
 
   const [isUploading, setIsUploading] = useState(false);

@@ -1,14 +1,19 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { AutomationsPage } from "@/components/dashboard/automations/AutomationsPage";
 
-export const metadata: Metadata = {
-  title: "Автоматизации и дожим — Kvik.ai",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+  return {
+    title: `${t("nav.automations")} — Kvik.ai`,
+  };
+}
 
-export default function AutomationsRoutePage() {
+export default async function AutomationsRoutePage() {
+  const t = await getTranslations("dashboard");
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">Загрузка автоматизаций...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">{t("common.loading")}</div>}>
       <AutomationsPage />
     </Suspense>
   );

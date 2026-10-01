@@ -62,7 +62,9 @@ export function KnowledgeBaseManager() {
     if (typeof window !== "undefined" && isAdminOrOwner) {
       const acknowledged = localStorage.getItem("kvik_kb_caution_acknowledged");
       if (!acknowledged) {
-        setIsCautionOpen(true);
+        queueMicrotask(() => {
+          setIsCautionOpen(true);
+        });
       }
     }
   }, [isAdminOrOwner]);
@@ -76,13 +78,19 @@ export function KnowledgeBaseManager() {
 
   useEffect(() => {
     if (tabQuery && ["sources", "business-context", "qualification", "ai-agent"].includes(tabQuery)) {
-      setActiveMainTab(tabQuery);
+      const q = tabQuery as MainTab;
+      queueMicrotask(() => {
+        setActiveMainTab(q);
+      });
     }
   }, [tabQuery]);
 
   useEffect(() => {
     if (subtabQuery && ["documents", "notes", "website", "twogis"].includes(subtabQuery)) {
-      setActiveSourceTab(subtabQuery);
+      const sq = subtabQuery as SourceSubTab;
+      queueMicrotask(() => {
+        setActiveSourceTab(sq);
+      });
     }
   }, [subtabQuery]);
 

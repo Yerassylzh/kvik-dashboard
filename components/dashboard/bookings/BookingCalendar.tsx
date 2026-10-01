@@ -98,7 +98,7 @@ export function BookingCalendar({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-7 gap-3 min-h-[460px]">
-        {weekDays.map((day, idx) => {
+        {weekDays.map((day) => {
           const dayBookings = getBookingsForDay(day);
           const activeToday = isToday(day);
 

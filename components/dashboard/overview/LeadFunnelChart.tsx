@@ -12,15 +12,24 @@ interface LeadFunnelChartProps {
   isLoading?: boolean;
 }
 
-const stageLabels: Record<string, string> = {
-  NEW: "В диалоге",
-  APPOINTMENT_SET: "Создана запись",
-  DEAL_WON: "Визит завершен",
-  DEAL_LOST: "Отказ",
-};
-
 export function LeadFunnelChart({ funnel, isLoading = false }: LeadFunnelChartProps) {
   const t = useTranslations("dashboard");
+
+  const getStageLabel = (status: string): string => {
+    switch (status) {
+      case "NEW":
+        return t("overview.funnel_stage_new");
+      case "APPOINTMENT_SET":
+        return t("overview.funnel_stage_appointment");
+      case "DEAL_WON":
+        return t("overview.funnel_stage_won");
+      case "DEAL_LOST":
+        return t("overview.funnel_stage_lost");
+      default:
+        return status;
+    }
+  };
+
   const stages: FunnelStageItem[] = (funnel?.stages || []).filter(
     (s: FunnelStageItem) => (s.status as string) !== "QUALIFIED"
   );
@@ -54,7 +63,7 @@ export function LeadFunnelChart({ funnel, isLoading = false }: LeadFunnelChartPr
           stages.map((stage: FunnelStageItem, idx: number) => {
             const count = stage.count || 0;
             const percentage = Math.round((count / maxCount) * 100);
-            const label = stageLabels[stage.status] || stage.status;
+            const label = getStageLabel(stage.status);
             const isZero = count === 0;
 
             // Progressive subtle shading from primary violet to muted slate

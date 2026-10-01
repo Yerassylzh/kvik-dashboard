@@ -5,7 +5,6 @@ import { Check, Clock, Save, RotateCcw, Building2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useStaffSchedule } from "@/hooks/useStaff";
 import type { StaffDto } from "@/lib/api/staff";
 import { toast } from "sonner";
@@ -64,9 +63,13 @@ export function AvailabilityModal({ staff, isOpen, onClose }: AvailabilityModalP
           duration: item.slotDuration || 60,
         };
       }
-      setActiveDays(mapped);
+      queueMicrotask(() => {
+        setActiveDays(mapped);
+      });
     } else if (templates && templates.length === 0) {
-      setActiveDays(DEFAULT_SCHEDULE);
+      queueMicrotask(() => {
+        setActiveDays(DEFAULT_SCHEDULE);
+      });
     }
   }, [templates]);
 

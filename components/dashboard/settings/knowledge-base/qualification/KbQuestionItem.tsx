@@ -10,7 +10,7 @@ import type { QualificationQuestion } from "@/types/knowledgeBase";
 interface KbQuestionItemProps {
   question: QualificationQuestion;
   index: number;
-  onUpdate: (index: number, key: keyof QualificationQuestion, value: any) => void;
+  onUpdate: (index: number, key: keyof QualificationQuestion, value: unknown) => void;
   onRemove: (index: number) => void;
 }
 

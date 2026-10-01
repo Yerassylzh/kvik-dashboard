@@ -27,6 +27,27 @@ interface StepConnectChannelProps {
   continueLoading: boolean;
 }
 
+const resolveDetail = (
+  type: ChannelType,
+  metadata: unknown
+): string | undefined => {
+  if (!metadata || typeof metadata !== "object") return undefined;
+  const m = metadata as Record<string, unknown>;
+  if (type === "WHATSAPP") {
+    return (m as unknown as WhatsAppChannelMetadata).displayPhoneNumber ?? undefined;
+  }
+  if (type === "INSTAGRAM") {
+    const ig = m as unknown as InstagramChannelMetadata;
+    if (ig.igUsername) return `@${ig.igUsername.replace(/^@/, '')}`;
+    return ig.name || ig.pageName || undefined;
+  }
+  if (type === "TELEGRAM") {
+    const tg = m as unknown as TelegramChannelMetadata;
+    return tg.botUsername ? `@${tg.botUsername}` : undefined;
+  }
+  return undefined;
+};
+
 export function StepConnectChannel({
   onContinue,
   continueLoading,
@@ -86,27 +107,6 @@ export function StepConnectChannel({
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
-  const resolveDetail = (
-    type: ChannelType,
-    metadata: unknown
-  ): string | undefined => {
-    if (!metadata || typeof metadata !== "object") return undefined;
-    const m = metadata as Record<string, unknown>;
-    if (type === "WHATSAPP") {
-      return (m as unknown as WhatsAppChannelMetadata).displayPhoneNumber ?? undefined;
-    }
-    if (type === "INSTAGRAM") {
-      const ig = m as unknown as InstagramChannelMetadata;
-      if (ig.igUsername) return `@${ig.igUsername.replace(/^@/, '')}`;
-      return ig.name || ig.pageName || undefined;
-    }
-    if (type === "TELEGRAM") {
-      const tg = m as unknown as TelegramChannelMetadata;
-      return tg.botUsername ? `@${tg.botUsername}` : undefined;
-    }
-    return undefined;
-  };
-
   const handleSelectStage = useCallback((targetStage: number) => {
     setDirection(targetStage >= prevStageRef.current ? 1 : -1);
     prevStageRef.current = targetStage;

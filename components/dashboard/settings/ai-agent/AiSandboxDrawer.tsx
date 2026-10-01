@@ -10,9 +10,6 @@ import {
   Wrench,
   ChevronDown,
   ChevronRight,
-  Calendar,
-  Users,
-  CheckCircle,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Modal } from "@/components/ui/modal";
@@ -27,7 +24,7 @@ interface AiSandboxDrawerProps {
 
 export function AiSandboxDrawer({ isOpen, onClose }: AiSandboxDrawerProps) {
   const t = useTranslations("dashboard");
-  const { runTest, isTesting, testResult, testError, clearTest } = useAiEngine();
+  const { runTest, isTesting, testResult, testError } = useAiEngine();
   const [inputMessage, setInputMessage] = useState("");
   const [isToolsExpanded, setIsToolsExpanded] = useState(true);
 

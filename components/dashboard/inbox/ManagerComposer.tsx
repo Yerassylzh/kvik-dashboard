@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { useInboxStore } from "@/store/inbox.store";
+import { typingManager } from "@/store/typing.store";
 import { useActorId } from "@/hooks/useActorId";
 import {
   conversationsApi,
@@ -36,7 +37,6 @@ export function ManagerComposer({
   takenOverByActorId,
   status = "BOT_ACTIVE",
   onTakeover,
-  assignedStaff: _assignedStaff,
 }: ManagerComposerProps) {
   const t = useTranslations("dashboard");
   const [content, setContent] = useState("");
@@ -73,14 +73,18 @@ export function ManagerComposer({
   }, [micError, t]);
 
   useEffect(() => {
-    setIsOptimisticOwner(false);
-    setIsLockedByOther(false);
+    queueMicrotask(() => {
+      setIsOptimisticOwner(false);
+      setIsLockedByOther(false);
+    });
   }, [conversationId]);
 
   useEffect(() => {
     if (status === "BOT_ACTIVE" || takenOverByActorId === null) {
-      setIsOptimisticOwner(false);
-      setIsLockedByOther(false);
+      queueMicrotask(() => {
+        setIsOptimisticOwner(false);
+        setIsLockedByOther(false);
+      });
     }
   }, [status, takenOverByActorId]);
 
@@ -91,7 +95,7 @@ export function ManagerComposer({
   const isAssignedToMe = isOptimisticOwner || (!!myActorId && takenOverByActorId === myActorId);
   const isLockedExternally =
     !isAssignedToMe &&
-    (Boolean(takenOverByActorId) || Boolean(conversationId && takenConversationIds.has(conversationId)));
+    (Boolean(takenOverByActorId) || Boolean(conversationId && takenConversationIds?.has(conversationId)));
 
   const handleTakeoverClick = async () => {
     if (!onTakeover || isTakingOver) return;
@@ -214,6 +218,7 @@ export function ManagerComposer({
         fileSize: uploadRes.fileSize,
       });
 
+      typingManager.clearTyping(conversationId);
       setIsLockedByOther(false);
     } catch (err: unknown) {
       console.error("[ManagerComposer] handleSendVoice failed:", err);
@@ -223,7 +228,7 @@ export function ManagerComposer({
       } else {
         const errMsg =
           (err as { message?: string })?.message ||
-          t("inbox.outbound_media_failed" as any) ||
+          t("inbox.outbound_media_failed" as Parameters<typeof t>[0]) ||
           "Failed to send voice note";
         toast.error(errMsg);
       }
@@ -263,6 +268,7 @@ export function ManagerComposer({
         await onSendMessage(textToSend);
       }
 
+      typingManager.clearTyping(conversationId);
       setContent("");
       setIsLockedByOther(false);
     } catch (err: unknown) {
@@ -273,7 +279,7 @@ export function ManagerComposer({
       } else {
         const errMsg =
           (err as { message?: string })?.message ||
-          t("inbox.outbound_media_failed" as any) ||
+          t("inbox.outbound_media_failed" as Parameters<typeof t>[0]) ||
           "Failed to send message";
         toast.error(errMsg);
         setContent(textToSend);

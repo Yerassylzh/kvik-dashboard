@@ -160,6 +160,7 @@ apiClient.interceptors.response.use(
 
           if (!isPublicPath) {
             const from = encodeURIComponent(pathname + window.location.search);
+            /* eslint-disable-next-line @next/next/no-location-assign-relative-destination */
             window.location.href = `/login?from=${from}`;
           }
         }

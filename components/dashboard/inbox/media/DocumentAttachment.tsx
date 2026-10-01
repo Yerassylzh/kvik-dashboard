@@ -21,7 +21,6 @@ export function DocumentAttachment({
   mediaUrl,
   fileName = "document.pdf",
   fileSize,
-  mimeType,
   extractedText,
   aiProcessed,
   isUserMessage = false,

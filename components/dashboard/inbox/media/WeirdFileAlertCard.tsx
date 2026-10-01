@@ -19,8 +19,6 @@ export function WeirdFileAlertCard({
   mediaUrl,
   fileName = "system-file.bin",
   fileSize,
-  mimeType,
-  escalationReason,
   isUserMessage = false,
 }: WeirdFileAlertCardProps) {
   const t = useTranslations("dashboard");

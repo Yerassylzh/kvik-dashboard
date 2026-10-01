@@ -1,14 +1,19 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { TeamPage } from "@/components/dashboard/team/TeamPage";
 
-export const metadata: Metadata = {
-  title: "Команда и специалисты — Kvik.ai",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard");
+  return {
+    title: `${t("nav.team")} — Kvik.ai`,
+  };
+}
 
-export default function TeamRoutePage() {
+export default async function TeamRoutePage() {
+  const t = await getTranslations("dashboard");
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">Загрузка команды...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground animate-pulse">{t("common.loading")}</div>}>
       <TeamPage />
     </Suspense>
   );

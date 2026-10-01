@@ -22,7 +22,10 @@ export function AgentConfig() {
 
   useEffect(() => {
     if (config && config.customInstructions !== undefined) {
-      setCustomInstructions(config.customInstructions || "");
+      const instructions = config.customInstructions || "";
+      queueMicrotask(() => {
+        setCustomInstructions(instructions);
+      });
     }
   }, [config]);
 

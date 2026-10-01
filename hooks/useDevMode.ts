@@ -23,7 +23,10 @@ export function useDevMode() {
     if (!isDevEnvironment()) return;
 
     // Read current value
-    setIsDevMode(localStorage.getItem(DEV_MODE_KEY) === "true");
+    const initialVal = localStorage.getItem(DEV_MODE_KEY) === "true";
+    queueMicrotask(() => {
+      setIsDevMode(initialVal);
+    });
 
     // Listen for changes triggered by OTHER components (same tab via custom event)
     const handleCustom = (e: CustomEvent<boolean>) => {
@@ -37,11 +40,11 @@ export function useDevMode() {
       }
     };
 
-    window.addEventListener(DEV_MODE_EVENT as any, handleCustom as EventListener);
+    window.addEventListener(DEV_MODE_EVENT as string, handleCustom as EventListener);
     window.addEventListener("storage", handleStorage);
 
     return () => {
-      window.removeEventListener(DEV_MODE_EVENT as any, handleCustom as EventListener);
+      window.removeEventListener(DEV_MODE_EVENT as string, handleCustom as EventListener);
       window.removeEventListener("storage", handleStorage);
     };
   }, []);

@@ -20,7 +20,6 @@ interface KbTwoGisScraperTabProps {
 
 export function KbTwoGisScraperTab({
   status,
-  isLoading,
   onRefresh,
 }: KbTwoGisScraperTabProps) {
   const t = useTranslations("dashboard");
@@ -36,7 +35,6 @@ export function KbTwoGisScraperTab({
   // Load actual scraped 2GIS catalog entry
   const {
     data: entriesData,
-    isLoading: isEntriesLoading,
     mutate: mutateEntries,
   } = useSWR(
     ["knowledge-base/entries", "LOCAL_LISTING"],

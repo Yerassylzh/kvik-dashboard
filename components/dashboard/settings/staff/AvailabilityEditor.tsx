@@ -14,7 +14,7 @@ interface AvailabilityEditorProps {
 
 export function AvailabilityEditor({ staff }: AvailabilityEditorProps) {
   const t = useTranslations("dashboard");
-  const { setSchedule, isLoading } = useStaffSchedule(staff.id);
+  const { setSchedule } = useStaffSchedule(staff.id);
 
   const dayNames = [
     t("staff.days.0"),

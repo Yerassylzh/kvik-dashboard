@@ -47,18 +47,20 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## 4. Translation & Localization Rules
 
-The product is Russian-only. `locales/ru/` is the single source of truth.
+The platform supports Russian (`ru`) and English (`en`). `locales/ru/` and `locales/en/` are the sources of truth.
 
 ALL THE TEXTS USED WITHIN THE PLATFORM MUST FOLLOW TRANSLATION SYSTEM:
 
-- **UI String Resolution:** Always resolve strings via `useTranslations('<namespace>')` or `getTranslations('<namespace>')` from `next-intl`. Never hardcode raw Russian text directly in TSX.
-- **Adding Keys:** Add new keys with Russian values to `locales/translation_keys_new.json` (or `backend_new_keys.json` for `api.json`), then run:
-  1. `node scripts/apply-translation-keys.mjs`
-  2. `node scripts/export-translation-keys.mjs`
-- **File Access:** Never edit `locales/ru/*.json` directly — always merge via scripts.
+- **UI String Resolution:** Always resolve strings via `useTranslations('<namespace>')` or `getTranslations('<namespace>')` from `next-intl`. Never hardcode raw text directly in TSX.
+- **Adding Keys:** Add new keys with values to `locales/translation_keys_new.json` (or `backend_new_keys.json` for `api.json`).
+- **Applying Keys (Execute Twice):** When applying translations, you must execute the script twice — once for Russian and once for English:
+  1. `node scripts/apply-translation-keys.mjs ru` (with Russian values in input files)
+  2. `node scripts/apply-translation-keys.mjs en` (with English values in input files)
+  3. `node scripts/export-translation-keys.mjs`
+- **File Access:** Do not manually break JSON structures — prefer merging keys consistently across both locales.
 
 ---
 
 ## 5. Communication & Language
 
-Use English for development notes, technical comments, and chat explanations. All text rendered to end-users in UI components must be in Russian.
+Use English for development notes, technical comments, and chat explanations. All text rendered to end-users in UI components must follow the localization system (`next-intl`).
