@@ -6,8 +6,10 @@ export interface WorkspaceScheduleTemplateDto {
   dayOfWeek: number; // 0 = Sunday, 1 = Monday, ... 6 = Saturday
   startTime: string; // e.g. "09:00"
   endTime: string;   // e.g. "19:00"
-  isOpen: boolean;
-  slotDuration: number; // in minutes (default: 60)
+  isOpen?: boolean;
+  isWorking?: boolean;
+  slotDuration?: number; // in minutes (default: 60)
+  slotDurationMinutes?: number;
 }
 
 export interface WorkspaceScheduleOverrideDto {

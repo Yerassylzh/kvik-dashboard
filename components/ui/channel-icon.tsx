@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { MessageCircle, Send } from "lucide-react";
 
@@ -32,3 +34,5 @@ export function ChannelIcon({ type, className = "w-4 h-4" }: ChannelIconProps) {
   }
   return <MessageCircle className={className} />;
 }
+
+export default ChannelIcon;

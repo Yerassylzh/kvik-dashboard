@@ -28,6 +28,8 @@ export interface WhatsAppChannelMetadata {
   phoneNumberId: string;
   displayPhoneNumber?: string;
   verifiedName?: string;
+  qualityRating?: "GREEN" | "YELLOW" | "RED" | "UNKNOWN" | string;
+  codeVerificationStatus?: "VERIFIED" | "NOT_VERIFIED" | "EXPIRED" | string;
 }
 
 export interface InstagramChannelMetadata {

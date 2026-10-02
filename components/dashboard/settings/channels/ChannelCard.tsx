@@ -13,9 +13,11 @@ import {
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ChannelIcon } from "@/components/ui/channel-icon";
+import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 import { WhatsAppFlow } from "@/components/onboarding/channel/WhatsAppFlow";
 import { InstagramFlow } from "@/components/onboarding/channel/InstagramFlow";
 import { TelegramFlow } from "@/components/onboarding/channel/TelegramFlow";
+import { ChannelCardMetaChips } from "./ChannelCardMetaChips";
 import type {
   Channel,
   ChannelType,
@@ -126,49 +128,90 @@ export function ChannelCard({
   const detail = channel ? resolveDetail(config.type, channel.metadata) : null;
   const expiry = isConnected ? resolveTokenExpiry(channel?.tokenExpiresAt, t) : null;
 
-  return (
-    <div className="flex flex-col p-4 rounded-2xl bg-card border border-border/60 hover:border-border transition-colors">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3.5 min-w-0">
-          <div className={`p-3 rounded-xl ${config.bg} ${config.color} shrink-0`}>
-            <ChannelIcon type={config.type} className="w-5 h-5" />
-          </div>
+  const waMeta = config.type === "WHATSAPP" && isConnected ? (channel?.metadata as WhatsAppChannelMetadata) : null;
+  const igMeta = config.type === "INSTAGRAM" && isConnected ? (channel?.metadata as InstagramChannelMetadata) : null;
+  const tgMeta = config.type === "TELEGRAM" && isConnected ? (channel?.metadata as TelegramChannelMetadata) : null;
 
-          <div className="min-w-0 space-y-0.5">
+  return (
+    <div className="flex flex-col p-4 sm:p-5 rounded-2xl bg-card border border-border/70 hover:border-border transition-all shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left: Icon / Avatar & Identifiers */}
+        <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+          {igMeta?.profilePictureUrl ? (
+            <div className="relative shrink-0">
+              <EntityAvatar
+                src={igMeta.profilePictureUrl}
+                name={igMeta.name || igMeta.igUsername}
+                size="md"
+                className="w-11 h-11 rounded-xl ring-1 ring-border/80"
+              />
+              <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-pink-500 text-white">
+                <ChannelIcon type="INSTAGRAM" className="w-2.5 h-2.5" />
+              </span>
+            </div>
+          ) : (
+            <div className={`p-3 rounded-xl ${config.bg} ${config.color} shrink-0`}>
+              <ChannelIcon type={config.type} className="w-5 h-5" />
+            </div>
+          )}
+
+          <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-bold text-sm text-foreground truncate">
                 {t(config.titleKey as Parameters<typeof t>[0])}
               </h4>
 
               {isConnected ? (
-                <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                   <CheckCircle2 className="w-3 h-3" />
                   <span>{t("channels.status_connected")}</span>
                 </span>
               ) : isError ? (
-                <span className="flex items-center gap-1 text-[11px] font-semibold text-destructive bg-destructive/10 border border-destructive/20 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-destructive bg-destructive/10 border border-destructive/20 px-2 py-0.5 rounded-full">
                   <AlertCircle className="w-3 h-3" />
                   <span>{t("channels.status_error")}</span>
                 </span>
               ) : (
-                <span className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground bg-muted/60 border border-border/60 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground bg-muted/60 border border-border/60 px-2 py-0.5 rounded-full">
                   <XCircle className="w-3 h-3" />
                   <span>{t("channels.status_disconnected")}</span>
                 </span>
               )}
 
               {expiry && expiry.isExpiringSoon && (
-                <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
                   <Clock className="w-3 h-3" />
                   <span>{expiry.text}</span>
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="truncate font-mono">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+              <span className="font-mono tabular-nums text-foreground/90 font-medium truncate">
                 {detail || (isConnected ? t("channels.last_synced") : t("channels.not_configured"))}
               </span>
+
+              {igMeta?.name && igMeta.igUsername && (
+                <>
+                  <span className="text-border">•</span>
+                  <span className="truncate">{igMeta.name}</span>
+                </>
+              )}
+
+              {waMeta?.verifiedName && waMeta.displayPhoneNumber && (
+                <>
+                  <span className="text-border">•</span>
+                  <span className="truncate">{waMeta.verifiedName}</span>
+                </>
+              )}
+
+              {tgMeta?.botFirstName && tgMeta.botUsername && (
+                <>
+                  <span className="text-border">•</span>
+                  <span className="truncate">{tgMeta.botFirstName}</span>
+                </>
+              )}
+
               {expiry && !expiry.isExpiringSoon && (
                 <>
                   <span className="text-border">•</span>
@@ -179,7 +222,8 @@ export function ChannelCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
           {isConnected ? (
             <>
               {expiry?.isExpiringSoon && (
@@ -204,7 +248,7 @@ export function ChannelCard({
                     }`}
                   />
                 }
-                className="text-xs h-8 border-border/60"
+                className="text-xs h-8 border-border/70"
               >
                 {t("channels.check_btn")}
               </Button>
@@ -214,7 +258,7 @@ export function ChannelCard({
                 onClick={() => onDisconnect(config.type)}
                 loading={isDisconnecting}
                 leftIcon={<PowerOff className="w-3.5 h-3.5 text-destructive" />}
-                className="text-xs h-8 border-border/60 hover:bg-destructive/10 hover:border-destructive/30 text-destructive"
+                className="text-xs h-8 border-border/70 hover:bg-destructive/10 hover:border-destructive/30 text-destructive"
               >
                 {t("channels.disconnect_btn")}
               </Button>
@@ -241,6 +285,15 @@ export function ChannelCard({
           )}
         </div>
       </div>
+
+      {/* Rich Metadata Sub-panel for Connected State */}
+      {isConnected && (
+        <ChannelCardMetaChips
+          waMeta={waMeta}
+          igMeta={igMeta}
+          tgMeta={tgMeta}
+        />
+      )}
 
       {/* In-place Connection Flow */}
       {isConnecting && (
