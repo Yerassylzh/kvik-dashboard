@@ -17,10 +17,13 @@ interface ChannelCardMetaChipsProps {
 
 export function ChannelCardMetaChips({
   waMeta,
-  igMeta,
   tgMeta,
 }: ChannelCardMetaChipsProps) {
   const t = useTranslations("dashboard.integrations");
+
+  if (!waMeta && !tgMeta) {
+    return null;
+  }
 
   const qualityRating = waMeta?.qualityRating?.toUpperCase();
   const isVerified = waMeta?.codeVerificationStatus === "VERIFIED";
@@ -76,28 +79,6 @@ export function ChannelCardMetaChips({
             <span className="font-mono text-[11px] bg-muted/50 px-2 py-0.5 rounded-md border border-border/60">
               {t("phone_id_label")}: {waMeta.phoneNumberId}
             </span>
-          )}
-        </div>
-      )}
-
-      {/* Instagram Extended Specs */}
-      {igMeta && (
-        <div className="flex items-center gap-2 flex-wrap">
-          {igMeta.instagramId && (
-            <span className="font-mono text-[11px] bg-muted/50 px-2 py-0.5 rounded-md border border-border/60">
-              {t("account_id_label")}: {igMeta.instagramId}
-            </span>
-          )}
-          {igMeta.igUsername && (
-            <a
-              href={`https://instagram.com/${igMeta.igUsername.replace(/^@/, "")}`}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-1 text-[11px] text-pink-600 dark:text-pink-400 hover:underline"
-            >
-              <span>instagram.com/{igMeta.igUsername.replace(/^@/, "")}</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
           )}
         </div>
       )}

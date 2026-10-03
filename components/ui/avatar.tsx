@@ -60,11 +60,10 @@ export function Avatar({ name, src, size = "md", online, className }: AvatarProp
   const showImage = Boolean(src) && !imgError;
 
   return (
-    <div className={clsx("relative flex-shrink-0 select-none", className)}>
+    <div className={clsx("relative flex-shrink-0 select-none", sizeClasses[size], className)}>
       <div
         className={clsx(
-          "rounded-full flex items-center justify-center font-semibold overflow-hidden border transition-colors",
-          sizeClasses[size],
+          "w-full h-full rounded-full flex items-center justify-center font-semibold overflow-hidden border transition-colors",
           showImage
             ? "border-border/60 bg-muted/40"
             : getColorVariant(name)
@@ -75,7 +74,7 @@ export function Avatar({ name, src, size = "md", online, className }: AvatarProp
           <img
             src={src}
             alt={name ?? "avatar"}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-full"
             onError={() => setImgError(true)}
           />
         ) : (

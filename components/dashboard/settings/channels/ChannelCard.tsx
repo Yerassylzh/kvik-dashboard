@@ -11,7 +11,7 @@ import {
   Clock,
   ExternalLink,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ChannelIcon } from "@/components/ui/channel-icon";
 import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
@@ -61,6 +61,7 @@ interface ExpiryInfo {
 
 function resolveTokenExpiry(
   dateStr?: string | null,
+  locale: string = "en",
   t?: (key: string, values?: Record<string, string | number>) => string
 ): ExpiryInfo | null {
   if (!dateStr) return null;
@@ -73,24 +74,25 @@ function resolveTokenExpiry(
 
   if (diffDays <= 0) {
     return {
-      text: t ? t("channels.token_expired") : "Срок действия истек",
+      text: t ? t("channels.token_expired") : "Token expired",
       isExpiringSoon: true,
       isExpired: true,
     };
   }
   if (diffDays <= 7) {
     return {
-      text: t ? t("channels.token_expires_in", { days: diffDays }) : `Истекает через ${diffDays} дн.`,
+      text: t ? t("channels.token_expires_in", { days: diffDays }) : `Expires in ${diffDays} d.`,
       isExpiringSoon: true,
       isExpired: false,
     };
   }
-  const formattedDate = expiryDate.toLocaleDateString("ru-RU", {
+  const dateLocale = locale === "ru" ? "ru-RU" : locale === "kk" ? "kk-KZ" : "en-US";
+  const formattedDate = expiryDate.toLocaleDateString(dateLocale, {
     day: "numeric",
     month: "short",
   });
   return {
-    text: t ? t("channels.token_valid_until", { date: formattedDate }) : `Действителен до ${formattedDate}`,
+    text: t ? t("channels.token_valid_until", { date: formattedDate }) : `Valid until ${formattedDate}`,
     isExpiringSoon: false,
     isExpired: false,
   };
@@ -123,11 +125,12 @@ export function ChannelCard({
 }: ChannelCardProps) {
   const t = useTranslations("dashboard");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
 
   const isConnected = channel?.status === "CONNECTED";
   const isError = channel?.status === "ERROR" || channel?.status === "REVOKED";
   const detail = channel ? resolveDetail(config.type, channel.metadata) : null;
-  const expiry = isConnected ? resolveTokenExpiry(channel?.tokenExpiresAt, t) : null;
+  const expiry = isConnected ? resolveTokenExpiry(channel?.tokenExpiresAt, locale, t) : null;
 
   const waMeta = config.type === "WHATSAPP" && isConnected ? (channel?.metadata as WhatsAppChannelMetadata) : null;
   const igMeta = config.type === "INSTAGRAM" && isConnected ? (channel?.metadata as InstagramChannelMetadata) : null;
