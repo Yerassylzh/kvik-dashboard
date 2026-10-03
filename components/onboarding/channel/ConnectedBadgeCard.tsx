@@ -3,11 +3,15 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { ExternalLink } from "lucide-react";
+import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 
 interface ConnectedBadgeCardProps {
   channelName: string;
   icon: string;
   detail?: string;
+  accountName?: string;
+  avatarUrl?: string;
   badgeLabel?: string;
   onDisconnect: () => Promise<void>;
   disconnecting?: boolean;
@@ -19,6 +23,8 @@ export function ConnectedBadgeCard({
   channelName,
   icon,
   detail,
+  accountName,
+  avatarUrl,
   badgeLabel,
   onDisconnect,
   disconnecting = false,
@@ -63,28 +69,59 @@ export function ConnectedBadgeCard({
       {/* Decorative success glow */}
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Big Animated Success Icon */}
-      <motion.div
-        initial={{ scale: 0, rotate: -20 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: "spring", stiffness: 350, damping: 20 }}
-        className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl mb-4 relative shadow-sm"
-      >
-        <span>{icon}</span>
-        <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center font-bold shadow">
-          ✓
-        </span>
-      </motion.div>
+      {/* Main Avatar / Icon */}
+      {avatarUrl || accountName ? (
+        <motion.div
+          initial={{ scale: 0, rotate: -10 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 350, damping: 20 }}
+          className="relative mb-3.5"
+        >
+          <EntityAvatar
+            src={avatarUrl}
+            name={accountName || detail || channelName}
+            size="lg"
+            className="w-16 h-16 rounded-full ring-4 ring-card shadow-sm object-cover"
+          />
+          <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center font-bold shadow-xs">
+            ✓
+          </span>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 350, damping: 20 }}
+          className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl mb-4 relative shadow-sm"
+        >
+          <span>{icon}</span>
+          <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center font-bold shadow">
+            ✓
+          </span>
+        </motion.div>
+      )}
 
-      {/* Success Title */}
+      {/* Success Title / Account Name */}
       <h4 className="text-base font-bold text-foreground">
-        {t("connected_success_title", { channel: channelName })}
+        {accountName || t("connected_success_title", { channel: channelName })}
       </h4>
 
       {/* Detail (Phone or Username) */}
       {detail ? (
-        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border text-xs font-mono font-semibold text-foreground shadow-xs">
-          <span>{detail}</span>
+        <div className="mt-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border text-xs font-semibold text-foreground shadow-xs">
+          {detail.startsWith("@") ? (
+            <a
+              href={`https://instagram.com/${detail.replace(/^@/, "")}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-1 text-pink-600 dark:text-pink-400 hover:underline"
+            >
+              <span>{detail}</span>
+              <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+            </a>
+          ) : (
+            <span className="font-mono">{detail}</span>
+          )}
         </div>
       ) : badgeLabel ? (
         <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-card border border-border text-xs font-semibold text-foreground">

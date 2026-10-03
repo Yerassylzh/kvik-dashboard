@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { SectionCard } from "@/components/dashboard/shared/SectionCard";
 import { ConfirmDeleteModal } from "@/components/dashboard/shared/ConfirmDeleteModal";
-import { useToast } from "@/components/ui/toast/ToastContext";
 import {
   listChannels,
   disconnectChannel,
@@ -42,7 +42,6 @@ interface ChannelsManagerProps {
 export function ChannelsManager({ onChannelsChange, className }: ChannelsManagerProps = {}) {
   const t = useTranslations("dashboard");
   const tChannels = useTranslations("channels");
-  const toast = useToast();
 
   const [channelMap, setChannelMap] = useState<Partial<Record<ChannelType, Channel>>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -94,21 +93,16 @@ export function ChannelsManager({ onChannelsChange, className }: ChannelsManager
       );
 
       if (res.isHealthy || res.status === "CONNECTED") {
-        toast.success(
-          t("channels.refresh_success"),
-          channelTitle
-        );
+        toast.success(t("channels.refresh_success"), {
+          description: `${channelTitle}: ${res.status}`,
+        });
       } else {
-        toast.warning(
-          `${channelTitle}: ${res.status}`,
-          t("channels.status_error")
-        );
+        toast.warning(t("channels.status_error"), {
+          description: `${channelTitle}: ${res.status}`,
+        });
       }
     } catch {
-      toast.error(
-        tChannels("health_check_failed"),
-        t("channels.refresh_error")
-      );
+      toast.error(tChannels("health_check_failed"));
     } finally {
       setCheckingType(null);
     }

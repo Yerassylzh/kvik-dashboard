@@ -9,6 +9,7 @@ import {
   PowerOff,
   Plus,
   Clock,
+  ExternalLink,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -137,15 +138,15 @@ export function ChannelCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Left: Icon / Avatar & Identifiers */}
         <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-          {igMeta?.profilePictureUrl ? (
+          {igMeta ? (
             <div className="relative shrink-0">
               <EntityAvatar
                 src={igMeta.profilePictureUrl}
-                name={igMeta.name || igMeta.igUsername}
+                name={igMeta.name || igMeta.igUsername || "Instagram"}
                 size="md"
-                className="w-11 h-11 rounded-xl ring-1 ring-border/80"
+                className="w-12 h-12 rounded-full ring-2 ring-pink-500/20 shadow-xs object-cover"
               />
-              <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-pink-500 text-white">
+              <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 text-white flex items-center justify-center shadow-xs">
                 <ChannelIcon type="INSTAGRAM" className="w-2.5 h-2.5" />
               </span>
             </div>
@@ -158,7 +159,9 @@ export function ChannelCard({
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-bold text-sm text-foreground truncate">
-                {t(config.titleKey as Parameters<typeof t>[0])}
+                {igMeta?.name
+                  ? igMeta.name
+                  : t(config.titleKey as Parameters<typeof t>[0])}
               </h4>
 
               {isConnected ? (
@@ -187,16 +190,30 @@ export function ChannelCard({
             </div>
 
             <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-              <span className="font-mono tabular-nums text-foreground/90 font-medium truncate">
-                {detail || (isConnected ? t("channels.last_synced") : t("channels.not_configured"))}
-              </span>
+              {igMeta?.igUsername ? (
+                <a
+                  href={`https://instagram.com/${igMeta.igUsername.replace(/^@/, "")}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-1 font-semibold text-pink-600 dark:text-pink-400 hover:underline"
+                >
+                  <span>@{igMeta.igUsername.replace(/^@/, "")}</span>
+                  <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+                </a>
+              ) : (
+                <span className="font-mono tabular-nums text-foreground/90 font-medium truncate">
+                  {detail || (isConnected ? t("channels.last_synced") : t("channels.not_configured"))}
+                </span>
+              )}
 
-              {igMeta?.name && igMeta.igUsername && (
+              {igMeta ? (
                 <>
                   <span className="text-border">•</span>
-                  <span className="truncate">{igMeta.name}</span>
+                  <span className="text-[11px] text-muted-foreground/90">
+                    {t(config.titleKey as Parameters<typeof t>[0])}
+                  </span>
                 </>
-              )}
+              ) : null}
 
               {waMeta?.verifiedName && waMeta.displayPhoneNumber && (
                 <>

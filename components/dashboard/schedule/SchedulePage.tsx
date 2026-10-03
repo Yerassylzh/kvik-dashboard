@@ -43,7 +43,7 @@ export function SchedulePage() {
       return template
         ? {
             ...day,
-            isOpen: template.isOpen,
+            isOpen: template.isOpen ?? day.isOpen,
             startTime: template.startTime?.slice(0, 5) || day.startTime,
             endTime: template.endTime?.slice(0, 5) || day.endTime,
           }
@@ -108,7 +108,7 @@ export function SchedulePage() {
         dayOfWeek: d.dayOfWeek,
         startTime: d.startTime,
         endTime: d.endTime,
-        isOpen: d.isOpen,
+        isOpen: Boolean(d.isOpen),
         slotDuration: displayedSlotDuration,
       }));
       await setSchedule(payload);

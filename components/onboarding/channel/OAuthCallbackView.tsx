@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { Channel } from "@/types/channels";
+import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
 
 interface OAuthCallbackViewProps {
   channelName: string;
@@ -50,6 +51,8 @@ export function OAuthCallbackView({
   const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [accountDetail, setAccountDetail] = useState<string | null>(null);
+  const [accountName, setAccountName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const executedRef = useRef(false);
 
   useEffect(() => {
@@ -123,6 +126,14 @@ export function OAuthCallbackView({
         const detail = extractDetail(res.channel);
         if (detail) setAccountDetail(detail);
 
+        const meta = res.channel?.metadata as Record<string, unknown> | undefined;
+        if (meta) {
+          if (typeof meta.name === "string" && meta.name) setAccountName(meta.name);
+          if (typeof meta.profilePictureUrl === "string" && meta.profilePictureUrl) {
+            setAvatarUrl(meta.profilePictureUrl);
+          }
+        }
+
         setStatus("success");
 
         // 3. Broadcast success
@@ -186,20 +197,34 @@ export function OAuthCallbackView({
 
         {status === "success" && (
           <>
-            <div
-              className={`w-14 h-14 rounded-2xl border flex items-center justify-center text-2xl font-bold ${
-                isPurple
-                  ? "bg-primary/10 border-primary/20 text-primary"
-                  : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-              }`}
-            >
-              ✓
-            </div>
+            {avatarUrl || accountName ? (
+              <div className="relative">
+                <EntityAvatar
+                  src={avatarUrl || undefined}
+                  name={accountName || accountDetail || channelName}
+                  size="lg"
+                  className="w-16 h-16 rounded-full ring-2 ring-primary/20 object-cover"
+                />
+                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center font-bold shadow-xs">
+                  ✓
+                </span>
+              </div>
+            ) : (
+              <div
+                className={`w-14 h-14 rounded-2xl border flex items-center justify-center text-2xl font-bold ${
+                  isPurple
+                    ? "bg-primary/10 border-primary/20 text-primary"
+                    : "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                }`}
+              >
+                ✓
+              </div>
+            )}
             <h3 className="text-base font-bold text-foreground">
-              {channelName} успешно подключен!
+              {accountName || `${channelName} успешно подключен!`}
             </h3>
             {accountDetail && (
-              <div className="px-3 py-1 rounded-xl bg-muted border border-border text-xs font-mono font-semibold text-foreground">
+              <div className="px-3 py-1 rounded-xl bg-muted border border-border text-xs font-semibold text-foreground">
                 {accountDetail}
               </div>
             )}

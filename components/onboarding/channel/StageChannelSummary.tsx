@@ -5,11 +5,13 @@ import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { AlertCircle } from "lucide-react";
 import { ChannelIcon } from "@/components/ui/channel-icon";
-import { ChannelType, ChannelStatus } from "@/types/channels";
+import { EntityAvatar } from "@/components/dashboard/shared/EntityAvatar";
+import { ChannelType, ChannelStatus, InstagramChannelMetadata } from "@/types/channels";
 
 interface ConnectedChannel {
   status: ChannelStatus;
   detail?: string;
+  metadata?: unknown;
 }
 
 interface StageChannelSummaryProps {
@@ -116,13 +118,28 @@ export function StageChannelSummary({
               <div>
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2 mb-3">
-                  <div
-                    className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
-                      isConnected ? cfg.colorClasses.iconBg : "bg-muted border-border text-muted-foreground"
-                    }`}
-                  >
-                    <ChannelIcon type={cfg.type} className="w-5 h-5" />
-                  </div>
+                  {cfg.type === "INSTAGRAM" && isConnected && (ch?.metadata as InstagramChannelMetadata)?.profilePictureUrl ? (
+                    <div className="relative shrink-0">
+                      <EntityAvatar
+                        src={(ch.metadata as InstagramChannelMetadata).profilePictureUrl}
+                        name={(ch.metadata as InstagramChannelMetadata).name || ch.detail}
+                        size="md"
+                        className="w-10 h-10 rounded-full ring-2 ring-primary/20 object-cover"
+                      />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 text-white flex items-center justify-center text-[8px] shadow-xs">
+                        ✓
+                      </span>
+                    </div>
+                  ) : (
+                    <div
+                      className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+                        isConnected ? cfg.colorClasses.iconBg : "bg-muted border-border text-muted-foreground"
+                      }`}
+                    >
+                      <ChannelIcon type={cfg.type} className="w-5 h-5" />
+                    </div>
+                  )}
+
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                       isConnected
@@ -136,11 +153,13 @@ export function StageChannelSummary({
 
                 {/* Title & Detail */}
                 <h4 className="font-bold text-sm text-foreground">
-                  {cfg.title}
+                  {cfg.type === "INSTAGRAM" && isConnected && (ch?.metadata as InstagramChannelMetadata)?.name
+                    ? (ch.metadata as InstagramChannelMetadata).name
+                    : cfg.title}
                 </h4>
 
                 {isConnected && ch?.detail ? (
-                  <p className="text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-400 mt-1 truncate">
+                  <p className="text-xs font-semibold text-pink-600 dark:text-pink-400 mt-1 truncate">
                     {ch.detail}
                   </p>
                 ) : (

@@ -12,6 +12,7 @@ import { InstagramChannelMetadata } from "@/types/channels";
 interface StageInstagramProps {
   isConnected: boolean;
   connectedDetail?: string;
+  metadata?: InstagramChannelMetadata | null;
   onSuccess: (metadata: InstagramChannelMetadata) => void;
   onDisconnect: () => Promise<void>;
   disconnecting: boolean;
@@ -23,6 +24,7 @@ interface StageInstagramProps {
 export function StageInstagram({
   isConnected,
   connectedDetail,
+  metadata,
   onSuccess,
   onDisconnect,
   disconnecting,
@@ -37,6 +39,10 @@ export function StageInstagram({
     { icon: Tag, text: t("instagram_benefit2") },
     { icon: Link2, text: t("instagram_benefit3") },
   ];
+
+  const handle = metadata?.igUsername
+    ? `@${metadata.igUsername.replace(/^@/, "")}`
+    : connectedDetail;
 
   return (
     <div className="space-y-5">
@@ -90,7 +96,9 @@ export function StageInstagram({
           <ConnectedBadgeCard
             channelName={t("instagram_title")}
             icon="INSTAGRAM"
-            detail={connectedDetail}
+            accountName={metadata?.name}
+            avatarUrl={metadata?.profilePictureUrl}
+            detail={handle}
             onDisconnect={onDisconnect}
             disconnecting={disconnecting}
             accentColor="purple"

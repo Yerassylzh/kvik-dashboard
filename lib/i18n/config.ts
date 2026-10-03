@@ -12,12 +12,25 @@ export const API_DICTIONARIES: Record<SupportedLocale, Record<string, unknown>> 
 export const SUPPORTED_LOCALES: SupportedLocale[] = ['ru', 'en', 'kk'];
 export const DEFAULT_LOCALE: SupportedLocale = 'ru';
 
-let activeLocale: SupportedLocale = DEFAULT_LOCALE;
+function getClientCookieLocale(): SupportedLocale | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|;\s*)NEXT_LOCALE=([^;]+)/);
+  if (match && SUPPORTED_LOCALES.includes(match[1] as SupportedLocale)) {
+    return match[1] as SupportedLocale;
+  }
+  return null;
+}
+
+let activeLocale: SupportedLocale = getClientCookieLocale() || DEFAULT_LOCALE;
 
 /**
  * Gets the current active locale in the application.
  */
 export function getCurrentLocale(): SupportedLocale {
+  const cookieLocale = getClientCookieLocale();
+  if (cookieLocale) {
+    activeLocale = cookieLocale;
+  }
   return activeLocale;
 }
 

@@ -19,6 +19,7 @@ import {
 interface ConnectedChannel {
   status: ChannelStatus;
   detail?: string;
+  metadata?: unknown;
 }
 
 interface StepConnectChannelProps {
@@ -76,6 +77,7 @@ export function StepConnectChannel({
           map[ch.type] = {
             status: ch.status,
             detail: resolveDetail(ch.type, ch.metadata),
+            metadata: ch.metadata,
           };
         }
         setChannels(map);
@@ -114,10 +116,10 @@ export function StepConnectChannel({
   }, []);
 
   const markConnected = useCallback(
-    (type: ChannelType, detail?: string) => {
+    (type: ChannelType, detail?: string, metadata?: unknown) => {
       setChannels((prev) => ({
         ...prev,
-        [type]: { status: "CONNECTED" as ChannelStatus, detail },
+        [type]: { status: "CONNECTED" as ChannelStatus, detail, metadata },
       }));
     },
     []
@@ -219,10 +221,12 @@ export function StepConnectChannel({
               <StageInstagram
                 isConnected={isInstagramConnected}
                 connectedDetail={channels.INSTAGRAM?.detail}
+                metadata={channels.INSTAGRAM?.metadata as InstagramChannelMetadata | undefined}
                 onSuccess={(meta) => {
                   markConnected(
                     "INSTAGRAM",
-                    meta.igUsername ? `@${meta.igUsername}` : undefined
+                    meta.igUsername ? `@${meta.igUsername.replace(/^@/, '')}` : undefined,
+                    meta
                   );
                 }}
                 onDisconnect={() => handleDisconnect("INSTAGRAM")}

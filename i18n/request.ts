@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import fs from 'node:fs';
 import path from 'node:path';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
@@ -12,6 +12,20 @@ export default getRequestConfig(async () => {
   let locale: SupportedLocale = DEFAULT_LOCALE;
   if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale)) {
     locale = cookieLocale;
+  } else {
+    try {
+      const headerStore = await headers();
+      const acceptLang = headerStore.get('accept-language')?.toLowerCase() || '';
+      if (acceptLang.startsWith('en') || acceptLang.includes(',en')) {
+        locale = 'en';
+      } else if (acceptLang.startsWith('kk') || acceptLang.includes(',kk')) {
+        locale = 'kk';
+      } else if (acceptLang.startsWith('ru') || acceptLang.includes(',ru')) {
+        locale = 'ru';
+      }
+    } catch {
+      // Fallback to DEFAULT_LOCALE
+    }
   }
 
   const localesDir = path.join(process.cwd(), 'locales', locale);
